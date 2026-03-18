@@ -6,8 +6,8 @@ import habitsReducer, {
   fetchTodayCompletions,
   completeHabit,
   HabitsState,
-} from '../habitsSlice';
-import {Habit, HabitCompletion} from '../../types';
+} from '../../src/store/habitsSlice';
+import {Habit, HabitCompletion} from '../../src/types';
 
 const makeHabit = (overrides: Partial<Habit> = {}): Habit => ({
   id: 'h1',

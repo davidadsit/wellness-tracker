@@ -3,15 +3,15 @@ import {render, fireEvent, waitFor} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import {configureStore} from '@reduxjs/toolkit';
 import {Alert} from 'react-native';
-import {CheckInScreen} from '../CheckInScreen';
-import tagsReducer from '../../store/tagsSlice';
-import checkInReducer from '../../store/checkInSlice';
-import habitsReducer from '../../store/habitsSlice';
-import settingsReducer from '../../store/settingsSlice';
+import {CheckInScreen} from '../../src/screens/CheckInScreen';
+import tagsReducer from '../../src/store/tagsSlice';
+import checkInReducer from '../../src/store/checkInSlice';
+import habitsReducer from '../../src/store/habitsSlice';
+import settingsReducer from '../../src/store/settingsSlice';
 
 jest.spyOn(Alert, 'alert');
 
-jest.mock('../../services/database/checkInRepository', () => ({
+jest.mock('../../src/services/database/checkInRepository', () => ({
   checkInRepository: {
     create: jest.fn().mockReturnValue({
       id: 'new-1',
@@ -24,7 +24,7 @@ jest.mock('../../services/database/checkInRepository', () => ({
   },
 }));
 
-jest.mock('../../services/database/tagRepository', () => ({
+jest.mock('../../src/services/database/tagRepository', () => ({
   tagRepository: {
     getAllCategories: jest.fn().mockReturnValue([
       {id: 'cat-mental', name: 'Mental Health', sortOrder: 1, isDefault: true, createdAt: 0},

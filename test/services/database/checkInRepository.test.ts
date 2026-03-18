@@ -1,5 +1,5 @@
-import {checkInRepository} from '../checkInRepository';
-import {resetDatabase, initializeDatabase} from '../database';
+import {checkInRepository} from '../../../src/services/database/checkInRepository';
+import {resetDatabase, initializeDatabase} from '../../../src/services/database/database';
 beforeEach(async () => {
   resetDatabase();
   await initializeDatabase();

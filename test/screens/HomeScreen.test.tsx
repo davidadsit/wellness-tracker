@@ -2,27 +2,27 @@ import React from 'react';
 import {render, fireEvent} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import {configureStore} from '@reduxjs/toolkit';
-import {HomeScreen} from '../HomeScreen';
-import tagsReducer from '../../store/tagsSlice';
-import checkInReducer from '../../store/checkInSlice';
-import habitsReducer from '../../store/habitsSlice';
-import settingsReducer from '../../store/settingsSlice';
+import {HomeScreen} from '../../src/screens/HomeScreen';
+import tagsReducer from '../../src/store/tagsSlice';
+import checkInReducer from '../../src/store/checkInSlice';
+import habitsReducer from '../../src/store/habitsSlice';
+import settingsReducer from '../../src/store/settingsSlice';
 
-jest.mock('../../services/database/tagRepository', () => ({
+jest.mock('../../src/services/database/tagRepository', () => ({
   tagRepository: {
     getAllCategories: jest.fn().mockReturnValue([]),
     getAllTags: jest.fn().mockReturnValue([]),
   },
 }));
 
-jest.mock('../../services/database/checkInRepository', () => ({
+jest.mock('../../src/services/database/checkInRepository', () => ({
   checkInRepository: {
     getToday: jest.fn().mockReturnValue([]),
     getRecent: jest.fn().mockReturnValue([]),
   },
 }));
 
-jest.mock('../../services/database/habitRepository', () => ({
+jest.mock('../../src/services/database/habitRepository', () => ({
   habitRepository: {
     getCompletionsForDate: jest.fn().mockReturnValue([]),
   },

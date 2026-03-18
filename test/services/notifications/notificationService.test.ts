@@ -1,6 +1,6 @@
 import notifee, {TriggerType, RepeatFrequency} from '@notifee/react-native';
-import {notificationService} from '../notificationService';
-import {Habit} from '../../../types';
+import {notificationService} from '../../../src/services/notifications/notificationService';
+import {Habit} from '../../../src/types';
 
 beforeEach(() => {
   jest.clearAllMocks();

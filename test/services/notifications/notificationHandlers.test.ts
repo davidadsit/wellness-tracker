@@ -1,10 +1,10 @@
 import notifee, {EventType} from '@notifee/react-native';
-import {registerNotificationHandlers} from '../notificationHandlers';
-import {habitRepository} from '../../database/habitRepository';
-import {notificationService} from '../notificationService';
+import {registerNotificationHandlers} from '../../../src/services/notifications/notificationHandlers';
+import {habitRepository} from '../../../src/services/database/habitRepository';
+import {notificationService} from '../../../src/services/notifications/notificationService';
 
-jest.mock('../../database/habitRepository');
-jest.mock('../notificationService');
+jest.mock('../../../src/services/database/habitRepository');
+jest.mock('../../../src/services/notifications/notificationService');
 
 const mockedHabitRepo = habitRepository as jest.Mocked<typeof habitRepository>;
 const mockedNotifService = notificationService as jest.Mocked<typeof notificationService>;

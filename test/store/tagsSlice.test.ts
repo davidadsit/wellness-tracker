@@ -4,10 +4,10 @@ import tagsReducer, {
   createTag,
   deleteTag,
   TagsState,
-} from '../tagsSlice';
-import {tagRepository} from '../../services/database/tagRepository';
+} from '../../src/store/tagsSlice';
+import {tagRepository} from '../../src/services/database/tagRepository';
 
-jest.mock('../../services/database/tagRepository');
+jest.mock('../../src/services/database/tagRepository');
 
 const mockedRepo = tagRepository as jest.Mocked<typeof tagRepository>;
 

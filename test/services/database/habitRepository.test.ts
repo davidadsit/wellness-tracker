@@ -1,5 +1,5 @@
-import {habitRepository} from '../habitRepository';
-import {resetDatabase, initializeDatabase} from '../database';
+import {habitRepository} from '../../../src/services/database/habitRepository';
+import {resetDatabase, initializeDatabase} from '../../../src/services/database/database';
 beforeEach(async () => {
   resetDatabase();
   await initializeDatabase();

@@ -1,5 +1,5 @@
-import {tagRepository} from '../tagRepository';
-import {resetDatabase, initializeDatabase} from '../database';
+import {tagRepository} from '../../../src/services/database/tagRepository';
+import {resetDatabase, initializeDatabase} from '../../../src/services/database/database';
 beforeEach(async () => {
   resetDatabase();
   await initializeDatabase();

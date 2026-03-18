@@ -2,13 +2,13 @@ import React from 'react';
 import {render, fireEvent} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import {configureStore} from '@reduxjs/toolkit';
-import {HabitsScreen} from '../HabitsScreen';
-import tagsReducer from '../../store/tagsSlice';
-import checkInReducer from '../../store/checkInSlice';
-import habitsReducer from '../../store/habitsSlice';
-import settingsReducer from '../../store/settingsSlice';
+import {HabitsScreen} from '../../src/screens/HabitsScreen';
+import tagsReducer from '../../src/store/tagsSlice';
+import checkInReducer from '../../src/store/checkInSlice';
+import habitsReducer from '../../src/store/habitsSlice';
+import settingsReducer from '../../src/store/settingsSlice';
 
-jest.mock('../../services/database/habitRepository', () => ({
+jest.mock('../../src/services/database/habitRepository', () => ({
   habitRepository: {
     getCompletionsForDate: jest.fn().mockReturnValue([]),
   },
