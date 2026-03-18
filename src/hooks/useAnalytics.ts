@@ -1,0 +1,67 @@
+import {useState, useCallback} from 'react';
+import {checkInRepository} from '../services/database/checkInRepository';
+import {habitRepository} from '../services/database/habitRepository';
+import {getDateRange} from '../utils/dateUtils';
+import {
+  calculateTagFrequency,
+  calculateTagTrends,
+  TagFrequencyItem,
+  TagTrend,
+} from '../utils/analytics';
+
+export type AnalyticsPeriod = 7 | 30 | 90;
+
+export function useAnalytics(tagLabels: Record<string, string>) {
+  const [tagFrequency, setTagFrequency] = useState<TagFrequencyItem[]>([]);
+  const [tagTrends, setTagTrends] = useState<TagTrend[]>([]);
+  const [completionRates, setCompletionRates] = useState<
+    Array<{habitId: string; totalCompletions: number; daysWithCompletions: number}>
+  >([]);
+  const [loading, setLoading] = useState(false);
+
+  const loadAnalytics = useCallback(
+    async (period: AnalyticsPeriod, habitIds: string[]) => {
+      setLoading(true);
+
+      const currentRange = getDateRange(period);
+      const previousRange = {
+        start: getDateRange(period * 2).start,
+        end: currentRange.start - 1,
+      };
+
+      const currentFreq = await checkInRepository.getTagFrequency(
+        currentRange.start,
+        currentRange.end,
+      );
+      const previousFreq = await checkInRepository.getTagFrequency(
+        previousRange.start,
+        previousRange.end,
+      );
+
+      const currentCheckIns = await checkInRepository.getByDateRange(
+        currentRange.start,
+        currentRange.end,
+      );
+
+      setTagFrequency(
+        calculateTagFrequency(currentFreq, tagLabels, currentCheckIns.length),
+      );
+      setTagTrends(calculateTagTrends(currentFreq, previousFreq, tagLabels));
+
+      if (habitIds.length > 0) {
+        const startDate = new Date(currentRange.start)
+          .toISOString()
+          .split('T')[0];
+        const endDate = new Date(currentRange.end).toISOString().split('T')[0];
+        setCompletionRates(
+          await habitRepository.getCompletionRates(habitIds, startDate, endDate),
+        );
+      }
+
+      setLoading(false);
+    },
+    [tagLabels],
+  );
+
+  return {tagFrequency, tagTrends, completionRates, loading, loadAnalytics};
+}

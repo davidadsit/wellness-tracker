@@ -1,0 +1,92 @@
+import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import {TagCategory, Tag} from '../types';
+import {tagRepository} from '../services/database/tagRepository';
+
+export interface TagsState {
+  categories: TagCategory[];
+  tags: Tag[];
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: TagsState = {
+  categories: [],
+  tags: [],
+  loading: false,
+  error: null,
+};
+
+export const fetchAllTags = createAsyncThunk('tags/fetchAll', async () => {
+  const categories = await tagRepository.getAllCategories();
+  const tags = await tagRepository.getAllTags();
+  return {categories, tags};
+});
+
+export const createCategory = createAsyncThunk(
+  'tags/createCategory',
+  async (params: {name: string; sortOrder: number}) => {
+    return tagRepository.createCategory(params.name, params.sortOrder);
+  },
+);
+
+export const createTag = createAsyncThunk(
+  'tags/createTag',
+  async (params: {categoryId: string; label: string}) => {
+    return tagRepository.createTag(params.categoryId, params.label);
+  },
+);
+
+export const deleteCategory = createAsyncThunk(
+  'tags/deleteCategory',
+  async (id: string) => {
+    await tagRepository.deleteCategory(id);
+    return id;
+  },
+);
+
+export const deleteTag = createAsyncThunk(
+  'tags/deleteTag',
+  async (id: string) => {
+    await tagRepository.deleteTag(id);
+    return id;
+  },
+);
+
+const tagsSlice = createSlice({
+  name: 'tags',
+  initialState,
+  reducers: {},
+  extraReducers: builder => {
+    builder
+      .addCase(fetchAllTags.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllTags.fulfilled, (state, action) => {
+        state.loading = false;
+        state.categories = action.payload.categories;
+        state.tags = action.payload.tags;
+      })
+      .addCase(fetchAllTags.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message ?? 'Failed to fetch tags';
+      })
+      .addCase(createCategory.fulfilled, (state, action) => {
+        state.categories.push(action.payload);
+      })
+      .addCase(createTag.fulfilled, (state, action) => {
+        state.tags.push(action.payload);
+      })
+      .addCase(deleteCategory.fulfilled, (state, action) => {
+        state.categories = state.categories.filter(c => c.id !== action.payload);
+        state.tags = state.tags.filter(
+          t => !state.categories.find(c => c.id === action.payload) || t.categoryId !== action.payload,
+        );
+      })
+      .addCase(deleteTag.fulfilled, (state, action) => {
+        state.tags = state.tags.filter(t => t.id !== action.payload);
+      });
+  },
+});
+
+export default tagsSlice.reducer;

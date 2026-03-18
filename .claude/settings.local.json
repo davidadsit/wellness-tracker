@@ -5,7 +5,14 @@
       "Bash(claude --version)",
       "Bash(zsh -l -c 'claude --version')",
       "Bash(npm install:*)",
-      "Bash(npx jest:*)"
+      "Bash(npx jest:*)",
+      "Bash(cp -r /tmp/WellnessTracker/android /Users/davidadsit/code/wellness-tracker/)",
+      "Bash(cp -r /tmp/WellnessTracker/ios /Users/davidadsit/code/wellness-tracker/)",
+      "Bash(cp /tmp/WellnessTracker/Gemfile /Users/davidadsit/code/wellness-tracker/)",
+      "Bash(cp /tmp/WellnessTracker/app.json /Users/davidadsit/code/wellness-tracker/)",
+      "Bash(adb logcat:*)",
+      "Bash(adb shell:*)",
+      "Bash(adb exec-out:*)"
     ]
   }
 }
