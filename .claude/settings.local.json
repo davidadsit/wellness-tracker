@@ -3,7 +3,9 @@
     "allow": [
       "Bash(source ~/.zshrc)",
       "Bash(claude --version)",
-      "Bash(zsh -l -c 'claude --version')"
+      "Bash(zsh -l -c 'claude --version')",
+      "Bash(npm install:*)",
+      "Bash(npx jest:*)"
     ]
   }
 }
