@@ -17,6 +17,7 @@ export function CheckInScreen() {
   const {categories, tagsByCategory, loadTags, visibleCategories, addTag} = useTags();
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [note, setNote] = useState('');
+  const [noteHeight, setNoteHeight] = useState(100);
 
   useFocusEffect(
     useCallback(() => {
@@ -78,12 +79,15 @@ export function CheckInScreen() {
       <Text style={styles.noteLabel}>Note (optional)</Text>
       <TextInput
         testID="checkin-note"
-        style={styles.noteInput}
+        style={[styles.noteInput, {height: Math.max(100, noteHeight)}]}
         value={note}
         onChangeText={setNote}
+        onContentSizeChange={e =>
+          setNoteHeight(e.nativeEvent.contentSize.height + 24)
+        }
         placeholder="Anything else you want to capture..."
         multiline
-        numberOfLines={3}
+        scrollEnabled={false}
       />
 
       <TouchableOpacity
@@ -103,7 +107,7 @@ const styles = StyleSheet.create({
   noteLabel: {fontSize: 14, fontWeight: '600', color: '#333', marginTop: 8, marginBottom: 6},
   noteInput: {
     borderWidth: 1, borderColor: '#ddd', borderRadius: 8,
-    padding: 12, fontSize: 15, minHeight: 80, textAlignVertical: 'top',
+    padding: 12, fontSize: 15, textAlignVertical: 'top',
     backgroundColor: '#fff',
   },
   submitButton: {

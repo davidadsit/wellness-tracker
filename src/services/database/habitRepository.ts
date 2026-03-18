@@ -1,6 +1,6 @@
 import {getDatabase} from './database';
 import {HabitCompletion} from '../../types';
-import {v4 as uuid} from 'uuid';
+import {uuid} from '../../utils/uuid';
 
 function mapCompletion(row: any): HabitCompletion {
   return {

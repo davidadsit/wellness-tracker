@@ -1,6 +1,6 @@
 import {getDatabase} from './database';
 import {TagCategory, Tag} from '../../types';
-import {v4 as uuid} from 'uuid';
+import {uuid} from '../../utils/uuid';
 
 function mapCategory(row: any): TagCategory {
   return {

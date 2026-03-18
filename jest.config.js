@@ -9,7 +9,6 @@ module.exports = {
     '@op-engineering/op-sqlite': '<rootDir>/src/__mocks__/op-sqlite.ts',
     '@notifee/react-native': '<rootDir>/src/__mocks__/notifee.ts',
     'react-native-mmkv': '<rootDir>/src/__mocks__/react-native-mmkv.ts',
-    uuid: '<rootDir>/src/__mocks__/uuid.ts',
   },
   testPathIgnorePatterns: ['/node_modules/', '/android/', '/ios/'],
 };

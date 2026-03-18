@@ -39,32 +39,36 @@ export function AddTagInline({onAdd, testID}: AddTagInlineProps) {
   }
 
   return (
-    <View style={styles.inputContainer}>
-      <TextInput
-        testID={`${testID}-input`}
-        style={styles.input}
-        value={text}
-        onChangeText={setText}
-        placeholder="New tag..."
-        autoFocus
-        onSubmitEditing={handleSubmit}
-        returnKeyType="done"
-      />
-      <TouchableOpacity
-        testID={`${testID}-confirm`}
-        style={styles.confirmButton}
-        onPress={handleSubmit}>
-        <Text style={styles.confirmText}>Add</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        testID={`${testID}-cancel`}
-        style={styles.cancelButton}
-        onPress={() => {
-          setText('');
-          setIsEditing(false);
-        }}>
-        <Text style={styles.cancelText}>Cancel</Text>
-      </TouchableOpacity>
+    <View style={styles.editingContainer}>
+      <View style={styles.inputRow}>
+        <TextInput
+          testID={`${testID}-input`}
+          style={styles.input}
+          value={text}
+          onChangeText={setText}
+          placeholder="New tag..."
+          autoFocus
+          returnKeyType="done"
+          onSubmitEditing={handleSubmit}
+        />
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
+            testID={`${testID}-confirm`}
+            style={styles.confirmButton}
+            onPress={handleSubmit}>
+            <Text style={styles.confirmText}>Add</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            testID={`${testID}-cancel`}
+            style={styles.cancelButton}
+            onPress={() => {
+              setText('');
+              setIsEditing(false);
+            }}>
+            <Text style={styles.cancelText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 }
@@ -82,28 +86,37 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     marginBottom: 8,
   },
+  addButtonActive: {
+    borderStyle: 'solid',
+    backgroundColor: '#e8e8e8',
+  },
   addButtonText: {
     fontSize: 18,
     color: '#888',
   },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  editingContainer: {
+    width: '100%',
+  },
+  inputRow: {
+    width: '100%',
     marginBottom: 8,
   },
   input: {
-    flex: 1,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    fontSize: 14,
+    paddingVertical: 10,
+    fontSize: 16,
+    backgroundColor: '#fff',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    marginTop: 8,
   },
   confirmButton: {
-    marginLeft: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     backgroundColor: '#4A90D9',
     borderRadius: 8,
   },
@@ -113,9 +126,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   cancelButton: {
-    marginLeft: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 6,
+    marginLeft: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   cancelText: {
     color: '#888',

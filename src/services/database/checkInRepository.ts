@@ -1,6 +1,6 @@
 import {getDatabase} from './database';
 import {CheckIn} from '../../types';
-import {v4 as uuid} from 'uuid';
+import {uuid} from '../../utils/uuid';
 
 function mapCheckIn(row: any, tagIds: string[]): CheckIn {
   return {

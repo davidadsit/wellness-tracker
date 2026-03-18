@@ -14,19 +14,19 @@ function getDb(): Database.Database {
 export function open(options: {name: string; location?: string}) {
   const instance = getDb();
   return {
-    execute: (sql: string, params?: any[]) => {
+    execute: async (sql: string, params?: any[]) => {
       const stmt = instance.prepare(sql);
       if (
         sql.trimStart().toUpperCase().startsWith('SELECT') ||
         sql.trimStart().toUpperCase().startsWith('WITH')
       ) {
         const rows = params ? stmt.all(...params) : stmt.all();
-        return {rows: {_array: rows, length: rows.length}};
+        return {rows, rowsAffected: 0};
       }
       const result = params ? stmt.run(...params) : stmt.run();
-      return {rowsAffected: result.changes, insertId: result.lastInsertRowid};
+      return {rows: [], rowsAffected: result.changes, insertId: result.lastInsertRowid};
     },
-    executeBatch: (commands: Array<{sql: string; params?: any[]}>) => {
+    executeBatch: async (commands: Array<{sql: string; params?: any[]}>) => {
       const transaction = instance.transaction(() => {
         for (const cmd of commands) {
           const stmt = instance.prepare(cmd.sql);

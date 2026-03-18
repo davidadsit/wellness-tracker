@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import {Habit, HabitCategory} from '../../types';
-import {v4 as uuid} from 'uuid';
+import {uuid} from '../../utils/uuid';
 
 const CATEGORIES: HabitCategory[] = [
   'sleep',
