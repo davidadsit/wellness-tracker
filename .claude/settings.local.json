@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(source ~/.zshrc)",
+      "Bash(claude --version)",
+      "Bash(zsh -l -c 'claude --version')"
+    ]
+  }
+}
