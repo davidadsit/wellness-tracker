@@ -93,6 +93,7 @@ export function CheckInScreen() {
         multiline
         scrollEnabled
       />
+      <Text>{/* Spacer to ensure content isn't hidden behind keyboard */}</Text>
     </ScrollView>
   );
 }
@@ -101,11 +102,12 @@ const styles = StyleSheet.create({
   container: commonStyles.screenContainerPadded,
   title: { fontSize: 24, fontWeight: '700', color: colors.text, marginBottom: 4 },
   subtitle: { fontSize: 14, color: colors.textSecondary, marginBottom: 20 },
-  noteLabel: { fontSize: 14, fontWeight: '600', color: colors.text, marginTop: 8, marginBottom: 6 },
+  noteLabel: { fontSize: 16, fontWeight: '600', color: colors.text, marginTop: 4, marginBottom: 8 },
   noteInput: {
     ...commonStyles.textInput,
     padding: 12,
     textAlignVertical: 'top',
+    marginBottom: 16
   },
   submitButton: {
     ...commonStyles.primaryButton,

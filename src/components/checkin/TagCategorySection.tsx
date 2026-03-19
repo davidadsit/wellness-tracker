@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {Tag} from '../../types';
-import {TagChip} from './TagChip';
-import {AddTagInline} from './AddTagInline';
+import { View, Text, StyleSheet } from 'react-native';
+import { Tag } from '../../types';
+import { TagChip } from './TagChip';
+import { AddTagInline } from './AddTagInline';
 
 interface TagCategorySectionProps {
   categoryName: string;
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   tagsWrap: {
     flexDirection: 'row',
