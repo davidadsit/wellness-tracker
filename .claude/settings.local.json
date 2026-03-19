@@ -12,7 +12,8 @@
       "Bash(cp /tmp/WellnessTracker/app.json /Users/davidadsit/code/wellness-tracker/)",
       "Bash(adb logcat:*)",
       "Bash(adb shell:*)",
-      "Bash(adb exec-out:*)"
+      "Bash(adb exec-out:*)",
+      "Bash(make test:*)"
     ]
   }
 }

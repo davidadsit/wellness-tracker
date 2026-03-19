@@ -12,8 +12,12 @@ import {useFocusEffect} from '@react-navigation/native';
 import {useTags} from '../hooks/useTags';
 
 export function TagManagementScreen() {
-  const {categories, tagsByCategory, loadTags, addTag, addCategory} = useTags();
+  const {categories, tagsByCategory, loadTags, addTag, addCategory, editTag, removeTag} = useTags();
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [editingTagId, setEditingTagId] = useState<string | null>(null);
+  const [editingLabel, setEditingLabel] = useState('');
+  const [addingToCategoryId, setAddingToCategoryId] = useState<string | null>(null);
+  const [newTagLabel, setNewTagLabel] = useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -36,17 +40,82 @@ export function TagManagementScreen() {
     }
   };
 
-  const handleAddTag = async (categoryId: string) => {
-    Alert.prompt?.('New Tag', 'Enter tag name:', async (label: string) => {
-      if (label?.trim()) {
-        try {
-          await addTag(categoryId, label.trim());
-          loadTags();
-        } catch {
-          Alert.alert('Error', 'A tag with that name already exists in this category.');
-        }
-      }
-    });
+  const handleStartAddTag = (categoryId: string) => {
+    setAddingToCategoryId(categoryId);
+    setNewTagLabel('');
+  };
+
+  const handleSubmitNewTag = async () => {
+    if (!addingToCategoryId) {
+      return;
+    }
+    const label = newTagLabel.trim();
+    if (!label) {
+      setAddingToCategoryId(null);
+      return;
+    }
+    try {
+      await addTag(addingToCategoryId, label);
+      setAddingToCategoryId(null);
+      setNewTagLabel('');
+      loadTags();
+    } catch {
+      Alert.alert('Error', 'A tag with that name already exists in this category.');
+    }
+  };
+
+  const handleCancelAddTag = () => {
+    setAddingToCategoryId(null);
+    setNewTagLabel('');
+  };
+
+  const handleStartEdit = (tagId: string, currentLabel: string) => {
+    setEditingTagId(tagId);
+    setEditingLabel(currentLabel);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingTagId) {
+      return;
+    }
+    const label = editingLabel.trim();
+    if (!label) {
+      setEditingTagId(null);
+      return;
+    }
+    try {
+      await editTag(editingTagId, label);
+      setEditingTagId(null);
+      loadTags();
+    } catch {
+      Alert.alert('Error', 'Could not update tag.');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTagId(null);
+  };
+
+  const handleRemoveTag = (tagId: string) => {
+    Alert.alert(
+      'Remove Tag',
+      'Remove tag? If used in check-ins, it will be archived.',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await removeTag(tagId);
+              loadTags();
+            } catch {
+              Alert.alert('Error', 'Could not remove tag.');
+            }
+          },
+        },
+      ],
+    );
   };
 
   return (
@@ -64,22 +133,86 @@ export function TagManagementScreen() {
               )}
             </View>
             <View style={styles.tagsWrap}>
-              {tags.map(tag => (
-                <View
-                  key={tag.id}
-                  style={[
-                    styles.tagBadge,
-                    tag.isDefault && styles.tagBadgeDefault,
-                  ]}>
-                  <Text style={styles.tagText}>{tag.label}</Text>
-                </View>
-              ))}
+              {tags.map(tag => {
+                if (editingTagId === tag.id) {
+                  return (
+                    <View key={tag.id} style={styles.editRow}>
+                      <TextInput
+                        testID={`edit-tag-input-${tag.id}`}
+                        style={styles.editInput}
+                        value={editingLabel}
+                        onChangeText={setEditingLabel}
+                        autoFocus
+                        onSubmitEditing={handleSaveEdit}
+                      />
+                      <TouchableOpacity
+                        testID={`save-tag-${tag.id}`}
+                        onPress={handleSaveEdit}
+                        style={styles.editAction}>
+                        <Text style={styles.saveText}>Save</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        testID={`cancel-edit-${tag.id}`}
+                        onPress={handleCancelEdit}
+                        style={styles.editAction}>
+                        <Text style={styles.cancelText}>Cancel</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        testID={`delete-tag-${tag.id}`}
+                        onPress={() => { handleCancelEdit(); handleRemoveTag(tag.id); }}
+                        style={styles.editAction}>
+                        <Text style={styles.deleteText}>Delete</Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                }
+                return (
+                  <TouchableOpacity
+                    key={tag.id}
+                    style={[
+                      styles.tagBadge,
+                      tag.isDefault && styles.tagBadgeDefault,
+                    ]}
+                    onPress={!tag.isDefault ? () => handleStartEdit(tag.id, tag.label) : undefined}
+                    onLongPress={!tag.isDefault ? () => handleRemoveTag(tag.id) : undefined}
+                    activeOpacity={tag.isDefault ? 1 : 0.7}
+                    testID={`tag-${tag.id}`}>
+                    <Text style={styles.tagText}>{tag.label}</Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
-            <TouchableOpacity
-              style={styles.addTagButton}
-              onPress={() => handleAddTag(category.id)}>
-              <Text style={styles.addTagText}>+ Add Tag</Text>
-            </TouchableOpacity>
+            {addingToCategoryId === category.id ? (
+              <View style={styles.addTagRow}>
+                <TextInput
+                  testID={`new-tag-input-${category.id}`}
+                  style={styles.editInput}
+                  value={newTagLabel}
+                  onChangeText={setNewTagLabel}
+                  placeholder="Tag name"
+                  autoFocus
+                  onSubmitEditing={handleSubmitNewTag}
+                />
+                <TouchableOpacity
+                  testID={`submit-new-tag-${category.id}`}
+                  onPress={handleSubmitNewTag}
+                  style={styles.editAction}>
+                  <Text style={styles.saveText}>Add</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  testID={`cancel-new-tag-${category.id}`}
+                  onPress={handleCancelAddTag}
+                  style={styles.editAction}>
+                  <Text style={styles.cancelText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.addTagButton}
+                onPress={() => handleStartAddTag(category.id)}>
+                <Text style={styles.addTagText}>+ Add Tag</Text>
+              </TouchableOpacity>
+            )}
           </View>
         );
       })}
@@ -127,8 +260,19 @@ const styles = StyleSheet.create({
   },
   tagBadgeDefault: {borderWidth: 1, borderColor: '#B8D4F0'},
   tagText: {fontSize: 13, color: '#4A90D9'},
+  addTagRow: {flexDirection: 'row', alignItems: 'center', marginTop: 4},
   addTagButton: {marginTop: 4},
   addTagText: {fontSize: 13, color: '#4A90D9', fontWeight: '600'},
+  editRow: {flexDirection: 'row', alignItems: 'center', marginBottom: 8},
+  editInput: {
+    borderWidth: 1, borderColor: '#4A90D9', borderRadius: 8,
+    paddingHorizontal: 10, paddingVertical: 4, fontSize: 13,
+    minWidth: 100, backgroundColor: '#fff',
+  },
+  editAction: {marginLeft: 8},
+  saveText: {fontSize: 13, color: '#4A90D9', fontWeight: '600'},
+  cancelText: {fontSize: 13, color: '#999'},
+  deleteText: {fontSize: 13, color: '#e74c3c', fontWeight: '600'},
   newCategorySection: {marginTop: 8, marginBottom: 40},
   sectionTitle: {fontSize: 16, fontWeight: '600', color: '#333', marginBottom: 8},
   newCategoryRow: {flexDirection: 'row', alignItems: 'center'},

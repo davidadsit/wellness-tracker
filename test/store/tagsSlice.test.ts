@@ -3,6 +3,8 @@ import tagsReducer, {
   createCategory,
   createTag,
   deleteTag,
+  updateTag,
+  removeTag,
   TagsState,
 } from '../../src/store/tagsSlice';
 import {tagRepository} from '../../src/services/database/tagRepository';
@@ -38,7 +40,7 @@ describe('tagsSlice', () => {
 
     it('stores categories and tags on fulfilled', () => {
       const categories = [{id: 'c1', name: 'Mental', sortOrder: 1, isDefault: true, createdAt: 0}];
-      const tags = [{id: 't1', categoryId: 'c1', label: 'Calm', isDefault: true, createdAt: 0}];
+      const tags = [{id: 't1', categoryId: 'c1', label: 'Calm', isDefault: true, isArchived: false, createdAt: 0}];
 
       const state = tagsReducer(
         {...initialState, loading: true},
@@ -74,7 +76,7 @@ describe('tagsSlice', () => {
 
   describe('createTag', () => {
     it('adds new tag on fulfilled', () => {
-      const newTag = {id: 't2', categoryId: 'c1', label: 'Motivated', isDefault: false, createdAt: 123};
+      const newTag = {id: 't2', categoryId: 'c1', label: 'Motivated', isDefault: false, isArchived: false, createdAt: 123};
       const state = tagsReducer(
         initialState,
         createTag.fulfilled(newTag, '', {categoryId: 'c1', label: 'Motivated'}),
@@ -88,9 +90,35 @@ describe('tagsSlice', () => {
     it('removes tag on fulfilled', () => {
       const stateWithTag: TagsState = {
         ...initialState,
-        tags: [{id: 't1', categoryId: 'c1', label: 'Calm', isDefault: false, createdAt: 0}],
+        tags: [{id: 't1', categoryId: 'c1', label: 'Calm', isDefault: false, isArchived: false, createdAt: 0}],
       };
       const state = tagsReducer(stateWithTag, deleteTag.fulfilled('t1', '', 't1'));
+      expect(state.tags).toHaveLength(0);
+    });
+  });
+
+  describe('updateTag', () => {
+    it('updates label in state on fulfilled', () => {
+      const stateWithTag: TagsState = {
+        ...initialState,
+        tags: [{id: 't1', categoryId: 'c1', label: 'Old Label', isDefault: false, isArchived: false, createdAt: 0}],
+      };
+      const state = tagsReducer(
+        stateWithTag,
+        updateTag.fulfilled({id: 't1', label: 'New Label'}, '', {id: 't1', label: 'New Label'}),
+      );
+      expect(state.tags).toHaveLength(1);
+      expect(state.tags[0].label).toBe('New Label');
+    });
+  });
+
+  describe('removeTag', () => {
+    it('removes tag from state on fulfilled', () => {
+      const stateWithTag: TagsState = {
+        ...initialState,
+        tags: [{id: 't1', categoryId: 'c1', label: 'Calm', isDefault: false, isArchived: false, createdAt: 0}],
+      };
+      const state = tagsReducer(stateWithTag, removeTag.fulfilled('t1', '', 't1'));
       expect(state.tags).toHaveLength(0);
     });
   });

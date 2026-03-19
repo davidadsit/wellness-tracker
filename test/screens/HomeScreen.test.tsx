@@ -77,7 +77,7 @@ describe('HomeScreen', () => {
       },
       tags: {
         categories: [],
-        tags: [{id: 'tag-happy', categoryId: 'c1', label: 'Happy', isDefault: true, createdAt: 0}],
+        tags: [{id: 'tag-happy', categoryId: 'c1', label: 'Happy', isDefault: true, isArchived: false, createdAt: 0}],
         loading: false,
         error: null,
       },

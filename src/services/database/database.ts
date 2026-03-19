@@ -44,6 +44,7 @@ async function initSchema(database: DB): Promise<void> {
       category_id TEXT NOT NULL REFERENCES tag_categories(id),
       label TEXT NOT NULL,
       is_default INTEGER NOT NULL DEFAULT 0,
+      is_archived INTEGER NOT NULL DEFAULT 0,
       created_at INTEGER NOT NULL,
       UNIQUE(category_id, label)
     );
@@ -93,6 +94,14 @@ async function initSchema(database: DB): Promise<void> {
   await database.execute(
     'CREATE INDEX IF NOT EXISTS idx_completions_date ON habit_completions(date);',
   );
+
+  try {
+    await database.execute(
+      'ALTER TABLE tags ADD COLUMN is_archived INTEGER NOT NULL DEFAULT 0;',
+    );
+  } catch {
+    // Column already exists — expected after first migration
+  }
 
   await seedDefaultData(database);
 }

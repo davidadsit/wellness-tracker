@@ -1,7 +1,7 @@
 import {useCallback, useMemo} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {RootState, AppDispatch} from '../store';
-import {fetchAllTags, createTag, createCategory} from '../store/tagsSlice';
+import {fetchAllTags, createTag, createCategory, updateTag, removeTag} from '../store/tagsSlice';
 import {Tag, TagCategory} from '../types';
 
 export function useTags() {
@@ -58,6 +58,20 @@ export function useTags() {
     [dispatch],
   );
 
+  const editTag = useCallback(
+    (id: string, label: string) => {
+      return dispatch(updateTag({id, label})).unwrap();
+    },
+    [dispatch],
+  );
+
+  const deleteTag = useCallback(
+    (id: string) => {
+      return dispatch(removeTag(id)).unwrap();
+    },
+    [dispatch],
+  );
+
   return {
     categories,
     tags,
@@ -68,5 +82,7 @@ export function useTags() {
     visibleCategories,
     addTag,
     addCategory,
+    editTag,
+    removeTag: deleteTag,
   };
 }

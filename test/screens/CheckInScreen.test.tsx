@@ -32,9 +32,9 @@ jest.mock('../../src/services/database/tagRepository', () => ({
       {id: 'cat-symptoms', name: 'Symptoms', sortOrder: 4, isDefault: true, triggerTagId: 'tag-ill', createdAt: 0},
     ]),
     getAllTags: jest.fn().mockReturnValue([
-      {id: 'tag-calm', categoryId: 'cat-mental', label: 'Calm', isDefault: true, createdAt: 0},
-      {id: 'tag-ill', categoryId: 'cat-physical', label: 'Ill', isDefault: true, createdAt: 0},
-      {id: 'tag-headache', categoryId: 'cat-symptoms', label: 'Headache', isDefault: true, createdAt: 0},
+      {id: 'tag-calm', categoryId: 'cat-mental', label: 'Calm', isDefault: true, isArchived: false, createdAt: 0},
+      {id: 'tag-ill', categoryId: 'cat-physical', label: 'Ill', isDefault: true, isArchived: false, createdAt: 0},
+      {id: 'tag-headache', categoryId: 'cat-symptoms', label: 'Headache', isDefault: true, isArchived: false, createdAt: 0},
     ]),
     createTag: jest.fn(),
   },
@@ -77,9 +77,9 @@ describe('CheckInScreen', () => {
           {id: 'cat-symptoms', name: 'Symptoms', sortOrder: 4, isDefault: true, triggerTagId: 'tag-ill', createdAt: 0},
         ],
         tags: [
-          {id: 'tag-calm', categoryId: 'cat-mental', label: 'Calm', isDefault: true, createdAt: 0},
-          {id: 'tag-ill', categoryId: 'cat-physical', label: 'Ill', isDefault: true, createdAt: 0},
-          {id: 'tag-headache', categoryId: 'cat-symptoms', label: 'Headache', isDefault: true, createdAt: 0},
+          {id: 'tag-calm', categoryId: 'cat-mental', label: 'Calm', isDefault: true, isArchived: false, createdAt: 0},
+          {id: 'tag-ill', categoryId: 'cat-physical', label: 'Ill', isDefault: true, isArchived: false, createdAt: 0},
+          {id: 'tag-headache', categoryId: 'cat-symptoms', label: 'Headache', isDefault: true, isArchived: false, createdAt: 0},
         ],
       },
     });
@@ -106,9 +106,9 @@ describe('CheckInScreen', () => {
           {id: 'cat-symptoms', name: 'Symptoms', sortOrder: 4, isDefault: true, triggerTagId: 'tag-ill', createdAt: 0},
         ],
         tags: [
-          {id: 'tag-calm', categoryId: 'cat-mental', label: 'Calm', isDefault: true, createdAt: 0},
-          {id: 'tag-ill', categoryId: 'cat-physical', label: 'Ill', isDefault: true, createdAt: 0},
-          {id: 'tag-headache', categoryId: 'cat-symptoms', label: 'Headache', isDefault: true, createdAt: 0},
+          {id: 'tag-calm', categoryId: 'cat-mental', label: 'Calm', isDefault: true, isArchived: false, createdAt: 0},
+          {id: 'tag-ill', categoryId: 'cat-physical', label: 'Ill', isDefault: true, isArchived: false, createdAt: 0},
+          {id: 'tag-headache', categoryId: 'cat-symptoms', label: 'Headache', isDefault: true, isArchived: false, createdAt: 0},
         ],
       },
     });

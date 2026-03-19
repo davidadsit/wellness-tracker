@@ -52,6 +52,22 @@ export const deleteTag = createAsyncThunk(
   },
 );
 
+export const updateTag = createAsyncThunk(
+  'tags/updateTag',
+  async (params: {id: string; label: string}) => {
+    await tagRepository.updateTag(params.id, params.label);
+    return params;
+  },
+);
+
+export const removeTag = createAsyncThunk(
+  'tags/removeTag',
+  async (id: string) => {
+    await tagRepository.removeTag(id);
+    return id;
+  },
+);
+
 const tagsSlice = createSlice({
   name: 'tags',
   initialState,
@@ -84,6 +100,15 @@ const tagsSlice = createSlice({
         );
       })
       .addCase(deleteTag.fulfilled, (state, action) => {
+        state.tags = state.tags.filter(t => t.id !== action.payload);
+      })
+      .addCase(updateTag.fulfilled, (state, action) => {
+        const tag = state.tags.find(t => t.id === action.payload.id);
+        if (tag) {
+          tag.label = action.payload.label;
+        }
+      })
+      .addCase(removeTag.fulfilled, (state, action) => {
         state.tags = state.tags.filter(t => t.id !== action.payload);
       });
   },

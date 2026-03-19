@@ -19,6 +19,7 @@ function mapTag(row: any): Tag {
     categoryId: row.category_id,
     label: row.label,
     isDefault: row.is_default === 1,
+    isArchived: row.is_archived === 1,
     createdAt: row.created_at,
   };
 }
@@ -46,7 +47,7 @@ export const tagRepository = {
   async getTagsByCategory(categoryId: string): Promise<Tag[]> {
     const db = getDatabase();
     const result = await db.execute(
-      'SELECT * FROM tags WHERE category_id = ? ORDER BY label ASC',
+      'SELECT * FROM tags WHERE category_id = ? AND is_archived = 0 ORDER BY label ASC',
       [categoryId],
     );
     return result.rows.map(mapTag);
@@ -54,7 +55,7 @@ export const tagRepository = {
 
   async getAllTags(): Promise<Tag[]> {
     const db = getDatabase();
-    const result = await db.execute('SELECT * FROM tags ORDER BY label ASC');
+    const result = await db.execute('SELECT * FROM tags WHERE is_archived = 0 ORDER BY label ASC');
     return result.rows.map(mapTag);
   },
 
@@ -99,7 +100,33 @@ export const tagRepository = {
       'INSERT INTO tags (id, category_id, label, is_default, created_at) VALUES (?, ?, ?, 0, ?)',
       [id, categoryId, label, now],
     );
-    return {id, categoryId, label, isDefault: false, createdAt: now};
+    return {id, categoryId, label, isDefault: false, isArchived: false, createdAt: now};
+  },
+
+  async hasCheckInUsage(tagId: string): Promise<boolean> {
+    const db = getDatabase();
+    const result = await db.execute(
+      'SELECT COUNT(*) as count FROM check_in_tags WHERE tag_id = ?',
+      [tagId],
+    );
+    return (result.rows[0]?.count ?? 0) > 0;
+  },
+
+  async archiveTag(id: string): Promise<void> {
+    const db = getDatabase();
+    await db.execute(
+      'UPDATE tags SET is_archived = 1 WHERE id = ? AND is_default = 0',
+      [id],
+    );
+  },
+
+  async removeTag(id: string): Promise<void> {
+    const hasUsage = await this.hasCheckInUsage(id);
+    if (hasUsage) {
+      await this.archiveTag(id);
+    } else {
+      await this.deleteTag(id);
+    }
   },
 
   async updateTag(id: string, label: string): Promise<void> {

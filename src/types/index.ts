@@ -12,6 +12,7 @@ export interface Tag {
   categoryId: string;
   label: string;
   isDefault: boolean;
+  isArchived: boolean;
   createdAt: number;
 }
 

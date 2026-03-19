@@ -1,5 +1,5 @@
 import {tagRepository} from '../../../src/services/database/tagRepository';
-import {resetDatabase, initializeDatabase} from '../../../src/services/database/database';
+import {resetDatabase, initializeDatabase, getDatabase} from '../../../src/services/database/database';
 beforeEach(async () => {
   resetDatabase();
   await initializeDatabase();
@@ -68,6 +68,11 @@ describe('tagRepository', () => {
       const tags = await tagRepository.getAllTags();
       expect(tags.length).toBe(7 + 8 + 8 + 9); // mental + physical + emotional + symptoms
     });
+
+    it('returns tags with isArchived false', async () => {
+      const tags = await tagRepository.getAllTags();
+      expect(tags.every(t => t.isArchived === false)).toBe(true);
+    });
   });
 
   describe('getTagById', () => {
@@ -76,6 +81,7 @@ describe('tagRepository', () => {
       expect(tag).toBeDefined();
       expect(tag?.label).toBe('Focused');
       expect(tag?.categoryId).toBe('cat-mental');
+      expect(tag?.isArchived).toBe(false);
     });
 
     it('returns undefined for unknown id', async () => {
@@ -141,6 +147,7 @@ describe('tagRepository', () => {
       expect(tag.label).toBe('Motivated');
       expect(tag.categoryId).toBe('cat-mental');
       expect(tag.isDefault).toBe(false);
+      expect(tag.isArchived).toBe(false);
 
       const tags = await tagRepository.getTagsByCategory('cat-mental');
       expect(tags.find(t => t.label === 'Motivated')).toBeDefined();
@@ -177,6 +184,80 @@ describe('tagRepository', () => {
     it('does not delete default tags', async () => {
       await tagRepository.deleteTag('tag-focused');
       expect(await tagRepository.getTagById('tag-focused')).toBeDefined();
+    });
+  });
+
+  describe('hasCheckInUsage', () => {
+    it('returns false for unused tag', async () => {
+      const tag = await tagRepository.createTag('cat-mental', 'Unused');
+      expect(await tagRepository.hasCheckInUsage(tag.id)).toBe(false);
+    });
+
+    it('returns true for tag used in a check-in', async () => {
+      const tag = await tagRepository.createTag('cat-mental', 'Used');
+      const db = getDatabase();
+      await db.execute(
+        "INSERT INTO check_ins (id, timestamp, source) VALUES ('ci-1', ?, 'manual')",
+        [Date.now()],
+      );
+      await db.execute(
+        "INSERT INTO check_in_tags (check_in_id, tag_id) VALUES ('ci-1', ?)",
+        [tag.id],
+      );
+      expect(await tagRepository.hasCheckInUsage(tag.id)).toBe(true);
+    });
+  });
+
+  describe('archiveTag', () => {
+    it('sets isArchived and hides from getAllTags', async () => {
+      const tag = await tagRepository.createTag('cat-mental', 'ToArchive');
+      await tagRepository.archiveTag(tag.id);
+
+      const allTags = await tagRepository.getAllTags();
+      expect(allTags.find(t => t.id === tag.id)).toBeUndefined();
+
+      const byId = await tagRepository.getTagById(tag.id);
+      expect(byId).toBeDefined();
+      expect(byId?.isArchived).toBe(true);
+    });
+
+    it('does not archive default tags', async () => {
+      await tagRepository.archiveTag('tag-focused');
+      const tag = await tagRepository.getTagById('tag-focused');
+      expect(tag?.isArchived).toBe(false);
+    });
+  });
+
+  describe('removeTag', () => {
+    it('archives tag when used in check-ins', async () => {
+      const tag = await tagRepository.createTag('cat-mental', 'UsedTag');
+      const db = getDatabase();
+      await db.execute(
+        "INSERT INTO check_ins (id, timestamp, source) VALUES ('ci-2', ?, 'manual')",
+        [Date.now()],
+      );
+      await db.execute(
+        "INSERT INTO check_in_tags (check_in_id, tag_id) VALUES ('ci-2', ?)",
+        [tag.id],
+      );
+
+      await tagRepository.removeTag(tag.id);
+
+      // Should be archived, not deleted
+      const byId = await tagRepository.getTagById(tag.id);
+      expect(byId).toBeDefined();
+      expect(byId?.isArchived).toBe(true);
+
+      // Should not appear in getAllTags
+      const allTags = await tagRepository.getAllTags();
+      expect(allTags.find(t => t.id === tag.id)).toBeUndefined();
+    });
+
+    it('hard-deletes tag when not used in check-ins', async () => {
+      const tag = await tagRepository.createTag('cat-mental', 'UnusedTag');
+      await tagRepository.removeTag(tag.id);
+
+      expect(await tagRepository.getTagById(tag.id)).toBeUndefined();
     });
   });
 
