@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import {
   ScrollView,
   Text,
@@ -16,12 +16,18 @@ import { colors, commonStyles } from '../theme';
 export function CheckInScreen() {
   const { submit } = useCheckIn();
   const { categories, tagsByCategory, loadTags, visibleCategories, addTag } = useTags();
+  const scrollRef = useRef<ScrollView>(null);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [note, setNote] = useState('');
 
   useFocusEffect(
     useCallback(() => {
       loadTags();
+      scrollRef.current?.scrollTo({ y: 0, animated: false });
+      return () => {
+        setSelectedTagIds([]);
+        setNote('');
+      };
     }, [loadTags]),
   );
 
@@ -57,7 +63,7 @@ export function CheckInScreen() {
   const visible = visibleCategories(selectedTagIds);
 
   return (
-    <ScrollView style={styles.container} testID="checkin-screen">
+    <ScrollView ref={scrollRef} style={styles.container} testID="checkin-screen">
       <Text style={styles.title}>How are you feeling?</Text>
       <Text style={styles.subtitle}>Select all that apply</Text>
 
