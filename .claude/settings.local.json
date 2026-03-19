@@ -16,7 +16,12 @@
       "Bash(make test:*)",
       "Bash(npm test:*)",
       "Bash(npx tsc:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(ls /tmp/*.png /tmp/*.jpg /tmp/screenshot*)",
+      "Bash(adb devices:*)",
+      "WebSearch",
+      "WebFetch(domain:support.claude.com)",
+      "WebFetch(domain:hypereal.tech)"
     ]
   }
 }
