@@ -7,6 +7,7 @@ import {habitRepository} from '../services/database/habitRepository';
 import {calculateStreak} from '../utils/analytics';
 import {HabitStreak} from '../components/habits/HabitStreak';
 import {Card} from '../components/common/Card';
+import {colors, commonStyles} from '../theme';
 import {RootStackParamList} from '../types';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -92,23 +93,23 @@ export function HabitDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#f8f9fa'},
+  container: commonStyles.screenContainer,
   header: {padding: 24, paddingTop: 16},
   habitName: {fontSize: 24, fontWeight: '700', color: '#fff'},
   habitMeta: {fontSize: 14, color: 'rgba(255,255,255,0.8)', marginTop: 4},
-  sectionTitle: {fontSize: 16, fontWeight: '600', color: '#333', marginBottom: 8},
-  emptyText: {fontSize: 14, color: '#888'},
-  dateItem: {fontSize: 14, color: '#555', paddingVertical: 4},
-  notFound: {fontSize: 16, color: '#888', textAlign: 'center', marginTop: 40},
+  sectionTitle: commonStyles.sectionTitle,
+  emptyText: {fontSize: 14, color: colors.textSecondary},
+  dateItem: {fontSize: 14, color: colors.textSubtle, paddingVertical: 4},
+  notFound: {fontSize: 16, color: colors.textSecondary, textAlign: 'center', marginTop: 40},
   actions: {flexDirection: 'row', justifyContent: 'center', marginTop: 16, marginBottom: 40},
   editButton: {
     paddingHorizontal: 24, paddingVertical: 12,
-    backgroundColor: '#4A90D9', borderRadius: 8, marginRight: 12,
+    backgroundColor: colors.primary, borderRadius: 8, marginRight: 12,
   },
   editButtonText: {color: '#fff', fontWeight: '600', fontSize: 15},
   deleteButton: {
     paddingHorizontal: 24, paddingVertical: 12,
-    backgroundColor: '#e74c3c', borderRadius: 8,
+    backgroundColor: colors.danger, borderRadius: 8,
   },
   deleteButtonText: {color: '#fff', fontWeight: '600', fontSize: 15},
 });

@@ -1,5 +1,6 @@
 import React from 'react';
 import {TouchableOpacity, Text, StyleSheet} from 'react-native';
+import {colors} from '../../theme';
 
 interface TagChipProps {
   label: string;
@@ -28,19 +29,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: colors.divider,
     marginRight: 8,
     marginBottom: 8,
     borderWidth: 1,
     borderColor: '#e0e0e0',
   },
   chipSelected: {
-    backgroundColor: '#4A90D9',
-    borderColor: '#4A90D9',
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   label: {
     fontSize: 14,
-    color: '#555',
+    color: colors.textSubtle,
   },
   labelSelected: {
     color: '#fff',

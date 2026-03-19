@@ -10,6 +10,7 @@ import {
 } from '../store/settingsSlice';
 import {notificationService} from '../services/notifications/notificationService';
 import {Card} from '../components/common/Card';
+import {colors, commonStyles} from '../theme';
 import {RootStackParamList} from '../types';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -62,14 +63,14 @@ export function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#f8f9fa'},
-  title: {fontSize: 28, fontWeight: '700', color: '#333', margin: 16, marginBottom: 8},
+  container: commonStyles.screenContainer,
+  title: commonStyles.screenTitle,
   row: {
     flexDirection: 'row', justifyContent: 'space-between',
     alignItems: 'center', paddingVertical: 12,
-    borderBottomWidth: 1, borderBottomColor: '#f0f0f0',
+    borderBottomWidth: 1, borderBottomColor: colors.divider,
   },
-  label: {fontSize: 15, color: '#333'},
-  value: {fontSize: 15, color: '#888'},
+  label: {fontSize: 15, color: colors.text},
+  value: {fontSize: 15, color: colors.textSecondary},
   chevron: {fontSize: 18, color: '#ccc'},
 });

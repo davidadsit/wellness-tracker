@@ -11,6 +11,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useCheckIn } from '../hooks/useCheckIn';
 import { useTags } from '../hooks/useTags';
 import { TagCategorySection } from '../components/checkin/TagCategorySection';
+import { colors, commonStyles } from '../theme';
 
 export function CheckInScreen() {
   const { submit } = useCheckIn();
@@ -97,18 +98,20 @@ export function CheckInScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8f9fa', padding: 16 },
-  title: { fontSize: 24, fontWeight: '700', color: '#333', marginBottom: 4 },
-  subtitle: { fontSize: 14, color: '#888', marginBottom: 20 },
-  noteLabel: { fontSize: 14, fontWeight: '600', color: '#333', marginTop: 8, marginBottom: 6 },
+  container: commonStyles.screenContainerPadded,
+  title: { fontSize: 24, fontWeight: '700', color: colors.text, marginBottom: 4 },
+  subtitle: { fontSize: 14, color: colors.textSecondary, marginBottom: 20 },
+  noteLabel: { fontSize: 14, fontWeight: '600', color: colors.text, marginTop: 8, marginBottom: 6 },
   noteInput: {
-    borderWidth: 1, borderColor: '#ddd', borderRadius: 8,
-    padding: 12, fontSize: 15, textAlignVertical: 'top',
-    backgroundColor: '#fff',
+    ...commonStyles.textInput,
+    padding: 12,
+    textAlignVertical: 'top',
   },
   submitButton: {
-    backgroundColor: '#4A90D9', borderRadius: 10, paddingVertical: 14,
-    alignItems: 'center', marginBottom: 12,
+    ...commonStyles.primaryButton,
+    borderRadius: 10,
+    paddingVertical: 14,
+    marginBottom: 12,
   },
   submitText: { color: '#fff', fontWeight: '700', fontSize: 16 },
 });

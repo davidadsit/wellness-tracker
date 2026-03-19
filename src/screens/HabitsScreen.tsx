@@ -1,5 +1,6 @@
 import React, {useCallback} from 'react';
 import {View, FlatList, TouchableOpacity, Text, StyleSheet} from 'react-native';
+import {colors, commonStyles} from '../theme';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useHabits} from '../hooks/useHabits';
@@ -64,12 +65,12 @@ export function HabitsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#f8f9fa'},
+  container: commonStyles.screenContainer,
   list: {paddingVertical: 8},
   fab: {
     position: 'absolute', bottom: 24, right: 24,
     width: 56, height: 56, borderRadius: 28,
-    backgroundColor: '#4A90D9', justifyContent: 'center', alignItems: 'center',
+    backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center',
     shadowColor: '#000', shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.2, shadowRadius: 5, elevation: 5,
   },

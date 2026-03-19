@@ -6,6 +6,7 @@ import {
   Text,
   StyleSheet,
 } from 'react-native';
+import {colors, commonStyles} from '../../theme';
 
 interface AddTagInlineProps {
   onAdd: (label: string) => void;
@@ -78,11 +79,11 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: colors.divider,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: colors.border,
     borderStyle: 'dashed',
     marginBottom: 8,
   },
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     fontSize: 18,
-    color: '#888',
+    color: colors.textSecondary,
   },
   editingContainer: {
     width: '100%',
@@ -102,13 +103,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    ...commonStyles.textInput,
     fontSize: 16,
-    backgroundColor: '#fff',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -117,7 +113,7 @@ const styles = StyleSheet.create({
   confirmButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#4A90D9',
+    backgroundColor: colors.primary,
     borderRadius: 8,
   },
   confirmText: {
@@ -131,7 +127,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   cancelText: {
-    color: '#888',
+    color: colors.textSecondary,
     fontSize: 14,
   },
 });

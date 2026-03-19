@@ -4,6 +4,7 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useCheckIn} from '../hooks/useCheckIn';
 import {useTags} from '../hooks/useTags';
 import {TagCategorySection} from '../components/checkin/TagCategorySection';
+import {colors, commonStyles} from '../theme';
 
 export function QuickCheckInScreen() {
   const navigation = useNavigation();
@@ -61,11 +62,13 @@ export function QuickCheckInScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#f8f9fa', padding: 16},
-  title: {fontSize: 22, fontWeight: '700', color: '#333', marginBottom: 16},
+  container: commonStyles.screenContainerPadded,
+  title: {fontSize: 22, fontWeight: '700', color: colors.text, marginBottom: 16},
   submitButton: {
-    backgroundColor: '#4A90D9', borderRadius: 10, paddingVertical: 14,
-    alignItems: 'center', marginTop: 20,
+    ...commonStyles.primaryButton,
+    borderRadius: 10,
+    paddingVertical: 14,
+    marginTop: 20,
   },
   submitText: {color: '#fff', fontWeight: '700', fontSize: 16},
 });

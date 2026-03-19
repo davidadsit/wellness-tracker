@@ -6,6 +6,8 @@ import {useCheckIn} from '../hooks/useCheckIn';
 import {useHabits} from '../hooks/useHabits';
 import {useTags} from '../hooks/useTags';
 import {Card} from '../components/common/Card';
+import {TagBadge} from '../components/common/TagBadge';
+import {colors, commonStyles} from '../theme';
 import {RootStackParamList} from '../types';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -48,13 +50,9 @@ export function HomeScreen() {
           <Text style={styles.sectionTitle}>Today's Check-Ins</Text>
           {todayCheckIns.map(checkIn => (
             <View key={checkIn.id} style={styles.checkInRow}>
-              <View style={styles.tagRow}>
+              <View style={commonStyles.row}>
                 {checkIn.tagIds.map(tagId => (
-                  <View key={tagId} style={styles.tagBadge}>
-                    <Text style={styles.tagText}>
-                      {tagLabels[tagId] ?? tagId}
-                    </Text>
-                  </View>
+                  <TagBadge key={tagId} label={tagLabels[tagId] ?? tagId} />
                 ))}
               </View>
               {checkIn.note ? (
@@ -97,29 +95,20 @@ export function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#f8f9fa'},
-  greeting: {fontSize: 28, fontWeight: '700', color: '#333', margin: 16, marginBottom: 8},
-  ctaText: {fontSize: 15, color: '#666', marginBottom: 12},
-  ctaButton: {
-    backgroundColor: '#4A90D9', borderRadius: 8,
-    paddingVertical: 12, alignItems: 'center',
-  },
-  ctaButtonText: {color: '#fff', fontWeight: '600', fontSize: 16},
-  sectionTitle: {fontSize: 18, fontWeight: '600', color: '#333', marginBottom: 8},
-  checkInRow: {paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#f0f0f0'},
-  tagRow: {flexDirection: 'row', flexWrap: 'wrap'},
-  tagBadge: {
-    backgroundColor: '#E8F0FE', paddingHorizontal: 10, paddingVertical: 4,
-    borderRadius: 12, marginRight: 6, marginBottom: 4,
-  },
-  tagText: {fontSize: 12, color: '#4A90D9'},
-  note: {fontSize: 13, color: '#666', marginTop: 4, fontStyle: 'italic'},
-  habitSummary: {fontSize: 14, color: '#888', marginBottom: 8},
+  container: commonStyles.screenContainer,
+  greeting: commonStyles.screenTitle,
+  ctaText: {fontSize: 15, color: colors.textNote, marginBottom: 12},
+  ctaButton: commonStyles.primaryButton,
+  ctaButtonText: commonStyles.primaryButtonText,
+  sectionTitle: {fontSize: 18, fontWeight: '600', color: colors.text, marginBottom: 8},
+  checkInRow: {paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.divider},
+  note: {fontSize: 13, color: colors.textNote, marginTop: 4, fontStyle: 'italic'},
+  habitSummary: {fontSize: 14, color: colors.textSecondary, marginBottom: 8},
   habitRow: {
     flexDirection: 'row', alignItems: 'center', paddingVertical: 10,
-    borderBottomWidth: 1, borderBottomColor: '#f0f0f0',
+    borderBottomWidth: 1, borderBottomColor: colors.divider,
   },
   habitDot: {width: 10, height: 10, borderRadius: 5, marginRight: 10},
-  habitName: {flex: 1, fontSize: 15, color: '#333'},
-  habitStatus: {fontSize: 13, color: '#888'},
+  habitName: {flex: 1, fontSize: 15, color: colors.text},
+  habitStatus: {fontSize: 13, color: colors.textSecondary},
 });

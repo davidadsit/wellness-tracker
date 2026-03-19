@@ -7,6 +7,7 @@ import {useAnalytics, AnalyticsPeriod} from '../hooks/useAnalytics';
 import {Card} from '../components/common/Card';
 import {TagFrequencyChart} from '../components/analytics/TagFrequencyChart';
 import {InsightCard} from '../components/analytics/InsightCard';
+import {colors, commonStyles} from '../theme';
 
 const PERIODS: AnalyticsPeriod[] = [7, 30, 90];
 const PERIOD_LABELS: Record<AnalyticsPeriod, string> = {
@@ -95,21 +96,21 @@ export function AnalyticsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#f8f9fa'},
-  title: {fontSize: 28, fontWeight: '700', color: '#333', margin: 16, marginBottom: 8},
+  container: commonStyles.screenContainer,
+  title: commonStyles.screenTitle,
   periodRow: {flexDirection: 'row', paddingHorizontal: 16, marginBottom: 8},
   periodPill: {
     paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20,
-    backgroundColor: '#f0f0f0', marginRight: 8,
+    backgroundColor: colors.divider, marginRight: 8,
   },
-  periodPillActive: {backgroundColor: '#4A90D9'},
-  periodText: {fontSize: 13, color: '#555'},
+  periodPillActive: {backgroundColor: colors.primary},
+  periodText: {fontSize: 13, color: colors.textSubtle},
   periodTextActive: {color: '#fff', fontWeight: '600'},
-  sectionTitle: {fontSize: 16, fontWeight: '600', color: '#333', marginBottom: 12},
+  sectionTitle: {...commonStyles.sectionTitle, marginBottom: 12},
   rateRow: {
     flexDirection: 'row', justifyContent: 'space-between',
-    paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#f0f0f0',
+    paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.divider,
   },
-  rateName: {fontSize: 14, color: '#333'},
-  rateValue: {fontSize: 13, color: '#888'},
+  rateName: {fontSize: 14, color: colors.text},
+  rateValue: {fontSize: 13, color: colors.textSecondary},
 });

@@ -2,6 +2,8 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {CheckIn} from '../../types';
 import {formatDisplayDate, formatDisplayTime} from '../../utils/dateUtils';
+import {TagBadge} from '../common/TagBadge';
+import {colors} from '../../theme';
 
 interface CheckInHistoryItemProps {
   checkIn: CheckIn;
@@ -17,9 +19,7 @@ export function CheckInHistoryItem({checkIn, tagLabels}: CheckInHistoryItemProps
       </View>
       <View style={styles.tagsRow}>
         {checkIn.tagIds.map(tagId => (
-          <View key={tagId} style={styles.tagBadge}>
-            <Text style={styles.tagText}>{tagLabels[tagId] ?? tagId}</Text>
-          </View>
+          <TagBadge key={tagId} label={tagLabels[tagId] ?? tagId} />
         ))}
       </View>
       {checkIn.note ? <Text style={styles.note}>{checkIn.note}</Text> : null}
@@ -41,31 +41,19 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: colors.text,
   },
   time: {
     fontSize: 12,
-    color: '#888',
+    color: colors.textSecondary,
   },
   tagsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
-  tagBadge: {
-    backgroundColor: '#E8F0FE',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 6,
-    marginBottom: 4,
-  },
-  tagText: {
-    fontSize: 12,
-    color: '#4A90D9',
-  },
   note: {
     fontSize: 13,
-    color: '#666',
+    color: colors.textNote,
     marginTop: 6,
     fontStyle: 'italic',
   },

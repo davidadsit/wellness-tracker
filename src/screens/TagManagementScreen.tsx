@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {useTags} from '../hooks/useTags';
+import {Card} from '../components/common/Card';
+import {colors, commonStyles} from '../theme';
 
 export function TagManagementScreen() {
   const {categories, tagsByCategory, loadTags, addTag, addCategory, editTag, removeTag} = useTags();
@@ -125,7 +127,7 @@ export function TagManagementScreen() {
       {categories.map(category => {
         const tags = tagsByCategory.get(category.id) ?? [];
         return (
-          <View key={category.id} style={styles.categoryBlock}>
+          <Card key={category.id} style={styles.categoryBlock}>
             <View style={styles.categoryHeader}>
               <Text style={styles.categoryName}>{category.name}</Text>
               {category.triggerTagId && (
@@ -213,7 +215,7 @@ export function TagManagementScreen() {
                 <Text style={styles.addTagText}>+ Add Tag</Text>
               </TouchableOpacity>
             )}
-          </View>
+          </Card>
         );
       })}
 
@@ -240,49 +242,42 @@ export function TagManagementScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#f8f9fa', padding: 16},
-  title: {fontSize: 24, fontWeight: '700', color: '#333', marginBottom: 16},
-  categoryBlock: {
-    backgroundColor: '#fff', borderRadius: 12, padding: 16,
-    marginBottom: 12, shadowColor: '#000', shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.06, shadowRadius: 2, elevation: 1,
-  },
+  container: commonStyles.screenContainerPadded,
+  title: {fontSize: 24, fontWeight: '700', color: colors.text, marginBottom: 16},
+  categoryBlock: {marginHorizontal: 0, marginVertical: 4},
   categoryHeader: {flexDirection: 'row', alignItems: 'center', marginBottom: 10},
-  categoryName: {fontSize: 16, fontWeight: '600', color: '#333', flex: 1},
+  categoryName: {fontSize: 16, fontWeight: '600', color: colors.text, flex: 1},
   triggerBadge: {
-    fontSize: 11, color: '#f39c12', backgroundColor: '#FEF3E2',
+    fontSize: 11, color: colors.warning, backgroundColor: colors.warningBackground,
     paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8,
   },
   tagsWrap: {flexDirection: 'row', flexWrap: 'wrap'},
   tagBadge: {
-    backgroundColor: '#E8F0FE', paddingHorizontal: 12, paddingVertical: 6,
+    backgroundColor: colors.primaryLight, paddingHorizontal: 12, paddingVertical: 6,
     borderRadius: 16, marginRight: 8, marginBottom: 8,
   },
-  tagBadgeDefault: {borderWidth: 1, borderColor: '#B8D4F0'},
-  tagText: {fontSize: 13, color: '#4A90D9'},
+  tagBadgeDefault: {borderWidth: 1, borderColor: colors.primaryBorder},
+  tagText: {fontSize: 13, color: colors.primary},
   addTagRow: {flexDirection: 'row', alignItems: 'center', marginTop: 4},
   addTagButton: {marginTop: 4},
-  addTagText: {fontSize: 13, color: '#4A90D9', fontWeight: '600'},
+  addTagText: {fontSize: 13, color: colors.primary, fontWeight: '600'},
   editRow: {flexDirection: 'row', alignItems: 'center', marginBottom: 8},
   editInput: {
-    borderWidth: 1, borderColor: '#4A90D9', borderRadius: 8,
+    borderWidth: 1, borderColor: colors.primary, borderRadius: 8,
     paddingHorizontal: 10, paddingVertical: 4, fontSize: 13,
-    minWidth: 100, backgroundColor: '#fff',
+    minWidth: 100, backgroundColor: colors.surface,
   },
   editAction: {marginLeft: 8},
-  saveText: {fontSize: 13, color: '#4A90D9', fontWeight: '600'},
-  cancelText: {fontSize: 13, color: '#999'},
-  deleteText: {fontSize: 13, color: '#e74c3c', fontWeight: '600'},
+  saveText: {fontSize: 13, color: colors.primary, fontWeight: '600'},
+  cancelText: {fontSize: 13, color: colors.textMuted},
+  deleteText: {fontSize: 13, color: colors.danger, fontWeight: '600'},
   newCategorySection: {marginTop: 8, marginBottom: 40},
-  sectionTitle: {fontSize: 16, fontWeight: '600', color: '#333', marginBottom: 8},
+  sectionTitle: commonStyles.sectionTitle,
   newCategoryRow: {flexDirection: 'row', alignItems: 'center'},
-  input: {
-    flex: 1, borderWidth: 1, borderColor: '#ddd', borderRadius: 8,
-    paddingHorizontal: 12, paddingVertical: 10, fontSize: 15, backgroundColor: '#fff',
-  },
+  input: {...commonStyles.textInput, flex: 1},
   addButton: {
     marginLeft: 8, paddingHorizontal: 16, paddingVertical: 10,
-    backgroundColor: '#4A90D9', borderRadius: 8,
+    backgroundColor: colors.primary, borderRadius: 8,
   },
   addButtonText: {color: '#fff', fontWeight: '600', fontSize: 14},
 });
