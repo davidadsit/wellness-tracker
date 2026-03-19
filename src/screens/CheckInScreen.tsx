@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   ScrollView,
   Text,
@@ -7,17 +7,16 @@ import {
   Alert,
   StyleSheet,
 } from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
-import {useCheckIn} from '../hooks/useCheckIn';
-import {useTags} from '../hooks/useTags';
-import {TagCategorySection} from '../components/checkin/TagCategorySection';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCheckIn } from '../hooks/useCheckIn';
+import { useTags } from '../hooks/useTags';
+import { TagCategorySection } from '../components/checkin/TagCategorySection';
 
 export function CheckInScreen() {
-  const {submit} = useCheckIn();
-  const {categories, tagsByCategory, loadTags, visibleCategories, addTag} = useTags();
+  const { submit } = useCheckIn();
+  const { categories, tagsByCategory, loadTags, visibleCategories, addTag } = useTags();
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [note, setNote] = useState('');
-  const [noteHeight, setNoteHeight] = useState(60);
 
   useFocusEffect(
     useCallback(() => {
@@ -48,7 +47,7 @@ export function CheckInScreen() {
       return;
     }
 
-    await submit({tagIds: selectedTagIds, note: note.trim() || undefined});
+    await submit({ tagIds: selectedTagIds, note: note.trim() || undefined });
     setSelectedTagIds([]);
     setNote('');
     Alert.alert('Saved', 'Check-in recorded!');
@@ -86,12 +85,9 @@ export function CheckInScreen() {
       <Text style={styles.noteLabel}>Note (optional)</Text>
       <TextInput
         testID="checkin-note"
-        style={[styles.noteInput, {height: Math.min(Math.max(60, noteHeight), 60)}]}
+        style={[styles.noteInput, { height: 60 }]}
         value={note}
         onChangeText={setNote}
-        onContentSizeChange={e =>
-          setNoteHeight(e.nativeEvent.contentSize.height + 24)
-        }
         placeholder="Anything else you want to capture..."
         multiline
         scrollEnabled
@@ -101,10 +97,10 @@ export function CheckInScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#f8f9fa', padding: 16},
-  title: {fontSize: 24, fontWeight: '700', color: '#333', marginBottom: 4},
-  subtitle: {fontSize: 14, color: '#888', marginBottom: 20},
-  noteLabel: {fontSize: 14, fontWeight: '600', color: '#333', marginTop: 8, marginBottom: 6},
+  container: { flex: 1, backgroundColor: '#f8f9fa', padding: 16 },
+  title: { fontSize: 24, fontWeight: '700', color: '#333', marginBottom: 4 },
+  subtitle: { fontSize: 14, color: '#888', marginBottom: 20 },
+  noteLabel: { fontSize: 14, fontWeight: '600', color: '#333', marginTop: 8, marginBottom: 6 },
   noteInput: {
     borderWidth: 1, borderColor: '#ddd', borderRadius: 8,
     padding: 12, fontSize: 15, textAlignVertical: 'top',
@@ -114,5 +110,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#4A90D9', borderRadius: 10, paddingVertical: 14,
     alignItems: 'center', marginBottom: 12,
   },
-  submitText: {color: '#fff', fontWeight: '700', fontSize: 16},
+  submitText: { color: '#fff', fontWeight: '700', fontSize: 16 },
 });
