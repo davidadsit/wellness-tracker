@@ -6,6 +6,7 @@ import {HabitFormScreen} from '../screens/HabitFormScreen';
 import {SettingsScreen} from '../screens/SettingsScreen';
 import {TagManagementScreen} from '../screens/TagManagementScreen';
 import {QuickCheckInScreen} from '../screens/QuickCheckInScreen';
+import {AnalyticsScreen} from '../screens/AnalyticsScreen';
 import {RootStackParamList} from '../types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -40,6 +41,11 @@ export function RootNavigator() {
         name="QuickCheckIn"
         component={QuickCheckInScreen}
         options={{title: 'Quick Check-In', presentation: 'modal'}}
+      />
+      <Stack.Screen
+        name="Analytics"
+        component={AnalyticsScreen}
+        options={{title: 'Analytics'}}
       />
     </Stack.Navigator>
   );

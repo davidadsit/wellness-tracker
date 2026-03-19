@@ -7,14 +7,14 @@ import {Ionicons} from '@react-native-vector-icons/ionicons';
 import {HomeScreen} from '../screens/HomeScreen';
 import {CheckInScreen} from '../screens/CheckInScreen';
 import {HabitsScreen} from '../screens/HabitsScreen';
-import {AnalyticsScreen} from '../screens/AnalyticsScreen';
+import {JournalScreen} from '../screens/JournalScreen';
 import {TabParamList, RootStackParamList} from '../types';
 
 const TAB_ICONS: Record<keyof TabParamList, {focused: string; unfocused: string}> = {
   Home: {focused: 'home', unfocused: 'home-outline'},
   'Check-In': {focused: 'checkmark-circle', unfocused: 'checkmark-circle-outline'},
   Habits: {focused: 'repeat', unfocused: 'repeat-outline'},
-  Analytics: {focused: 'bar-chart', unfocused: 'bar-chart-outline'},
+  Journal: {focused: 'book', unfocused: 'book-outline'},
 };
 
 function SettingsButton() {
@@ -45,7 +45,7 @@ export function TabNavigator() {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Check-In" component={CheckInScreen} />
       <Tab.Screen name="Habits" component={HabitsScreen} />
-      <Tab.Screen name="Analytics" component={AnalyticsScreen} />
+      <Tab.Screen name="Journal" component={JournalScreen} />
     </Tab.Navigator>
   );
 }

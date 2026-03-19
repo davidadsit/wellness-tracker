@@ -13,7 +13,10 @@
       "Bash(adb logcat:*)",
       "Bash(adb shell:*)",
       "Bash(adb exec-out:*)",
-      "Bash(make test:*)"
+      "Bash(make test:*)",
+      "Bash(npm test:*)",
+      "Bash(npx tsc:*)",
+      "Bash(git stash:*)"
     ]
   }
 }

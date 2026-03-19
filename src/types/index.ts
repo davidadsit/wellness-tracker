@@ -67,11 +67,12 @@ export type RootStackParamList = {
   Settings: undefined;
   TagManagement: undefined;
   QuickCheckIn: undefined;
+  Analytics: undefined;
 };
 
 export type TabParamList = {
   Home: undefined;
   'Check-In': undefined;
   Habits: undefined;
-  Analytics: undefined;
+  Journal: undefined;
 };
