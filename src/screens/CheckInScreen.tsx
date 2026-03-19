@@ -17,7 +17,7 @@ export function CheckInScreen() {
   const {categories, tagsByCategory, loadTags, visibleCategories, addTag} = useTags();
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [note, setNote] = useState('');
-  const [noteHeight, setNoteHeight] = useState(100);
+  const [noteHeight, setNoteHeight] = useState(60);
 
   useFocusEffect(
     useCallback(() => {
@@ -61,6 +61,13 @@ export function CheckInScreen() {
       <Text style={styles.title}>How are you feeling?</Text>
       <Text style={styles.subtitle}>Select all that apply</Text>
 
+      <TouchableOpacity
+        testID="checkin-submit"
+        style={styles.submitButton}
+        onPress={handleSubmit}>
+        <Text style={styles.submitText}>Record Check-In</Text>
+      </TouchableOpacity>
+
       {visible.map(category => {
         const categoryTags = tagsByCategory.get(category.id) ?? [];
         return (
@@ -79,7 +86,7 @@ export function CheckInScreen() {
       <Text style={styles.noteLabel}>Note (optional)</Text>
       <TextInput
         testID="checkin-note"
-        style={[styles.noteInput, {height: Math.max(100, noteHeight)}]}
+        style={[styles.noteInput, {height: Math.min(Math.max(60, noteHeight), 60)}]}
         value={note}
         onChangeText={setNote}
         onContentSizeChange={e =>
@@ -87,15 +94,8 @@ export function CheckInScreen() {
         }
         placeholder="Anything else you want to capture..."
         multiline
-        scrollEnabled={false}
+        scrollEnabled
       />
-
-      <TouchableOpacity
-        testID="checkin-submit"
-        style={styles.submitButton}
-        onPress={handleSubmit}>
-        <Text style={styles.submitText}>Save Check-In</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: '#4A90D9', borderRadius: 10, paddingVertical: 14,
-    alignItems: 'center', marginTop: 20, marginBottom: 40,
+    alignItems: 'center', marginBottom: 12,
   },
   submitText: {color: '#fff', fontWeight: '700', fontSize: 16},
 });
