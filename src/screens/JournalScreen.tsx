@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   View,
   Text,
@@ -11,10 +11,10 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Ionicons} from '@react-native-vector-icons/ionicons';
 import {useJournal, JournalEntry} from '../hooks/useJournal';
-import {useTags} from '../hooks/useTags';
 import {useHabits} from '../hooks/useHabits';
 import {CheckInHistoryItem} from '../components/checkin/CheckInHistoryItem';
 import {HabitCompletionItem} from '../components/journal/HabitCompletionItem';
+import {tagRepository} from '../services/database/tagRepository';
 import {RootStackParamList} from '../types';
 import {colors, commonStyles} from '../theme';
 
@@ -23,26 +23,35 @@ export function JournalScreen() {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const {sections, loading, loadingMore, hasMore, loadInitial, loadMore} =
     useJournal();
-  const {tagLabels, loadTags} = useTags();
-  const {habits, loadHabits} = useHabits();
+  const [allTagLabels, setAllTagLabels] = useState<Record<string, string>>({});
+  const [tagsLoading, setTagsLoading] = useState(false);
+  const {habits, loading: habitsLoading, loadHabits} = useHabits();
 
   useFocusEffect(
     useCallback(() => {
-      loadTags();
+      setTagsLoading(true);
+      tagRepository.getAllTagsIncludingArchived().then(tags => {
+        const labels: Record<string, string> = {};
+        for (const tag of tags) {
+          labels[tag.id] = tag.label;
+        }
+        setAllTagLabels(labels);
+        setTagsLoading(false);
+      });
       loadHabits();
       loadInitial();
-    }, [loadTags, loadHabits, loadInitial]),
+    }, [loadHabits, loadInitial]),
   );
 
   const renderItem = useCallback(
     ({item}: {item: JournalEntry}) => {
       if (item.type === 'checkin') {
-        return <CheckInHistoryItem checkIn={item.data} tagLabels={tagLabels} compact />;
+        return <CheckInHistoryItem checkIn={item.data} tagLabels={allTagLabels} compact />;
       }
       const habit = habits.find(h => h.id === item.data.habitId);
       return <HabitCompletionItem completion={item.data} habit={habit} />;
     },
-    [tagLabels, habits],
+    [allTagLabels, habits],
   );
 
   const renderSectionHeader = useCallback(
@@ -86,7 +95,7 @@ export function JournalScreen() {
     <Text style={styles.emptyText}>No journal entries yet</Text>
   ) : null;
 
-  if (loading) {
+  if (loading || tagsLoading || habitsLoading) {
     return (
       <View style={styles.loadingContainer}>
         {listHeader}

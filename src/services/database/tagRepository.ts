@@ -59,6 +59,12 @@ export const tagRepository = {
     return result.rows.map(mapTag);
   },
 
+  async getAllTagsIncludingArchived(): Promise<Tag[]> {
+    const db = getDatabase();
+    const result = await db.execute('SELECT * FROM tags ORDER BY label ASC');
+    return result.rows.map(mapTag);
+  },
+
   async getTagById(id: string): Promise<Tag | undefined> {
     const db = getDatabase();
     const result = await db.execute('SELECT * FROM tags WHERE id = ?', [id]);
