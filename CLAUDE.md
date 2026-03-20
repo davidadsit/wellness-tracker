@@ -44,6 +44,17 @@ test/
   utils/              # Utility tests
 ```
 
+## Design Principles — Kent Beck's 4 Rules of Simple Design
+
+All code changes should be evaluated against these rules, in priority order:
+
+1. **Passes the tests** — Code must work correctly. Verified by running `npm test`. Never sacrifice correctness for elegance.
+2. **Reveals intention** — Code should clearly communicate its purpose. Choose descriptive names, write straightforward logic, and structure code so a reader can understand *what* and *why* without extra explanation.
+3. **No duplication** — Every piece of knowledge should have a single, unambiguous representation. Extract shared logic rather than copying it, but only when duplication actually exists (not speculatively).
+4. **Fewest elements** — Remove anything that doesn't serve the first three rules. No speculative abstractions, unused code, or unnecessary complexity. Less is more.
+
+Rules are listed in priority order — e.g., don't sacrifice clarity (rule 2) to reduce duplication (rule 3), and don't add abstractions (violating rule 4) unless they genuinely serve the higher rules.
+
 ## Architecture Patterns
 
 - **Repository pattern**: Database operations isolated in `src/services/database/`. Repositories are singleton objects with async methods. Use these for all DB access.
