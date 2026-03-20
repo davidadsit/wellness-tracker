@@ -6,7 +6,11 @@ import {useAnalytics, AnalyticsPeriod} from '../hooks/useAnalytics';
 import {tagRepository} from '../services/database/tagRepository';
 import {Card} from '../components/common/Card';
 import {TagWordCloud} from '../components/analytics/TagWordCloud';
+import {TagTimeline} from '../components/analytics/TagTimeline';
 import {InsightCard} from '../components/analytics/InsightCard';
+import {checkInRepository} from '../services/database/checkInRepository';
+import {getDateRange, formatDateString} from '../utils/dateUtils';
+import {addDays} from 'date-fns';
 import {colors, commonStyles} from '../theme';
 
 const PERIODS: AnalyticsPeriod[] = [7, 30, 90];
@@ -20,6 +24,10 @@ export function AnalyticsScreen() {
   const [period, setPeriod] = useState<AnalyticsPeriod>(7);
   const [allTagLabels, setAllTagLabels] = useState<Record<string, string>>({});
   const [symptomTagIds, setSymptomTagIds] = useState<Set<string>>(new Set());
+  const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
+  const [selectedTagColor, setSelectedTagColor] = useState(colors.primary);
+  const [timelineData, setTimelineData] = useState<Array<{date: string; count: number}>>([]);
+  const [maxDailyFrequency, setMaxDailyFrequency] = useState(1);
   const {habits, loadHabits} = useHabits();
   const {tagFrequency, tagTrends, completionRates, loadAnalytics} =
     useAnalytics(allTagLabels);
@@ -57,6 +65,65 @@ export function AnalyticsScreen() {
     );
   }, [period, habits, allTagLabels, loadAnalytics]);
 
+  useEffect(() => {
+    if (tagFrequency.length === 0) {
+      setMaxDailyFrequency(1);
+      return;
+    }
+    const range = getDateRange(period);
+    Promise.all(
+      tagFrequency.map(tf =>
+        checkInRepository.getTagDailyFrequency(tf.tagId, range.start, range.end),
+      ),
+    ).then(results => {
+      let max = 1;
+      for (const daily of results) {
+        for (const d of daily) {
+          if (d.count > max) {
+            max = d.count;
+          }
+        }
+      }
+      setMaxDailyFrequency(max);
+    });
+  }, [tagFrequency, period]);
+
+  const loadTimelineForTag = useCallback(
+    async (tagId: string, days: AnalyticsPeriod) => {
+      const range = getDateRange(days);
+      const daily = await checkInRepository.getTagDailyFrequency(
+        tagId,
+        range.start,
+        range.end,
+      );
+      const countByDate = new Map(daily.map(d => [d.date, d.count]));
+      const today = new Date();
+      const fullRange: Array<{date: string; count: number}> = [];
+      for (let i = days; i >= 0; i--) {
+        const dateStr = formatDateString(addDays(today, -i));
+        fullRange.push({date: dateStr, count: countByDate.get(dateStr) ?? 0});
+      }
+      setTimelineData(fullRange);
+    },
+    [],
+  );
+
+  const handleTagPress = useCallback(
+    (tagId: string, color: string) => {
+      setSelectedTagId(tagId);
+      setSelectedTagColor(color);
+      loadTimelineForTag(tagId, period);
+    },
+    [period, loadTimelineForTag],
+  );
+
+  // Reload timeline when period changes and a tag is selected
+  useEffect(() => {
+    if (selectedTagId) {
+      loadTimelineForTag(selectedTagId, period);
+    }
+  }, [period, selectedTagId, loadTimelineForTag]);
+
   return (
     <ScrollView style={styles.container} testID="analytics-screen">
       <Text style={styles.title}>Analytics</Text>
@@ -79,8 +146,23 @@ export function AnalyticsScreen() {
       </View>
 
       <Card>
-        <TagWordCloud data={tagFrequency} symptomTagIds={symptomTagIds} />
+        <TagWordCloud
+          data={tagFrequency}
+          symptomTagIds={symptomTagIds}
+          onTagPress={handleTagPress}
+        />
       </Card>
+
+      {selectedTagId && timelineData.length > 0 && (
+        <Card>
+          <TagTimeline
+            tagLabel={allTagLabels[selectedTagId] ?? selectedTagId}
+            data={timelineData}
+            color={selectedTagColor}
+            maxFrequency={maxDailyFrequency}
+          />
+        </Card>
+      )}
 
       {tagTrends.length > 0 && (
         <Card>

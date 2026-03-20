@@ -114,6 +114,32 @@ export const checkInRepository = {
     }));
   },
 
+  async getTagDailyFrequency(
+    tagId: string,
+    startTimestamp: number,
+    endTimestamp: number,
+  ): Promise<Array<{date: string; count: number}>> {
+    const db = getDatabase();
+    const result = await db.execute(
+      `SELECT ci.timestamp
+       FROM check_in_tags ct
+       JOIN check_ins ci ON ci.id = ct.check_in_id
+       WHERE ct.tag_id = ? AND ci.timestamp >= ? AND ci.timestamp <= ?
+       ORDER BY ci.timestamp ASC`,
+      [tagId, startTimestamp, endTimestamp],
+    );
+    // Group by local date in JS to avoid SQLite timezone issues
+    const counts = new Map<string, number>();
+    for (const row of result.rows) {
+      const date = new Date(row.timestamp);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .map(([date, count]) => ({date, count}))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  },
+
   async getTagCoOccurrence(
     tagId: string,
     startTimestamp: number,
