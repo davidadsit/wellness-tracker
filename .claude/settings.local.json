@@ -30,7 +30,14 @@
       "Bash(grep -r export.*LineChart node_modules/react-native-gifted-charts/src/index.tsx)",
       "Bash(xcrun simctl:*)",
       "Bash(adb logcat:*)",
-      "Bash(sleep * && adb logcat:*)"
+      "Bash(sleep * && adb logcat:*)",
+      "Bash(npm run:*)",
+      "Bash(/usr/libexec/java_home -V 2>&1)",
+      "Bash(brew list:*)",
+      "Bash(mdfind -name javac)",
+      "Read(//Applications/**)",
+      "Bash(echo:*)",
+      "Bash(./gradlew app:installDebug --stacktrace)"
     ]
   }
 }
