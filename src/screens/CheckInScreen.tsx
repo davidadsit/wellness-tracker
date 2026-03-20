@@ -10,6 +10,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { useCheckIn } from '../hooks/useCheckIn';
 import { useTags } from '../hooks/useTags';
+import { useTagSelection } from '../hooks/useTagSelection';
 import { TagCategorySection } from '../components/checkin/TagCategorySection';
 import { colors, commonStyles } from '../theme';
 
@@ -17,7 +18,7 @@ export function CheckInScreen() {
   const { submit } = useCheckIn();
   const { categories, tagsByCategory, loadTags, visibleCategories, addTag } = useTags();
   const scrollRef = useRef<ScrollView>(null);
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const {selectedTagIds, toggleTag, resetSelection} = useTagSelection();
   const [note, setNote] = useState('');
 
   useFocusEffect(
@@ -25,24 +26,16 @@ export function CheckInScreen() {
       loadTags();
       scrollRef.current?.scrollTo({ y: 0, animated: false });
       return () => {
-        setSelectedTagIds([]);
+        resetSelection();
         setNote('');
       };
-    }, [loadTags]),
+    }, [loadTags, resetSelection]),
   );
-
-  const toggleTag = (tagId: string) => {
-    setSelectedTagIds(prev =>
-      prev.includes(tagId)
-        ? prev.filter(id => id !== tagId)
-        : [...prev, tagId],
-    );
-  };
 
   const handleAddTag = async (categoryId: string, label: string) => {
     try {
       const newTag = await addTag(categoryId, label);
-      setSelectedTagIds(prev => [...prev, newTag.id]);
+      toggleTag(newTag.id);
     } catch {
       Alert.alert('Error', 'A tag with that name already exists in this category.');
     }
@@ -55,7 +48,7 @@ export function CheckInScreen() {
     }
 
     await submit({ tagIds: selectedTagIds, note: note.trim() || undefined });
-    setSelectedTagIds([]);
+    resetSelection();
     setNote('');
     Alert.alert('Saved', 'Check-in recorded!');
   };
@@ -121,5 +114,5 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     marginBottom: 12,
   },
-  submitText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  submitText: commonStyles.primaryButtonText,
 });

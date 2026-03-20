@@ -58,30 +58,11 @@ export const commonStyles = StyleSheet.create({
   },
   primaryButtonText: {
     color: '#fff',
-    fontWeight: '600' as const,
+    fontWeight: '700' as const,
     fontSize: 16,
-  },
-  dangerButton: {
-    backgroundColor: colors.danger,
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: 'center' as const,
-  },
-  dangerButtonText: {
-    color: '#fff',
-    fontWeight: '600' as const,
-    fontSize: 15,
   },
   row: {
     flexDirection: 'row' as const,
     flexWrap: 'wrap' as const,
-  },
-  dividerRow: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'center' as const,
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.divider,
   },
 });

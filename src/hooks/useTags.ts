@@ -1,8 +1,9 @@
-import {useCallback, useMemo} from 'react';
+import {useState, useCallback, useMemo} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {RootState, AppDispatch} from '../store';
 import {fetchAllTags, createTag, createCategory, updateTag, removeTag} from '../store/tagsSlice';
 import {Tag, TagCategory} from '../types';
+import {tagRepository} from '../services/database/tagRepository';
 
 export function useTags() {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,6 +32,17 @@ export function useTags() {
     }
     return map;
   }, [tags]);
+
+  const [allTagLabels, setAllTagLabels] = useState<Record<string, string>>({});
+
+  const loadAllTagLabels = useCallback(async () => {
+    const allTags = await tagRepository.getAllTagsIncludingArchived();
+    const labels: Record<string, string> = {};
+    for (const tag of allTags) {
+      labels[tag.id] = tag.label;
+    }
+    setAllTagLabels(labels);
+  }, []);
 
   const visibleCategories = useCallback(
     (selectedTagIds: string[]): TagCategory[] => {
@@ -77,8 +89,10 @@ export function useTags() {
     tags,
     tagsByCategory,
     tagLabels,
+    allTagLabels,
     loading,
     loadTags,
+    loadAllTagLabels,
     visibleCategories,
     addTag,
     addCategory,

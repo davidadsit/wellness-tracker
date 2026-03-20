@@ -27,14 +27,12 @@ export interface HabitsState {
   habits: Habit[];
   todayCompletions: HabitCompletion[];
   loading: boolean;
-  error: string | null;
 }
 
 const initialState: HabitsState = {
   habits: [],
   todayCompletions: [],
   loading: false,
-  error: null,
 };
 
 export const fetchHabits = createAsyncThunk('habits/fetch', () => {
@@ -97,9 +95,8 @@ const habitsSlice = createSlice({
         state.loading = false;
         state.todayCompletions = action.payload;
       })
-      .addCase(fetchTodayCompletions.rejected, (state, action) => {
+      .addCase(fetchTodayCompletions.rejected, state => {
         state.loading = false;
-        state.error = action.error.message ?? 'Failed to fetch completions';
       })
       .addCase(completeHabit.fulfilled, (state, action) => {
         const existing = state.todayCompletions.findIndex(

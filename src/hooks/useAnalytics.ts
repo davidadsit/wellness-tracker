@@ -1,7 +1,7 @@
 import {useState, useCallback} from 'react';
 import {checkInRepository} from '../services/database/checkInRepository';
 import {habitRepository} from '../services/database/habitRepository';
-import {getDateRange} from '../utils/dateUtils';
+import {getDateRange, formatDateString} from '../utils/dateUtils';
 import {
   calculateTagFrequency,
   calculateTagTrends,
@@ -49,10 +49,8 @@ export function useAnalytics(tagLabels: Record<string, string>) {
       setTagTrends(calculateTagTrends(currentFreq, previousFreq, tagLabels));
 
       if (habitIds.length > 0) {
-        const startDate = new Date(currentRange.start)
-          .toISOString()
-          .split('T')[0];
-        const endDate = new Date(currentRange.end).toISOString().split('T')[0];
+        const startDate = formatDateString(new Date(currentRange.start));
+        const endDate = formatDateString(new Date(currentRange.end));
         setCompletionRates(
           await habitRepository.getCompletionRates(habitIds, startDate, endDate),
         );

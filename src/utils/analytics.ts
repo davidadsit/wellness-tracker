@@ -14,43 +14,31 @@ export function calculateStreak(completionDates: string[]): StreakResult {
   const today = format(new Date(), 'yyyy-MM-dd');
   const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
 
-  let currentStreak = 0;
-  let longestStreak = 0;
-  let streak = 1;
+  const isActive = sorted[0] === today || sorted[0] === yesterday;
 
-  const firstDate = sorted[0];
-  const isActive = firstDate === today || firstDate === yesterday;
+  let currentStreak = 1;
+  let longestStreak = 1;
+  let streak = 1;
+  let currentStreakBroken = false;
 
   for (let i = 1; i < sorted.length; i++) {
     const prevDate = parseISO(sorted[i - 1]);
     const currDate = parseISO(sorted[i]);
-    const diff = differenceInCalendarDays(prevDate, currDate);
 
-    if (diff === 1) {
+    if (differenceInCalendarDays(prevDate, currDate) === 1) {
       streak++;
-    } else {
-      if (i === 1 || (i > 1 && currentStreak === 0 && isActive)) {
-        // nothing — streak already captured below
+      if (!currentStreakBroken) {
+        currentStreak = streak;
       }
-      longestStreak = Math.max(longestStreak, streak);
+    } else {
+      currentStreakBroken = true;
       streak = 1;
     }
+    longestStreak = Math.max(longestStreak, streak);
   }
 
-  longestStreak = Math.max(longestStreak, streak);
-
-  if (isActive) {
-    let activeStreak = 1;
-    for (let i = 1; i < sorted.length; i++) {
-      const prevDate = parseISO(sorted[i - 1]);
-      const currDate = parseISO(sorted[i]);
-      if (differenceInCalendarDays(prevDate, currDate) === 1) {
-        activeStreak++;
-      } else {
-        break;
-      }
-    }
-    currentStreak = activeStreak;
+  if (!isActive) {
+    currentStreak = 0;
   }
 
   return {currentStreak, longestStreak};

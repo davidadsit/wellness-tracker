@@ -1,8 +1,9 @@
-import React, {useState, useCallback} from 'react';
+import React, {useCallback} from 'react';
 import {View, Text, TouchableOpacity, Alert, StyleSheet} from 'react-native';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useCheckIn} from '../hooks/useCheckIn';
 import {useTags} from '../hooks/useTags';
+import {useTagSelection} from '../hooks/useTagSelection';
 import {TagCategorySection} from '../components/checkin/TagCategorySection';
 import {colors, commonStyles} from '../theme';
 
@@ -10,21 +11,13 @@ export function QuickCheckInScreen() {
   const navigation = useNavigation();
   const {submit} = useCheckIn();
   const {tagsByCategory, loadTags, visibleCategories} = useTags();
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const {selectedTagIds, toggleTag} = useTagSelection();
 
   useFocusEffect(
     useCallback(() => {
       loadTags();
     }, [loadTags]),
   );
-
-  const toggleTag = (tagId: string) => {
-    setSelectedTagIds(prev =>
-      prev.includes(tagId)
-        ? prev.filter(id => id !== tagId)
-        : [...prev, tagId],
-    );
-  };
 
   const handleSubmit = async () => {
     if (selectedTagIds.length === 0) {
@@ -70,5 +63,5 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     marginTop: 20,
   },
-  submitText: {color: '#fff', fontWeight: '700', fontSize: 16},
+  submitText: commonStyles.primaryButtonText,
 });

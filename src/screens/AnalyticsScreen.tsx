@@ -3,6 +3,7 @@ import {ScrollView, View, Text, TouchableOpacity, StyleSheet} from 'react-native
 import {useFocusEffect} from '@react-navigation/native';
 import {useHabits} from '../hooks/useHabits';
 import {useAnalytics, AnalyticsPeriod} from '../hooks/useAnalytics';
+import {useTags} from '../hooks/useTags';
 import {tagRepository} from '../services/database/tagRepository';
 import {Card} from '../components/common/Card';
 import {TagWordCloud} from '../components/analytics/TagWordCloud';
@@ -22,7 +23,7 @@ const PERIOD_LABELS: Record<AnalyticsPeriod, string> = {
 
 export function AnalyticsScreen() {
   const [period, setPeriod] = useState<AnalyticsPeriod>(7);
-  const [allTagLabels, setAllTagLabels] = useState<Record<string, string>>({});
+  const {allTagLabels, loadAllTagLabels} = useTags();
   const [symptomTagIds, setSymptomTagIds] = useState<Set<string>>(new Set());
   const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
   const [selectedTagColor, setSelectedTagColor] = useState(colors.primary);
@@ -34,25 +35,19 @@ export function AnalyticsScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      Promise.all([
-        tagRepository.getAllTagsIncludingArchived(),
-        tagRepository.getAllCategories(),
-      ]).then(([tags, categories]) => {
-        const labels: Record<string, string> = {};
-        for (const tag of tags) {
-          labels[tag.id] = tag.label;
-        }
-        setAllTagLabels(labels);
-
-        const symptomCatIds = new Set(
-          categories.filter(c => c.triggerTagId).map(c => c.id),
-        );
-        setSymptomTagIds(
-          new Set(tags.filter(t => symptomCatIds.has(t.categoryId)).map(t => t.id)),
-        );
+      loadAllTagLabels();
+      tagRepository.getAllTagsIncludingArchived().then(tags => {
+        tagRepository.getAllCategories().then(categories => {
+          const symptomCatIds = new Set(
+            categories.filter(c => c.triggerTagId).map(c => c.id),
+          );
+          setSymptomTagIds(
+            new Set(tags.filter(t => symptomCatIds.has(t.categoryId)).map(t => t.id)),
+          );
+        });
       });
       loadHabits();
-    }, [loadHabits]),
+    }, [loadAllTagLabels, loadHabits]),
   );
 
   useEffect(() => {

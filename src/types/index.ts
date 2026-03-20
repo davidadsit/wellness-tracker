@@ -24,11 +24,6 @@ export interface CheckIn {
   source: 'manual' | 'notification';
 }
 
-export interface CheckInTag {
-  checkInId: string;
-  tagId: string;
-}
-
 export type HabitCategory =
   | 'sleep'
   | 'water'

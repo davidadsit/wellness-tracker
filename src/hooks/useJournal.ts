@@ -27,7 +27,7 @@ function buildSections(
   completions: HabitCompletion[],
   startDay: Date,
   days: number,
-): JournalSection[] {
+): {sections: JournalSection[]; trailingEmpty: number} {
   const sections: JournalSection[] = [];
   let consecutiveEmpty = 0;
 
@@ -72,7 +72,7 @@ function buildSections(
     });
   }
 
-  return {sections, trailingEmpty: consecutiveEmpty} as any;
+  return {sections, trailingEmpty: consecutiveEmpty};
 }
 
 export function useJournal() {
@@ -105,13 +105,7 @@ export function useJournal() {
 
       // Build sections from most recent day first
       const startDay = subDays(today, offsetDays);
-      const result = buildSections(checkIns, completions, startDay, count);
-      // buildSections returns {sections, trailingEmpty} via the cast
-      const parsed = result as unknown as {
-        sections: JournalSection[];
-        trailingEmpty: number;
-      };
-      return parsed;
+      return buildSections(checkIns, completions, startDay, count);
     },
     [],
   );

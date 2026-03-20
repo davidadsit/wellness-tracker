@@ -9,7 +9,6 @@ const initialState: CheckInState = {
   todayCheckIns: [],
   recentCheckIns: [],
   loading: false,
-  error: null,
 };
 
 describe('checkInSlice', () => {
@@ -40,13 +39,12 @@ describe('checkInSlice', () => {
       expect(state.todayCheckIns).toEqual(checkIns);
     });
 
-    it('sets error on rejected', () => {
+    it('sets loading false on rejected', () => {
       const state = checkInReducer(
         {...initialState, loading: true},
         fetchTodayCheckIns.rejected(new Error('fail'), '', undefined),
       );
       expect(state.loading).toBe(false);
-      expect(state.error).toBe('fail');
     });
   });
 

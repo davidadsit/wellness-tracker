@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Tag } from '../../types';
 import { TagChip } from './TagChip';
 import { AddTagInline } from './AddTagInline';
+import { colors } from '../../theme';
 
 interface TagCategorySectionProps {
   categoryName: string;
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
   categoryName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: colors.text,
     marginBottom: 4,
   },
   tagsWrap: {

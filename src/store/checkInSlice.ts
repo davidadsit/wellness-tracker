@@ -7,14 +7,12 @@ export interface CheckInState {
   todayCheckIns: CheckIn[];
   recentCheckIns: CheckIn[];
   loading: boolean;
-  error: string | null;
 }
 
 const initialState: CheckInState = {
   todayCheckIns: [],
   recentCheckIns: [],
   loading: false,
-  error: null,
 };
 
 export const fetchTodayCheckIns = createAsyncThunk(
@@ -57,15 +55,13 @@ const checkInSlice = createSlice({
     builder
       .addCase(fetchTodayCheckIns.pending, state => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(fetchTodayCheckIns.fulfilled, (state, action) => {
         state.loading = false;
         state.todayCheckIns = action.payload;
       })
-      .addCase(fetchTodayCheckIns.rejected, (state, action) => {
+      .addCase(fetchTodayCheckIns.rejected, state => {
         state.loading = false;
-        state.error = action.error.message ?? 'Failed to fetch check-ins';
       })
       .addCase(fetchRecentCheckIns.fulfilled, (state, action) => {
         state.recentCheckIns = action.payload;

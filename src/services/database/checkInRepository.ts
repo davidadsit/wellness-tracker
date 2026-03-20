@@ -1,6 +1,7 @@
 import {getDatabase} from './database';
 import {CheckIn} from '../../types';
 import {uuid} from '../../utils/uuid';
+import {formatDateString} from '../../utils/dateUtils';
 
 function mapCheckIn(row: any, tagIds: string[]): CheckIn {
   return {
@@ -132,7 +133,7 @@ export const checkInRepository = {
     const counts = new Map<string, number>();
     for (const row of result.rows) {
       const date = new Date(row.timestamp);
-      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      const key = formatDateString(date);
       counts.set(key, (counts.get(key) ?? 0) + 1);
     }
     return Array.from(counts.entries())

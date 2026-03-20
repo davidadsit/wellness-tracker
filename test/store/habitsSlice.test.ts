@@ -27,7 +27,6 @@ const initialState: HabitsState = {
   habits: [],
   todayCompletions: [],
   loading: false,
-  error: null,
 };
 
 describe('habitsSlice', () => {
