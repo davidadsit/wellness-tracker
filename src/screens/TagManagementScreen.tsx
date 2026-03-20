@@ -228,6 +228,8 @@ export function TagManagementScreen() {
             value={newCategoryName}
             onChangeText={setNewCategoryName}
             placeholder="Category name"
+            onSubmitEditing={handleAddCategory}
+            returnKeyType="done"
           />
           <TouchableOpacity
             testID="add-category-button"
