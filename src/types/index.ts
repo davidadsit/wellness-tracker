@@ -60,19 +60,23 @@ export interface HabitCompletion {
   source: 'manual' | 'notification';
 }
 
-export type RootStackParamList = {
-  Tabs: undefined;
-  HabitDetail: {habitId: string};
-  HabitForm: {habitId?: string};
-  Settings: undefined;
-  TagManagement: undefined;
-  QuickCheckIn: undefined;
-  Analytics: undefined;
-};
-
 export type TabParamList = {
   Home: undefined;
   'Check-In': undefined;
   Habits: undefined;
   Journal: undefined;
+};
+
+export type HomeStackParamList = {
+  HomeMain: undefined;
+  Settings: undefined;
+  Analytics: undefined;
+  TagManagement: undefined;
+  QuickCheckIn: undefined;
+};
+
+export type HabitsStackParamList = {
+  HabitsMain: undefined;
+  HabitDetail: {habitId: string};
+  HabitForm: {habitId?: string};
 };

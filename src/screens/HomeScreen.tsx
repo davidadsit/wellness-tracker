@@ -1,19 +1,15 @@
 import React, {useCallback} from 'react';
 import {View, Text, ScrollView, TouchableOpacity, StyleSheet} from 'react-native';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useCheckIn} from '../hooks/useCheckIn';
 import {useHabits} from '../hooks/useHabits';
 import {useTags} from '../hooks/useTags';
 import {Card} from '../components/common/Card';
 import {TagBadge} from '../components/common/TagBadge';
 import {colors, commonStyles} from '../theme';
-import {RootStackParamList} from '../types';
-
-type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export function HomeScreen() {
-  const navigation = useNavigation<Nav>();
+  const navigation = useNavigation<any>();
   const {todayCheckIns, hasCheckedInToday, loadToday} = useCheckIn();
   const {activeHabits, todayCompletions, loadHabits, loadTodayCompletions} = useHabits();
   const {tagLabels, loadTags} = useTags();
@@ -41,7 +37,7 @@ export function HomeScreen() {
           <TouchableOpacity
             testID="cta-check-in"
             style={styles.ctaButton}
-            onPress={() => navigation.navigate('Tabs', {screen: 'Check-In'} as any)}>
+            onPress={() => navigation.navigate('Check-In')}>
             <Text style={styles.ctaButtonText}>Check In Now</Text>
           </TouchableOpacity>
         </Card>
@@ -76,7 +72,7 @@ export function HomeScreen() {
             <TouchableOpacity
               key={habit.id}
               style={styles.habitRow}
-              onPress={() => navigation.navigate('HabitDetail', {habitId: habit.id})}>
+              onPress={() => navigation.navigate('Habits', {screen: 'HabitDetail', params: {habitId: habit.id}})}>
               <View
                 style={[styles.habitDot, {backgroundColor: habit.color}]}
               />

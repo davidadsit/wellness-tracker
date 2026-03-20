@@ -6,9 +6,9 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useHabits} from '../hooks/useHabits';
 import {HabitCard} from '../components/habits/HabitCard';
 import {EmptyState} from '../components/common/EmptyState';
-import {RootStackParamList} from '../types';
+import {HabitsStackParamList} from '../types';
 
-type Nav = NativeStackNavigationProp<RootStackParamList>;
+type Nav = NativeStackNavigationProp<HabitsStackParamList>;
 
 export function HabitsScreen() {
   const navigation = useNavigation<Nav>();

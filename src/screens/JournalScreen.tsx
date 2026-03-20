@@ -8,19 +8,16 @@ import {
   StyleSheet,
 } from 'react-native';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Ionicons} from '@react-native-vector-icons/ionicons';
 import {useJournal, JournalEntry} from '../hooks/useJournal';
 import {useHabits} from '../hooks/useHabits';
 import {CheckInHistoryItem} from '../components/checkin/CheckInHistoryItem';
 import {HabitCompletionItem} from '../components/journal/HabitCompletionItem';
 import {tagRepository} from '../services/database/tagRepository';
-import {RootStackParamList} from '../types';
 import {colors, commonStyles} from '../theme';
 
 export function JournalScreen() {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<any>();
   const {sections, loading, loadingMore, hasMore, loadInitial, loadMore} =
     useJournal();
   const [allTagLabels, setAllTagLabels] = useState<Record<string, string>>({});
@@ -76,7 +73,7 @@ export function JournalScreen() {
     <View>
       <TouchableOpacity
         style={styles.analyticsButton}
-        onPress={() => navigation.navigate('Analytics')}>
+        onPress={() => navigation.navigate('Home', {screen: 'Analytics'})}>
         <Ionicons
           name="bar-chart-outline"
           size={18}

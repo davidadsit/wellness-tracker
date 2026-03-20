@@ -2,7 +2,6 @@ import React from 'react';
 import {View, Text, Switch, TouchableOpacity, StyleSheet} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootState, AppDispatch} from '../store';
 import {
   setNotificationsEnabled,
@@ -11,12 +10,9 @@ import {
 import {notificationService} from '../services/notifications/notificationService';
 import {Card} from '../components/common/Card';
 import {colors, commonStyles} from '../theme';
-import {RootStackParamList} from '../types';
-
-type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export function SettingsScreen() {
-  const navigation = useNavigation<Nav>();
+  const navigation = useNavigation<any>();
   const dispatch = useDispatch<AppDispatch>();
   const settings = useSelector((state: RootState) => state.settings);
 

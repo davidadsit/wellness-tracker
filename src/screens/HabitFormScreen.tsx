@@ -4,13 +4,13 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useHabits} from '../hooks/useHabits';
 import {HabitForm} from '../components/habits/HabitForm';
 import {notificationService} from '../services/notifications/notificationService';
-import {RootStackParamList, Habit} from '../types';
+import {HabitsStackParamList, Habit} from '../types';
 
-type Nav = NativeStackNavigationProp<RootStackParamList>;
+type Nav = NativeStackNavigationProp<HabitsStackParamList>;
 
 export function HabitFormScreen() {
   const navigation = useNavigation<Nav>();
-  const route = useRoute<RouteProp<RootStackParamList, 'HabitForm'>>();
+  const route = useRoute<RouteProp<HabitsStackParamList, 'HabitForm'>>();
   const {habits, add, update} = useHabits();
 
   const editingHabit = route.params?.habitId

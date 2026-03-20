@@ -1,23 +1,27 @@
 import {LinkingOptions} from '@react-navigation/native';
-import {RootStackParamList} from '../types';
+import {TabParamList} from '../types';
 
-export const linking: LinkingOptions<RootStackParamList> = {
+export const linking: LinkingOptions<TabParamList> = {
   prefixes: ['wellnesstracker://'],
   config: {
     screens: {
-      QuickCheckIn: 'check-in',
-      Tabs: {
+      Home: {
         screens: {
-          Home: 'home',
-          'Check-In': 'checkin',
-          Habits: 'habits',
-          Journal: 'journal',
+          HomeMain: 'home',
+          Settings: 'settings',
+          Analytics: 'analytics',
+          TagManagement: 'tags',
+          QuickCheckIn: 'check-in',
         },
       },
-      HabitDetail: 'habit/:habitId',
-      Settings: 'settings',
-      TagManagement: 'tags',
-      Analytics: 'analytics',
+      'Check-In': 'checkin',
+      Habits: {
+        screens: {
+          HabitsMain: 'habits',
+          HabitDetail: 'habit/:habitId',
+        },
+      },
+      Journal: 'journal',
     },
   },
 };

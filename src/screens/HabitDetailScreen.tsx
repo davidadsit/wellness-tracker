@@ -8,13 +8,13 @@ import {calculateStreak} from '../utils/analytics';
 import {HabitStreak} from '../components/habits/HabitStreak';
 import {Card} from '../components/common/Card';
 import {colors, commonStyles} from '../theme';
-import {RootStackParamList} from '../types';
+import {HabitsStackParamList} from '../types';
 
-type Nav = NativeStackNavigationProp<RootStackParamList>;
+type Nav = NativeStackNavigationProp<HabitsStackParamList>;
 
 export function HabitDetailScreen() {
   const navigation = useNavigation<Nav>();
-  const route = useRoute<RouteProp<RootStackParamList, 'HabitDetail'>>();
+  const route = useRoute<RouteProp<HabitsStackParamList, 'HabitDetail'>>();
   const {habitId} = route.params;
   const {habits, remove} = useHabits();
   const habit = habits.find(h => h.id === habitId);
