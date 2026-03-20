@@ -20,7 +20,13 @@
       "Bash(ls /tmp/*.png /tmp/*.jpg /tmp/screenshot*)",
       "Bash(adb devices:*)",
       "WebSearch",
-      "WebFetch(domain:support.claude.com)"
+      "WebFetch(domain:support.claude.com)",
+      "Bash(wc -l /Users/davidadsit/code/wellness-tracker/src/**/*.tsx /Users/davidadsit/code/wellness-tracker/src/**/*.ts)",
+      "Bash(npm search:*)",
+      "Bash(npm view:*)",
+      "Bash(curl -s https://api.npmjs.org/downloads/point/last-month/rn-wordcloud)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(''''Monthly downloads:'''', d.get\\(''''downloads'''',''''N/A''''\\)\\)\")",
+      "WebFetch(domain:github.com)"
     ]
   }
 }

@@ -1,11 +1,11 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {ScrollView, View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
-import {useTags} from '../hooks/useTags';
 import {useHabits} from '../hooks/useHabits';
 import {useAnalytics, AnalyticsPeriod} from '../hooks/useAnalytics';
+import {tagRepository} from '../services/database/tagRepository';
 import {Card} from '../components/common/Card';
-import {TagFrequencyChart} from '../components/analytics/TagFrequencyChart';
+import {TagWordCloud} from '../components/analytics/TagWordCloud';
 import {InsightCard} from '../components/analytics/InsightCard';
 import {colors, commonStyles} from '../theme';
 
@@ -18,26 +18,44 @@ const PERIOD_LABELS: Record<AnalyticsPeriod, string> = {
 
 export function AnalyticsScreen() {
   const [period, setPeriod] = useState<AnalyticsPeriod>(7);
-  const {tagLabels, loadTags} = useTags();
+  const [allTagLabels, setAllTagLabels] = useState<Record<string, string>>({});
+  const [symptomTagIds, setSymptomTagIds] = useState<Set<string>>(new Set());
   const {habits, loadHabits} = useHabits();
   const {tagFrequency, tagTrends, completionRates, loadAnalytics} =
-    useAnalytics(tagLabels);
+    useAnalytics(allTagLabels);
 
   useFocusEffect(
     useCallback(() => {
-      loadTags();
+      Promise.all([
+        tagRepository.getAllTagsIncludingArchived(),
+        tagRepository.getAllCategories(),
+      ]).then(([tags, categories]) => {
+        const labels: Record<string, string> = {};
+        for (const tag of tags) {
+          labels[tag.id] = tag.label;
+        }
+        setAllTagLabels(labels);
+
+        const symptomCatIds = new Set(
+          categories.filter(c => c.triggerTagId).map(c => c.id),
+        );
+        setSymptomTagIds(
+          new Set(tags.filter(t => symptomCatIds.has(t.categoryId)).map(t => t.id)),
+        );
+      });
       loadHabits();
-    }, [loadTags, loadHabits]),
+    }, [loadHabits]),
   );
 
-  useFocusEffect(
-    useCallback(() => {
-      loadAnalytics(
-        period,
-        habits.map(h => h.id),
-      );
-    }, [period, habits, loadAnalytics]),
-  );
+  useEffect(() => {
+    if (Object.keys(allTagLabels).length === 0) {
+      return;
+    }
+    loadAnalytics(
+      period,
+      habits.map(h => h.id),
+    );
+  }, [period, habits, allTagLabels, loadAnalytics]);
 
   return (
     <ScrollView style={styles.container} testID="analytics-screen">
@@ -61,7 +79,7 @@ export function AnalyticsScreen() {
       </View>
 
       <Card>
-        <TagFrequencyChart data={tagFrequency} title="Tag Frequency" />
+        <TagWordCloud data={tagFrequency} symptomTagIds={symptomTagIds} />
       </Card>
 
       {tagTrends.length > 0 && (
