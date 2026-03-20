@@ -79,8 +79,22 @@ Key behaviors:
 - Use `getAllTagsIncludingArchived()` when displaying historical data (e.g., Journal screen)
 - Habit completions use upsert (ON CONFLICT) to increment count per day
 
-## Testing
+## Testing — TDD Required
 
+All code must be written using Test-Driven Development. TDD is the corollary of rule 1 (passes the tests): if code must pass tests to be correct, then the tests must exist *before* the code.
+
+**The TDD cycle:**
+1. **Red** — Write a failing test that describes the behavior you want. Run `npm test` and confirm it fails.
+2. **Green** — Write the simplest code that makes the test pass. Run `npm test` and confirm it passes.
+3. **Refactor** — Improve the code (apply rules 2–4) while keeping tests green. Run `npm test` after each change.
+
+**Key practices:**
+- Never write production code without a failing test demanding it.
+- Each Red–Green–Refactor cycle should be small — one behavior at a time.
+- Run the full test suite (`npm test`) frequently, not just the test you're working on.
+- When fixing a bug, first write a test that reproduces the bug, then fix it.
+
+**Test structure:**
 - Tests live in `test/` (not alongside source)
 - Jest config: `jest.config.js` with custom `moduleNameMapper` for native module mocks
 - Navigation and safe-area mocked in `jest.setup.js`
