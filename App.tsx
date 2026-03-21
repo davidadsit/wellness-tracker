@@ -6,7 +6,10 @@ import {store, persistor} from './src/store';
 import {RootNavigator} from './src/navigation/RootNavigator';
 import {linking} from './src/navigation/linking';
 import {notificationService} from './src/services/notifications/notificationService';
+import {registerNotificationHandlers} from './src/services/notifications/notificationHandlers';
 import {initializeDatabase} from './src/services/database/database';
+
+registerNotificationHandlers();
 
 export default function App() {
   const [dbReady, setDbReady] = useState(false);

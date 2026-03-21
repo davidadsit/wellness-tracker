@@ -59,8 +59,11 @@ describe('HabitsScreen', () => {
         error: null,
       },
       settings: {
-        notificationsEnabled: true,
-        dailyCheckInTime: '09:00',
+        reminders: {
+          morning: {enabled: false, time: '09:00'},
+          midday: {enabled: true, time: '13:00'},
+          evening: {enabled: false, time: '19:00'},
+        },
         theme: 'system',
       },
     });
@@ -101,8 +104,11 @@ describe('HabitsScreen', () => {
         error: null,
       },
       settings: {
-        notificationsEnabled: true,
-        dailyCheckInTime: '09:00',
+        reminders: {
+          morning: {enabled: false, time: '09:00'},
+          midday: {enabled: true, time: '13:00'},
+          evening: {enabled: false, time: '19:00'},
+        },
         theme: 'system',
       },
     });
@@ -144,8 +150,11 @@ describe('HabitsScreen', () => {
         error: null,
       },
       settings: {
-        notificationsEnabled: true,
-        dailyCheckInTime: '09:00',
+        reminders: {
+          morning: {enabled: false, time: '09:00'},
+          midday: {enabled: true, time: '13:00'},
+          evening: {enabled: false, time: '19:00'},
+        },
         theme: 'system',
       },
     });

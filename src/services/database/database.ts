@@ -95,6 +95,23 @@ async function initSchema(database: DB): Promise<void> {
     'CREATE INDEX IF NOT EXISTS idx_completions_date ON habit_completions(date);',
   );
 
+  await database.execute(`
+    CREATE TABLE IF NOT EXISTS notification_outcomes (
+      id TEXT PRIMARY KEY,
+      reminder_period TEXT NOT NULL,
+      outcome TEXT,
+      scheduled_time TEXT NOT NULL,
+      sent_at INTEGER NOT NULL,
+      responded_at INTEGER
+    );
+  `);
+  await database.execute(
+    'CREATE INDEX IF NOT EXISTS idx_outcomes_period ON notification_outcomes(reminder_period);',
+  );
+  await database.execute(
+    'CREATE INDEX IF NOT EXISTS idx_outcomes_sent ON notification_outcomes(sent_at);',
+  );
+
   try {
     await database.execute(
       'ALTER TABLE tags ADD COLUMN is_archived INTEGER NOT NULL DEFAULT 0;',

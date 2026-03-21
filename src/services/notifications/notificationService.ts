@@ -1,12 +1,60 @@
-import notifee, {
-  TriggerType,
-  RepeatFrequency,
-  AndroidImportance,
-} from '@notifee/react-native';
-import {Habit} from '../../types';
+import notifee, {TriggerType, AndroidImportance} from '@notifee/react-native';
+import {Habit, ReminderPeriod} from '../../types';
+import {notificationOutcomeRepository} from '../database/notificationOutcomeRepository';
 
 const CHANNEL_ID = 'wellness-tracker-default';
-const DAILY_CHECK_IN_ID = 'daily-check-in-reminder';
+
+const REMINDER_COPY: Record<ReminderPeriod, {title: string; body: string}> = {
+  morning: {
+    title: 'Good morning! How are you feeling?',
+    body: 'Start your day with a wellness check-in.',
+  },
+  midday: {
+    title: 'How are you feeling today?',
+    body: 'Take a moment to check in with yourself.',
+  },
+  evening: {
+    title: 'How was your day?',
+    body: 'Reflect on your day with an evening check-in.',
+  },
+};
+
+function checkInReminderId(period: ReminderPeriod): string {
+  return `check-in-reminder-${period}`;
+}
+
+function habitNotificationId(habitId: string): string {
+  return `habit-reminder-${habitId}`;
+}
+
+function randomOffset(): number {
+  return Math.floor(Math.random() * 20 - 10) * 60 * 1000;
+}
+
+function buildOneShotTrigger(hours: number, minutes: number) {
+  const now = new Date();
+  const trigger = new Date();
+  trigger.setHours(hours, minutes, 0, 0);
+
+  if (trigger.getTime() <= now.getTime()) {
+    trigger.setDate(trigger.getDate() + 1);
+  }
+
+  const timestamp = trigger.getTime() + randomOffset();
+
+  return {
+    type: TriggerType.TIMESTAMP as const,
+    timestamp,
+  };
+}
+
+function buildDailyTrigger(hours: number, minutes: number) {
+  const trigger = buildOneShotTrigger(hours, minutes);
+  return {
+    ...trigger,
+    repeatFrequency: 1, // RepeatFrequency.DAILY
+  };
+}
 
 export const notificationService = {
   async setupChannel(): Promise<void> {
@@ -17,15 +65,24 @@ export const notificationService = {
     });
   },
 
-  async scheduleDailyCheckIn(time: string): Promise<void> {
+  async scheduleCheckInReminder(
+    period: ReminderPeriod,
+    time: string,
+  ): Promise<void> {
     const [hours, minutes] = time.split(':').map(Number);
-    const trigger = buildDailyTrigger(hours, minutes);
+    const trigger = buildOneShotTrigger(hours, minutes);
+    const copy = REMINDER_COPY[period];
+
+    const outcomeRecord = await notificationOutcomeRepository.recordSent({
+      reminderPeriod: period,
+      scheduledTime: time,
+    });
 
     await notifee.createTriggerNotification(
       {
-        id: DAILY_CHECK_IN_ID,
-        title: 'How are you feeling today?',
-        body: 'Take a moment to check in with yourself.',
+        id: checkInReminderId(period),
+        title: copy.title,
+        body: copy.body,
         android: {
           channelId: CHANNEL_ID,
           pressAction: {id: 'default'},
@@ -34,17 +91,30 @@ export const notificationService = {
               title: 'Check In',
               pressAction: {id: 'CHECK_IN', launchActivity: 'default'},
             },
-            {title: 'Dismiss', pressAction: {id: 'DISMISS'}},
+            {title: 'Snooze 15m', pressAction: {id: 'SNOOZE_CHECK_IN'}},
           ],
         },
-        data: {type: 'daily-check-in'},
+        data: {
+          type: 'check-in-reminder',
+          reminderPeriod: period,
+          scheduledTime: time,
+          outcomeId: outcomeRecord.id,
+        },
       },
       trigger,
     );
   },
 
-  async cancelDailyCheckIn(): Promise<void> {
-    await notifee.cancelNotification(DAILY_CHECK_IN_ID);
+  async cancelCheckInReminder(period: ReminderPeriod): Promise<void> {
+    await notifee.cancelNotification(checkInReminderId(period));
+  },
+
+  async rescheduleCheckInReminder(
+    period: ReminderPeriod,
+    time: string,
+  ): Promise<void> {
+    await this.cancelCheckInReminder(period);
+    await this.scheduleCheckInReminder(period, time);
   },
 
   async scheduleHabitReminder(habit: Habit): Promise<void> {
@@ -60,7 +130,7 @@ export const notificationService = {
       {
         id: notificationId,
         title: `Time for: ${habit.name}`,
-        body: `Keep your streak going!`,
+        body: 'Keep your streak going!',
         android: {
           channelId: CHANNEL_ID,
           pressAction: {id: 'default'},
@@ -106,23 +176,3 @@ export const notificationService = {
     await notifee.cancelAllNotifications();
   },
 };
-
-function habitNotificationId(habitId: string): string {
-  return `habit-reminder-${habitId}`;
-}
-
-function buildDailyTrigger(hours: number, minutes: number) {
-  const now = new Date();
-  const trigger = new Date();
-  trigger.setHours(hours, minutes, 0, 0);
-
-  if (trigger.getTime() <= now.getTime()) {
-    trigger.setDate(trigger.getDate() + 1);
-  }
-
-  return {
-    type: TriggerType.TIMESTAMP as const,
-    timestamp: trigger.getTime(),
-    repeatFrequency: RepeatFrequency.DAILY,
-  };
-}

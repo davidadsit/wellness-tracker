@@ -55,6 +55,24 @@ export interface HabitCompletion {
   source: 'manual' | 'notification';
 }
 
+export type ReminderPeriod = 'morning' | 'midday' | 'evening';
+
+export type NotificationOutcome = 'dismissed' | 'snoozed' | 'interacted';
+
+export interface ReminderConfig {
+  enabled: boolean;
+  time: string;
+}
+
+export interface NotificationOutcomeRecord {
+  id: string;
+  reminderPeriod: ReminderPeriod;
+  outcome: NotificationOutcome | null;
+  scheduledTime: string;
+  sentAt: number;
+  respondedAt: number | null;
+}
+
 export type TabParamList = {
   Home: undefined;
   'Check-In': undefined;

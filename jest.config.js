@@ -9,6 +9,8 @@ const baseConfig = {
     '@op-engineering/op-sqlite': '<rootDir>/test/__mocks__/op-sqlite.ts',
     '@notifee/react-native': '<rootDir>/test/__mocks__/notifee.ts',
     'react-native-mmkv': '<rootDir>/test/__mocks__/react-native-mmkv.ts',
+    '@react-native-community/datetimepicker':
+      '<rootDir>/test/__mocks__/@react-native-community/datetimepicker.tsx',
   },
   testPathIgnorePatterns: ['/node_modules/', '/android/', '/ios/'],
 };

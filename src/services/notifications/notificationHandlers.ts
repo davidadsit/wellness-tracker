@@ -1,18 +1,55 @@
 import notifee, {EventType} from '@notifee/react-native';
 import {habitRepository} from '../database/habitRepository';
+import {notificationOutcomeRepository} from '../database/notificationOutcomeRepository';
 import {notificationService} from './notificationService';
+import {NotificationOutcome} from '../../types';
 import {format} from 'date-fns';
+
+function isCheckInReminder(notification: any): boolean {
+  return notification?.data?.type === 'check-in-reminder';
+}
+
+async function recordCheckInOutcome(
+  notification: any,
+  outcome: NotificationOutcome,
+): Promise<void> {
+  const outcomeId = notification?.data?.outcomeId as string | undefined;
+  if (outcomeId) {
+    await notificationOutcomeRepository.recordOutcome(outcomeId, outcome);
+  }
+}
 
 export function registerNotificationHandlers(): void {
   notifee.onBackgroundEvent(async ({type, detail}) => {
+    const {notification, pressAction} = detail;
+
+    if (type === EventType.DISMISSED) {
+      if (isCheckInReminder(notification)) {
+        await recordCheckInOutcome(notification, 'dismissed');
+      }
+      return;
+    }
+
     if (type !== EventType.ACTION_PRESS) {
       return;
     }
 
-    const {notification, pressAction} = detail;
     const habitId = notification?.data?.habitId as string | undefined;
 
     switch (pressAction?.id) {
+      case 'CHECK_IN':
+        if (isCheckInReminder(notification)) {
+          await recordCheckInOutcome(notification, 'interacted');
+        }
+        break;
+
+      case 'SNOOZE_CHECK_IN':
+        if (isCheckInReminder(notification) && notification?.id) {
+          await recordCheckInOutcome(notification, 'snoozed');
+          await notificationService.snoozeNotification(notification.id, 15);
+        }
+        break;
+
       case 'COMPLETE_HABIT':
         if (habitId) {
           await habitRepository.completeHabit(habitId, {
@@ -34,8 +71,6 @@ export function registerNotificationHandlers(): void {
           await notifee.cancelNotification(notification.id);
         }
         break;
-
-      // CHECK_IN opens app via deep link — nothing to do here
     }
   });
 }

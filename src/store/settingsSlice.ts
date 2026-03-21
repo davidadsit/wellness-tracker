@@ -1,14 +1,21 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {ReminderConfig, ReminderPeriod} from '../types';
 
 export interface SettingsState {
-  notificationsEnabled: boolean;
-  dailyCheckInTime: string;
+  reminders: {
+    morning: ReminderConfig;
+    midday: ReminderConfig;
+    evening: ReminderConfig;
+  };
   theme: 'light' | 'dark' | 'system';
 }
 
 const initialState: SettingsState = {
-  notificationsEnabled: true,
-  dailyCheckInTime: '09:00',
+  reminders: {
+    morning: {enabled: false, time: '09:00'},
+    midday: {enabled: true, time: '13:00'},
+    evening: {enabled: false, time: '19:00'},
+  },
   theme: 'system',
 };
 
@@ -16,11 +23,17 @@ const settingsSlice = createSlice({
   name: 'settings',
   initialState,
   reducers: {
-    setNotificationsEnabled(state, action: PayloadAction<boolean>) {
-      state.notificationsEnabled = action.payload;
+    setReminderEnabled(
+      state,
+      action: PayloadAction<{period: ReminderPeriod; enabled: boolean}>,
+    ) {
+      state.reminders[action.payload.period].enabled = action.payload.enabled;
     },
-    setDailyCheckInTime(state, action: PayloadAction<string>) {
-      state.dailyCheckInTime = action.payload;
+    setReminderTime(
+      state,
+      action: PayloadAction<{period: ReminderPeriod; time: string}>,
+    ) {
+      state.reminders[action.payload.period].time = action.payload.time;
     },
     setTheme(state, action: PayloadAction<'light' | 'dark' | 'system'>) {
       state.theme = action.payload;
@@ -28,6 +41,6 @@ const settingsSlice = createSlice({
   },
 });
 
-export const {setNotificationsEnabled, setDailyCheckInTime, setTheme} =
+export const {setReminderEnabled, setReminderTime, setTheme} =
   settingsSlice.actions;
 export default settingsSlice.reducer;

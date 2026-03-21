@@ -1,6 +1,10 @@
-import notifee, {TriggerType, RepeatFrequency} from '@notifee/react-native';
+import notifee, {TriggerType} from '@notifee/react-native';
 import {notificationService} from '../../../../src/services/notifications/notificationService';
 import {makeHabit} from '../../../helpers/factories';
+import {setupTestDatabase} from '../../../helpers/database';
+import {notificationOutcomeRepository} from '../../../../src/services/database/notificationOutcomeRepository';
+
+setupTestDatabase();
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -19,29 +23,105 @@ describe('notificationService', () => {
     });
   });
 
-  describe('scheduleDailyCheckIn', () => {
-    it('creates a daily trigger notification', async () => {
-      await notificationService.scheduleDailyCheckIn('09:00');
+  describe('scheduleCheckInReminder', () => {
+    it('creates a one-shot trigger notification for a period', async () => {
+      await notificationService.scheduleCheckInReminder('morning', '09:00');
 
       expect(notifee.createTriggerNotification).toHaveBeenCalledWith(
         expect.objectContaining({
-          id: 'daily-check-in-reminder',
-          title: 'How are you feeling today?',
-          data: {type: 'daily-check-in'},
+          id: 'check-in-reminder-morning',
+          title: 'Good morning! How are you feeling?',
+          data: expect.objectContaining({
+            type: 'check-in-reminder',
+            reminderPeriod: 'morning',
+            scheduledTime: '09:00',
+          }),
         }),
         expect.objectContaining({
           type: TriggerType.TIMESTAMP,
-          repeatFrequency: RepeatFrequency.DAILY,
         }),
+      );
+    });
+
+    it('does not use a repeat frequency', async () => {
+      await notificationService.scheduleCheckInReminder('midday', '13:00');
+
+      const trigger = (notifee.createTriggerNotification as jest.Mock).mock
+        .calls[0][1];
+      expect(trigger.repeatFrequency).toBeUndefined();
+    });
+
+    it('includes CHECK_IN and SNOOZE_CHECK_IN actions', async () => {
+      await notificationService.scheduleCheckInReminder('evening', '19:00');
+
+      const notification = (notifee.createTriggerNotification as jest.Mock).mock
+        .calls[0][0];
+      const actions = notification.android.actions;
+      expect(actions).toHaveLength(2);
+      expect(actions[0].pressAction.id).toBe('CHECK_IN');
+      expect(actions[1].pressAction.id).toBe('SNOOZE_CHECK_IN');
+    });
+
+    it('records a sent outcome with null outcome', async () => {
+      await notificationService.scheduleCheckInReminder('morning', '09:00');
+
+      const outcomes = await notificationOutcomeRepository.getRecentByPeriod(
+        'morning',
+        1,
+      );
+      expect(outcomes).toHaveLength(1);
+      expect(outcomes[0].outcome).toBeNull();
+      expect(outcomes[0].scheduledTime).toBe('09:00');
+    });
+
+    it('includes the outcomeId in notification data', async () => {
+      await notificationService.scheduleCheckInReminder('midday', '13:00');
+
+      const notification = (notifee.createTriggerNotification as jest.Mock).mock
+        .calls[0][0];
+      expect(notification.data.outcomeId).toBeDefined();
+
+      const outcomes = await notificationOutcomeRepository.getRecentByPeriod(
+        'midday',
+        1,
+      );
+      expect(notification.data.outcomeId).toBe(outcomes[0].id);
+    });
+
+    it('uses period-specific copy for each period', async () => {
+      await notificationService.scheduleCheckInReminder('morning', '09:00');
+      await notificationService.scheduleCheckInReminder('midday', '13:00');
+      await notificationService.scheduleCheckInReminder('evening', '19:00');
+
+      const calls = (notifee.createTriggerNotification as jest.Mock).mock.calls;
+      expect(calls[0][0].title).toBe('Good morning! How are you feeling?');
+      expect(calls[1][0].title).toBe('How are you feeling today?');
+      expect(calls[2][0].title).toBe('How was your day?');
+    });
+  });
+
+  describe('cancelCheckInReminder', () => {
+    it('cancels the notification by period ID', async () => {
+      await notificationService.cancelCheckInReminder('morning');
+      expect(notifee.cancelNotification).toHaveBeenCalledWith(
+        'check-in-reminder-morning',
       );
     });
   });
 
-  describe('cancelDailyCheckIn', () => {
-    it('cancels the daily check-in notification', async () => {
-      await notificationService.cancelDailyCheckIn();
+  describe('rescheduleCheckInReminder', () => {
+    it('cancels then reschedules', async () => {
+      await notificationService.rescheduleCheckInReminder('midday', '14:00');
+
       expect(notifee.cancelNotification).toHaveBeenCalledWith(
-        'daily-check-in-reminder',
+        'check-in-reminder-midday',
+      );
+      expect(notifee.createTriggerNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'check-in-reminder-midday',
+          data: expect.objectContaining({scheduledTime: '14:00'}),
+        }),
+        expect.anything(),
       );
     });
   });
@@ -59,7 +139,6 @@ describe('notificationService', () => {
         }),
         expect.objectContaining({
           type: TriggerType.TIMESTAMP,
-          repeatFrequency: RepeatFrequency.DAILY,
         }),
       );
     });

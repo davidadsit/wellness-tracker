@@ -2,6 +2,7 @@ import {configureStore, combineReducers} from '@reduxjs/toolkit';
 import {
   persistStore,
   persistReducer,
+  createMigrate,
   FLUSH,
   REHYDRATE,
   PAUSE,
@@ -45,10 +46,21 @@ const rootReducer = combineReducers({
   habits: habitsReducer,
 });
 
+const migrations = {
+  1: () => {
+    // v0→v1: settings shape changed from {notificationsEnabled, dailyCheckInTime}
+    // to {reminders: {morning, midday, evening}}. Discard old settings so
+    // initialState is used.
+    return {settings: undefined} as any;
+  },
+};
+
 const persistConfig = {
   key: 'root',
+  version: 1,
   storage: mmkvStorage,
   whitelist: ['settings'],
+  migrate: createMigrate(migrations, {debug: false}),
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
