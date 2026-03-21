@@ -15,6 +15,7 @@ npm run lint          # ESLint (errors + warnings)
 npm run lint:fix      # ESLint with auto-fix
 npm run format        # Prettier auto-format
 npm run format:check  # Prettier check (CI-friendly)
+make prep             # Lint, format, then run unit → integration → acceptance
 make test             # Tests with maxWorkers=1
 ```
 

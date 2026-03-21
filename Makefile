@@ -1,4 +1,4 @@
-.PHONY: all ios android install pods test clean
+.PHONY: all ios android install pods test prep clean
 
 all: ios android
 
@@ -13,6 +13,13 @@ ios: pods
 
 android: install
 	npx react-native run-android
+
+prep:
+	npm run lint:fix
+	npm run format
+	npm run test:unit
+	npm run test:integration
+	npm run test:acceptance
 
 test:
 	npx jest --maxWorkers=1
