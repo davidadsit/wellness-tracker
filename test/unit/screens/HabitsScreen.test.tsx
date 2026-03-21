@@ -1,9 +1,9 @@
 import React from 'react';
 import {fireEvent} from '@testing-library/react-native';
-import {HabitsScreen} from '../../src/screens/HabitsScreen';
-import {renderWithStore} from '../helpers/renderWithStore';
+import {HabitsScreen} from '../../../src/screens/HabitsScreen';
+import {renderWithStore} from '../../helpers/renderWithStore';
 
-jest.mock('../../src/services/database/habitRepository', () => ({
+jest.mock('../../../src/services/database/habitRepository', () => ({
   habitRepository: {
     getCompletionsForDate: jest.fn().mockReturnValue([]),
   },

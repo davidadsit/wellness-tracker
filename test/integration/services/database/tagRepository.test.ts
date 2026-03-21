@@ -1,6 +1,6 @@
-import {tagRepository} from '../../../src/services/database/tagRepository';
-import {getDatabase} from '../../../src/services/database/database';
-import {setupTestDatabase} from '../../helpers/database';
+import {tagRepository} from '../../../../src/services/database/tagRepository';
+import {getDatabase} from '../../../../src/services/database/database';
+import {setupTestDatabase} from '../../../helpers/database';
 setupTestDatabase();
 
 describe('tagRepository', () => {

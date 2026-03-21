@@ -1,12 +1,12 @@
 import React from 'react';
 import {fireEvent} from '@testing-library/react-native';
 import {Alert} from 'react-native';
-import {CheckInScreen} from '../../src/screens/CheckInScreen';
-import {makeStore, renderWithStore} from '../helpers/renderWithStore';
+import {CheckInScreen} from '../../../src/screens/CheckInScreen';
+import {makeStore, renderWithStore} from '../../helpers/renderWithStore';
 
 jest.spyOn(Alert, 'alert');
 
-jest.mock('../../src/services/database/checkInRepository', () => ({
+jest.mock('../../../src/services/database/checkInRepository', () => ({
   checkInRepository: {
     create: jest.fn().mockReturnValue({
       id: 'new-1',
@@ -19,7 +19,7 @@ jest.mock('../../src/services/database/checkInRepository', () => ({
   },
 }));
 
-jest.mock('../../src/services/database/tagRepository', () => ({
+jest.mock('../../../src/services/database/tagRepository', () => ({
   tagRepository: {
     getAllCategories: jest.fn().mockReturnValue([
       {id: 'cat-mental', name: 'Mental Health', sortOrder: 1, isDefault: true, createdAt: 0},

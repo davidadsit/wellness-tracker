@@ -4,7 +4,7 @@ import {
   calculateTagTrends,
   formatCoOccurrences,
   calculateCompletionRate,
-} from '../../src/utils/analytics';
+} from '../../../src/utils/analytics';
 import {format, subDays} from 'date-fns';
 
 function dateStr(daysAgo: number): string {

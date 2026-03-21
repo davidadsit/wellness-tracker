@@ -37,7 +37,15 @@
       "Bash(mdfind -name javac)",
       "Read(//Applications/**)",
       "Bash(echo:*)",
-      "Bash(./gradlew app:installDebug --stacktrace)"
+      "Bash(./gradlew app:installDebug --stacktrace)",
+      "WebFetch(domain:codeobsession.blogspot.com)",
+      "WebFetch(domain:www.nimblework.com)",
+      "WebFetch(domain:webcache.googleusercontent.com)",
+      "WebFetch(domain:web.archive.org)",
+      "WebFetch(domain:archive.org)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebFetch(domain:www.agilealliance.org)",
+      "WebFetch(domain:www.browserstack.com)"
     ]
   }
 }

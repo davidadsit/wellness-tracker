@@ -3,7 +3,7 @@ import settingsReducer, {
   setDailyCheckInTime,
   setTheme,
   SettingsState,
-} from '../../src/store/settingsSlice';
+} from '../../../src/store/settingsSlice';
 
 const initialState: SettingsState = {
   notificationsEnabled: true,

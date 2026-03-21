@@ -1,5 +1,5 @@
-import {checkInRepository} from '../../../src/services/database/checkInRepository';
-import {setupTestDatabase} from '../../helpers/database';
+import {checkInRepository} from '../../../../src/services/database/checkInRepository';
+import {setupTestDatabase} from '../../../helpers/database';
 setupTestDatabase();
 
 function rangeAroundNow() {

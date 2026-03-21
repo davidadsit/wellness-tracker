@@ -1,6 +1,6 @@
 import React from 'react';
 import {render, fireEvent} from '@testing-library/react-native';
-import {AddTagInline} from '../../../src/components/checkin/AddTagInline';
+import {AddTagInline} from '../../../../src/components/checkin/AddTagInline';
 
 describe('AddTagInline', () => {
   it('shows add button initially', () => {

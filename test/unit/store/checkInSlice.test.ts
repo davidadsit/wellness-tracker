@@ -4,7 +4,7 @@ import checkInReducer, {
   submitCheckIn,
   removeCheckIn,
   CheckInState,
-} from '../../src/store/checkInSlice';
+} from '../../../src/store/checkInSlice';
 
 const initialState: CheckInState = {
   todayCheckIns: [],

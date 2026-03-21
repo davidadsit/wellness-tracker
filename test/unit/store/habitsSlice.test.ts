@@ -6,9 +6,9 @@ import habitsReducer, {
   fetchTodayCompletions,
   completeHabit,
   HabitsState,
-} from '../../src/store/habitsSlice';
-import {HabitCompletion} from '../../src/types';
-import {makeHabit} from '../helpers/factories';
+} from '../../../src/store/habitsSlice';
+import {HabitCompletion} from '../../../src/types';
+import {makeHabit} from '../../helpers/factories';
 
 const initialState: HabitsState = {
   habits: [],

@@ -1,22 +1,22 @@
 import React from 'react';
-import {HomeScreen} from '../../src/screens/HomeScreen';
-import {renderWithStore} from '../helpers/renderWithStore';
+import {HomeScreen} from '../../../src/screens/HomeScreen';
+import {renderWithStore} from '../../helpers/renderWithStore';
 
-jest.mock('../../src/services/database/tagRepository', () => ({
+jest.mock('../../../src/services/database/tagRepository', () => ({
   tagRepository: {
     getAllCategories: jest.fn().mockReturnValue([]),
     getAllTags: jest.fn().mockReturnValue([]),
   },
 }));
 
-jest.mock('../../src/services/database/checkInRepository', () => ({
+jest.mock('../../../src/services/database/checkInRepository', () => ({
   checkInRepository: {
     getToday: jest.fn().mockReturnValue([]),
     getRecent: jest.fn().mockReturnValue([]),
   },
 }));
 
-jest.mock('../../src/services/database/habitRepository', () => ({
+jest.mock('../../../src/services/database/habitRepository', () => ({
   habitRepository: {
     getCompletionsForDate: jest.fn().mockReturnValue([]),
   },

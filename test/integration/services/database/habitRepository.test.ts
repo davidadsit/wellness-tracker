@@ -1,5 +1,5 @@
-import {habitRepository} from '../../../src/services/database/habitRepository';
-import {setupTestDatabase} from '../../helpers/database';
+import {habitRepository} from '../../../../src/services/database/habitRepository';
+import {setupTestDatabase} from '../../../helpers/database';
 setupTestDatabase();
 
 describe('habitRepository', () => {

@@ -8,7 +8,7 @@ import {
   formatDisplayDate,
   formatDisplayTime,
   getDateRange,
-} from '../../src/utils/dateUtils';
+} from '../../../src/utils/dateUtils';
 import {startOfDay, endOfDay, format} from 'date-fns';
 
 describe('dateUtils', () => {
