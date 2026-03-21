@@ -45,7 +45,11 @@
       "WebFetch(domain:archive.org)",
       "WebFetch(domain:en.wikipedia.org)",
       "WebFetch(domain:www.agilealliance.org)",
-      "WebFetch(domain:www.browserstack.com)"
+      "WebFetch(domain:www.browserstack.com)",
+      "Bash(npx eslint:*)",
+      "Bash(npx prettier:*)",
+      "Skill(update-config)",
+      "Bash(jq:*)"
     ]
   }
 }

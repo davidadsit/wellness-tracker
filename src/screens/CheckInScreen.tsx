@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, {useRef, useState, useCallback} from 'react';
 import {
   ScrollView,
   Text,
@@ -7,16 +7,16 @@ import {
   Alert,
   StyleSheet,
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import { useCheckIn } from '../hooks/useCheckIn';
-import { useTags } from '../hooks/useTags';
-import { useTagSelection } from '../hooks/useTagSelection';
-import { TagCategorySection } from '../components/checkin/TagCategorySection';
-import { colors, commonStyles } from '../theme';
+import {useFocusEffect} from '@react-navigation/native';
+import {useCheckIn} from '../hooks/useCheckIn';
+import {useTags} from '../hooks/useTags';
+import {useTagSelection} from '../hooks/useTagSelection';
+import {TagCategorySection} from '../components/checkin/TagCategorySection';
+import {colors, commonStyles} from '../theme';
 
 export function CheckInScreen() {
-  const { submit } = useCheckIn();
-  const { categories, tagsByCategory, loadTags, visibleCategories, addTag } = useTags();
+  const {submit} = useCheckIn();
+  const {tagsByCategory, loadTags, visibleCategories, addTag} = useTags();
   const scrollRef = useRef<ScrollView>(null);
   const {selectedTagIds, toggleTag, resetSelection} = useTagSelection();
   const [note, setNote] = useState('');
@@ -24,7 +24,7 @@ export function CheckInScreen() {
   useFocusEffect(
     useCallback(() => {
       loadTags();
-      scrollRef.current?.scrollTo({ y: 0, animated: false });
+      scrollRef.current?.scrollTo({y: 0, animated: false});
       return () => {
         resetSelection();
         setNote('');
@@ -37,17 +37,23 @@ export function CheckInScreen() {
       const newTag = await addTag(categoryId, label);
       toggleTag(newTag.id);
     } catch {
-      Alert.alert('Error', 'A tag with that name already exists in this category.');
+      Alert.alert(
+        'Error',
+        'A tag with that name already exists in this category.',
+      );
     }
   };
 
   const handleSubmit = async () => {
     if (selectedTagIds.length === 0) {
-      Alert.alert('Select Tags', 'Please select at least one tag for your check-in.');
+      Alert.alert(
+        'Select Tags',
+        'Please select at least one tag for your check-in.',
+      );
       return;
     }
 
-    await submit({ tagIds: selectedTagIds, note: note.trim() || undefined });
+    await submit({tagIds: selectedTagIds, note: note.trim() || undefined});
     resetSelection();
     setNote('');
     Alert.alert('Saved', 'Check-in recorded!');
@@ -56,7 +62,10 @@ export function CheckInScreen() {
   const visible = visibleCategories(selectedTagIds);
 
   return (
-    <ScrollView ref={scrollRef} style={styles.container} testID="checkin-screen">
+    <ScrollView
+      ref={scrollRef}
+      style={styles.container}
+      testID="checkin-screen">
       <Text style={styles.title}>How are you feeling?</Text>
       <Text style={styles.subtitle}>Select all that apply</Text>
 
@@ -85,7 +94,7 @@ export function CheckInScreen() {
       <Text style={styles.noteLabel}>Note (optional)</Text>
       <TextInput
         testID="checkin-note"
-        style={[styles.noteInput, { height: 60 }]}
+        style={[styles.noteInput, {height: 60}]}
         value={note}
         onChangeText={setNote}
         placeholder="Anything else you want to capture..."
@@ -99,14 +108,20 @@ export function CheckInScreen() {
 
 const styles = StyleSheet.create({
   container: commonStyles.screenContainerPadded,
-  title: { fontSize: 24, fontWeight: '700', color: colors.text, marginBottom: 4 },
-  subtitle: { fontSize: 14, color: colors.textSecondary, marginBottom: 20 },
-  noteLabel: { fontSize: 16, fontWeight: '600', color: colors.text, marginTop: 4, marginBottom: 8 },
+  title: {fontSize: 24, fontWeight: '700', color: colors.text, marginBottom: 4},
+  subtitle: {fontSize: 14, color: colors.textSecondary, marginBottom: 20},
+  noteLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    marginTop: 4,
+    marginBottom: 8,
+  },
   noteInput: {
     ...commonStyles.textInput,
     padding: 12,
     textAlignVertical: 'top',
-    marginBottom: 16
+    marginBottom: 16,
   },
   submitButton: {
     ...commonStyles.primaryButton,

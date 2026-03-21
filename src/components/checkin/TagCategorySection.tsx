@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Tag } from '../../types';
-import { TagChip } from './TagChip';
-import { AddTagInline } from './AddTagInline';
-import { colors } from '../../theme';
+import {View, Text, StyleSheet} from 'react-native';
+import {Tag} from '../../types';
+import {TagChip} from './TagChip';
+import {AddTagInline} from './AddTagInline';
+import {colors} from '../../theme';
 
 interface TagCategorySectionProps {
   categoryName: string;
@@ -36,10 +36,7 @@ export function TagCategorySection({
           />
         ))}
         {onAddTag && (
-          <AddTagInline
-            testID={`add-tag-${testID}`}
-            onAdd={onAddTag}
-          />
+          <AddTagInline testID={`add-tag-${testID}`} onAdd={onAddTag} />
         )}
       </View>
     </View>

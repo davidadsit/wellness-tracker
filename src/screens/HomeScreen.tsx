@@ -1,5 +1,11 @@
 import React, {useCallback} from 'react';
-import {View, Text, ScrollView, TouchableOpacity, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useCheckIn} from '../hooks/useCheckIn';
 import {useHabits} from '../hooks/useHabits';
@@ -11,7 +17,8 @@ import {colors, commonStyles} from '../theme';
 export function HomeScreen() {
   const navigation = useNavigation<any>();
   const {todayCheckIns, hasCheckedInToday, loadToday} = useCheckIn();
-  const {activeHabits, todayCompletions, loadHabits, loadTodayCompletions} = useHabits();
+  const {activeHabits, todayCompletions, loadHabits, loadTodayCompletions} =
+    useHabits();
   const {tagLabels, loadTags} = useTags();
 
   useFocusEffect(
@@ -72,10 +79,13 @@ export function HomeScreen() {
             <TouchableOpacity
               key={habit.id}
               style={styles.habitRow}
-              onPress={() => navigation.navigate('Habits', {screen: 'HabitDetail', params: {habitId: habit.id}})}>
-              <View
-                style={[styles.habitDot, {backgroundColor: habit.color}]}
-              />
+              onPress={() =>
+                navigation.navigate('Habits', {
+                  screen: 'HabitDetail',
+                  params: {habitId: habit.id},
+                })
+              }>
+              <View style={[styles.habitDot, {backgroundColor: habit.color}]} />
               <Text style={styles.habitName}>{habit.name}</Text>
               <Text style={styles.habitStatus}>
                 {isComplete
@@ -96,13 +106,30 @@ const styles = StyleSheet.create({
   ctaText: {fontSize: 15, color: colors.textNote, marginBottom: 12},
   ctaButton: commonStyles.primaryButton,
   ctaButtonText: commonStyles.primaryButtonText,
-  sectionTitle: {fontSize: 18, fontWeight: '600', color: colors.text, marginBottom: 8},
-  checkInRow: {paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.divider},
-  note: {fontSize: 13, color: colors.textNote, marginTop: 4, fontStyle: 'italic'},
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 8,
+  },
+  checkInRow: {
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.divider,
+  },
+  note: {
+    fontSize: 13,
+    color: colors.textNote,
+    marginTop: 4,
+    fontStyle: 'italic',
+  },
   habitSummary: {fontSize: 14, color: colors.textSecondary, marginBottom: 8},
   habitRow: {
-    flexDirection: 'row', alignItems: 'center', paddingVertical: 10,
-    borderBottomWidth: 1, borderBottomColor: colors.divider,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.divider,
   },
   habitDot: {width: 10, height: 10, borderRadius: 5, marginRight: 10},
   habitName: {flex: 1, fontSize: 15, color: colors.text},

@@ -4,7 +4,9 @@ import {AddTagInline} from '../../../../src/components/checkin/AddTagInline';
 
 describe('AddTagInline', () => {
   it('shows add button initially', () => {
-    const {getByText} = render(<AddTagInline onAdd={jest.fn()} testID="add-tag" />);
+    const {getByText} = render(
+      <AddTagInline onAdd={jest.fn()} testID="add-tag" />,
+    );
     expect(getByText('+')).toBeTruthy();
   });
 

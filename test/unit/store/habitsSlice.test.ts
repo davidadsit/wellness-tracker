@@ -70,7 +70,14 @@ describe('habitsSlice', () => {
 
     it('stores completions on fulfilled', () => {
       const completions: HabitCompletion[] = [
-        {id: 'c1', habitId: 'h1', date: '2024-01-15', count: 3, completedAt: 100, source: 'manual'},
+        {
+          id: 'c1',
+          habitId: 'h1',
+          date: '2024-01-15',
+          count: 3,
+          completedAt: 100,
+          source: 'manual',
+        },
       ];
       const state = habitsReducer(
         {...initialState, loading: true},

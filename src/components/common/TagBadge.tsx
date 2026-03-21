@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { colors } from '../../theme';
+import {View, Text, StyleSheet} from 'react-native';
+import {colors} from '../../theme';
 
 interface TagBadgeProps {
   label: string;
   size?: 'small' | 'medium';
 }
 
-export function TagBadge({ label, size = 'small' }: TagBadgeProps) {
+export function TagBadge({label, size = 'small'}: TagBadgeProps) {
   return (
     <View style={[styles.badge, size === 'medium' && styles.badgeMedium]}>
       <Text style={[styles.text, size === 'medium' && styles.textMedium]}>

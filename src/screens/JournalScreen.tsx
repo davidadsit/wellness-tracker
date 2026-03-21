@@ -36,7 +36,13 @@ export function JournalScreen() {
   const renderItem = useCallback(
     ({item}: {item: JournalEntry}) => {
       if (item.type === 'checkin') {
-        return <CheckInHistoryItem checkIn={item.data} tagLabels={allTagLabels} compact />;
+        return (
+          <CheckInHistoryItem
+            checkIn={item.data}
+            tagLabels={allTagLabels}
+            compact
+          />
+        );
       }
       const habit = habits.find(h => h.id === item.data.habitId);
       return <HabitCompletionItem completion={item.data} habit={habit} />;
@@ -67,11 +73,7 @@ export function JournalScreen() {
       <TouchableOpacity
         style={styles.analyticsButton}
         onPress={() => navigation.navigate('Home', {screen: 'Analytics'})}>
-        <Ionicons
-          name="bar-chart-outline"
-          size={18}
-          color={colors.primary}
-        />
+        <Ionicons name="bar-chart-outline" size={18} color={colors.primary} />
         <Text style={styles.analyticsButtonText}>View Analytics</Text>
       </TouchableOpacity>
     </View>

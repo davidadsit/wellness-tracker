@@ -10,21 +10,15 @@ interface TagWordCloudProps {
   onTagPress?: (tagId: string, color: string) => void;
 }
 
-const BLUE_SHADES = [
-  '#1A5276',
-  '#2874A6',
-  '#4A90D9',
-  '#6AAFE6',
-  '#85C1E9',
-];
+const BLUE_SHADES = ['#1A5276', '#2874A6', '#4A90D9', '#6AAFE6', '#85C1E9'];
 
-const GREEN_SHADES = [
-  '#1E8449',
-  '#27AE60',
-  '#58D68D',
-];
+const GREEN_SHADES = ['#1E8449', '#27AE60', '#58D68D'];
 
-export function TagWordCloud({data, symptomTagIds, onTagPress}: TagWordCloudProps) {
+export function TagWordCloud({
+  data,
+  symptomTagIds,
+  onTagPress,
+}: TagWordCloudProps) {
   const [width, setWidth] = useState(0);
 
   if (data.length === 0) {
@@ -83,5 +77,10 @@ export function TagWordCloud({data, symptomTagIds, onTagPress}: TagWordCloudProp
 
 const styles = StyleSheet.create({
   container: {marginVertical: 8},
-  title: {fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 12},
+  title: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 12,
+  },
 });

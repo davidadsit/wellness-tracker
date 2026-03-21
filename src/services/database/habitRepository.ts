@@ -79,7 +79,13 @@ export const habitRepository = {
     habitIds: string[],
     startDate: string,
     endDate: string,
-  ): Promise<Array<{habitId: string; totalCompletions: number; daysWithCompletions: number}>> {
+  ): Promise<
+    Array<{
+      habitId: string;
+      totalCompletions: number;
+      daysWithCompletions: number;
+    }>
+  > {
     const db = getDatabase();
     if (habitIds.length === 0) {
       return [];

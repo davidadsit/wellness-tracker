@@ -83,7 +83,9 @@ export function calculateTagTrends(
   tagLabels: Record<string, string>,
 ): TagTrend[] {
   const currentMap = new Map(currentPeriodCounts.map(t => [t.tagId, t.count]));
-  const previousMap = new Map(previousPeriodCounts.map(t => [t.tagId, t.count]));
+  const previousMap = new Map(
+    previousPeriodCounts.map(t => [t.tagId, t.count]),
+  );
 
   const allTagIds = new Set([...currentMap.keys(), ...previousMap.keys()]);
 

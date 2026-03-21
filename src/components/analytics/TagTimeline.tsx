@@ -12,7 +12,12 @@ interface TagTimelineProps {
 
 const Y_AXIS_WIDTH = 30;
 
-export function TagTimeline({tagLabel, data, color = colors.primary, maxFrequency}: TagTimelineProps) {
+export function TagTimeline({
+  tagLabel,
+  data,
+  color = colors.primary,
+  maxFrequency,
+}: TagTimelineProps) {
   const [containerWidth, setContainerWidth] = useState(0);
 
   if (data.length === 0) {
@@ -30,9 +35,8 @@ export function TagTimeline({tagLabel, data, color = colors.primary, maxFrequenc
   const adjustedMax = stepValue * noOfSections;
 
   const chartWidth = containerWidth > 0 ? containerWidth - Y_AXIS_WIDTH : 0;
-  const spacing = data.length > 1 && chartWidth > 0
-    ? chartWidth / (data.length - 1)
-    : 24;
+  const spacing =
+    data.length > 1 && chartWidth > 0 ? chartWidth / (data.length - 1) : 24;
 
   const onLayout = (e: LayoutChangeEvent) => {
     setContainerWidth(e.nativeEvent.layout.width);
@@ -52,7 +56,7 @@ export function TagTimeline({tagLabel, data, color = colors.primary, maxFrequenc
           startFillColor={color}
           startOpacity={0.2}
           endOpacity={0.05}
-          yAxisOffset={-.5}
+          yAxisOffset={-0.5}
           maxValue={adjustedMax}
           noOfSections={noOfSections}
           stepValue={stepValue}
@@ -77,6 +81,11 @@ export function TagTimeline({tagLabel, data, color = colors.primary, maxFrequenc
 
 const styles = StyleSheet.create({
   container: {marginVertical: 8},
-  title: {fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 12},
+  title: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 12,
+  },
   axisText: {fontSize: 10, color: colors.textSecondary},
 });

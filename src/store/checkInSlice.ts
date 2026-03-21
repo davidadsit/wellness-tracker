@@ -34,7 +34,11 @@ export const fetchRecentCheckIns = createAsyncThunk(
 
 export const submitCheckIn = createAsyncThunk(
   'checkIn/submit',
-  async (params: {tagIds: string[]; note?: string; source?: 'manual' | 'notification'}) => {
+  async (params: {
+    tagIds: string[];
+    note?: string;
+    source?: 'manual' | 'notification';
+  }) => {
     return checkInRepository.create(params);
   },
 );

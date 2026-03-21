@@ -3,10 +3,7 @@ import {View, Text, Switch, TouchableOpacity, StyleSheet} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {RootState, AppDispatch} from '../store';
-import {
-  setNotificationsEnabled,
-  setDailyCheckInTime,
-} from '../store/settingsSlice';
+import {setNotificationsEnabled} from '../store/settingsSlice';
 import {notificationService} from '../services/notifications/notificationService';
 import {Card} from '../components/common/Card';
 import {colors, commonStyles} from '../theme';
@@ -62,9 +59,12 @@ const styles = StyleSheet.create({
   container: commonStyles.screenContainer,
   title: commonStyles.screenTitle,
   row: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'center', paddingVertical: 12,
-    borderBottomWidth: 1, borderBottomColor: colors.divider,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.divider,
   },
   label: {fontSize: 15, color: colors.text},
   value: {fontSize: 15, color: colors.textSecondary},

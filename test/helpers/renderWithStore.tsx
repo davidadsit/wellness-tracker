@@ -19,7 +19,10 @@ export function makeStore(preloadedState: any = {}) {
   });
 }
 
-export function renderWithStore(ui: React.ReactElement, preloadedState: any = {}) {
+export function renderWithStore(
+  ui: React.ReactElement,
+  preloadedState: any = {},
+) {
   const store = makeStore(preloadedState);
   return {...render(<Provider store={store}>{ui}</Provider>), store};
 }

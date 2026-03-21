@@ -15,7 +15,9 @@ const initialState: CheckInState = {
 describe('checkInSlice', () => {
   describe('reducers', () => {
     it('returns the initial state', () => {
-      expect(checkInReducer(undefined, {type: 'unknown'})).toEqual(initialState);
+      expect(checkInReducer(undefined, {type: 'unknown'})).toEqual(
+        initialState,
+      );
     });
   });
 
@@ -86,7 +88,10 @@ describe('checkInSlice', () => {
 
       const state = checkInReducer(
         stateWithExisting,
-        submitCheckIn.fulfilled(newCheckIn, '', {tagIds: ['t2', 't3'], note: 'test'}),
+        submitCheckIn.fulfilled(newCheckIn, '', {
+          tagIds: ['t2', 't3'],
+          note: 'test',
+        }),
       );
 
       expect(state.todayCheckIns[0].id).toBe('new');

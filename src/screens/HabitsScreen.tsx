@@ -12,8 +12,13 @@ type Nav = NativeStackNavigationProp<HabitsStackParamList>;
 
 export function HabitsScreen() {
   const navigation = useNavigation<Nav>();
-  const {activeHabits, loadHabits, loadTodayCompletions, complete, getCompletionForHabit} =
-    useHabits();
+  const {
+    activeHabits,
+    loadHabits,
+    loadTodayCompletions,
+    complete,
+    getCompletionForHabit,
+  } = useHabits();
 
   useFocusEffect(
     useCallback(() => {
@@ -49,7 +54,9 @@ export function HabitsScreen() {
             habit={item}
             completion={getCompletionForHabit(item.id)}
             onComplete={() => complete(item.id)}
-            onPress={() => navigation.navigate('HabitDetail', {habitId: item.id})}
+            onPress={() =>
+              navigation.navigate('HabitDetail', {habitId: item.id})
+            }
           />
         )}
         contentContainerStyle={styles.list}
@@ -68,11 +75,20 @@ const styles = StyleSheet.create({
   container: commonStyles.screenContainer,
   list: {paddingVertical: 8},
   fab: {
-    position: 'absolute', bottom: 24, right: 24,
-    width: 56, height: 56, borderRadius: 28,
-    backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center',
-    shadowColor: '#000', shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.2, shadowRadius: 5, elevation: 5,
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
   },
   fabText: {color: '#fff', fontSize: 28, fontWeight: '300'},
 });

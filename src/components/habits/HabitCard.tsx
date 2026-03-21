@@ -9,7 +9,12 @@ interface HabitCardProps {
   onPress: () => void;
 }
 
-export function HabitCard({habit, completion, onComplete, onPress}: HabitCardProps) {
+export function HabitCard({
+  habit,
+  completion,
+  onComplete,
+  onPress,
+}: HabitCardProps) {
   const progress = completion ? completion.count : 0;
   const isComplete = progress >= habit.targetCount;
 
@@ -29,7 +34,8 @@ export function HabitCard({habit, completion, onComplete, onPress}: HabitCardPro
         onPress={onComplete}
         testID={`complete-${habit.id}`}
         disabled={isComplete}>
-        <Text style={[styles.completeText, isComplete && styles.completeTextDone]}>
+        <Text
+          style={[styles.completeText, isComplete && styles.completeTextDone]}>
           {isComplete ? 'Done' : '+1'}
         </Text>
       </TouchableOpacity>

@@ -65,9 +65,12 @@ describe('notificationService', () => {
     });
 
     it('includes COMPLETE_HABIT and SNOOZE_HABIT actions', async () => {
-      await notificationService.scheduleHabitReminder(makeHabit({reminderTime: '09:00'}));
+      await notificationService.scheduleHabitReminder(
+        makeHabit({reminderTime: '09:00'}),
+      );
 
-      const call = (notifee.createTriggerNotification as jest.Mock).mock.calls[0];
+      const call = (notifee.createTriggerNotification as jest.Mock).mock
+        .calls[0];
       const actions = call[0].android.actions;
       expect(actions).toHaveLength(2);
       expect(actions[0].pressAction.id).toBe('COMPLETE_HABIT');
@@ -96,7 +99,9 @@ describe('notificationService', () => {
       const habit = makeHabit({reminderTime: '09:00'});
       await notificationService.rescheduleHabitReminder(habit);
 
-      expect(notifee.cancelNotification).toHaveBeenCalledWith('habit-reminder-h1');
+      expect(notifee.cancelNotification).toHaveBeenCalledWith(
+        'habit-reminder-h1',
+      );
       expect(notifee.createTriggerNotification).toHaveBeenCalled();
     });
   });

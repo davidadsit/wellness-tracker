@@ -83,7 +83,10 @@ describe('checkInRepository', () => {
       const distantPastStart = 0;
       const distantPastEnd = 1;
 
-      const results = await checkInRepository.getByDateRange(distantPastStart, distantPastEnd);
+      const results = await checkInRepository.getByDateRange(
+        distantPastStart,
+        distantPastEnd,
+      );
       expect(results).toHaveLength(0);
     });
 
@@ -94,7 +97,9 @@ describe('checkInRepository', () => {
       const {start, end} = rangeAroundNow();
       const results = await checkInRepository.getByDateRange(start, end);
       if (results.length >= 2) {
-        expect(results[0].timestamp).toBeGreaterThanOrEqual(results[1].timestamp);
+        expect(results[0].timestamp).toBeGreaterThanOrEqual(
+          results[1].timestamp,
+        );
       }
     });
   });
@@ -155,7 +160,9 @@ describe('checkInRepository', () => {
 
   describe('getTagCoOccurrence', () => {
     it('returns tags that co-occur with the given tag', async () => {
-      await checkInRepository.create({tagIds: ['tag-happy', 'tag-energized', 'tag-focused']});
+      await checkInRepository.create({
+        tagIds: ['tag-happy', 'tag-energized', 'tag-focused'],
+      });
       await checkInRepository.create({tagIds: ['tag-happy', 'tag-energized']});
       await checkInRepository.create({tagIds: ['tag-sad']});
 
@@ -205,7 +212,11 @@ describe('checkInRepository', () => {
       await checkInRepository.create({tagIds: ['tag-happy']});
 
       const {start, end} = rangeAroundNow();
-      const freq = await checkInRepository.getTagDailyFrequency('tag-happy', start, end);
+      const freq = await checkInRepository.getTagDailyFrequency(
+        'tag-happy',
+        start,
+        end,
+      );
 
       expect(freq).toHaveLength(1);
       expect(freq[0].count).toBe(2);
@@ -216,7 +227,11 @@ describe('checkInRepository', () => {
       await checkInRepository.create({tagIds: ['tag-happy']});
 
       const {start, end} = rangeAroundNow();
-      const freq = await checkInRepository.getTagDailyFrequency('tag-happy', start, end);
+      const freq = await checkInRepository.getTagDailyFrequency(
+        'tag-happy',
+        start,
+        end,
+      );
       expect(freq.length).toBeGreaterThan(0);
       for (let i = 1; i < freq.length; i++) {
         expect(freq[i].date >= freq[i - 1].date).toBe(true);
@@ -224,7 +239,11 @@ describe('checkInRepository', () => {
     });
 
     it('returns empty array when tag has no check-ins in range', async () => {
-      const freq = await checkInRepository.getTagDailyFrequency('tag-happy', 0, 1);
+      const freq = await checkInRepository.getTagDailyFrequency(
+        'tag-happy',
+        0,
+        1,
+      );
       expect(freq).toEqual([]);
     });
   });

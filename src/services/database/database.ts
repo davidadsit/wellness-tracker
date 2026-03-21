@@ -108,7 +108,7 @@ async function initSchema(database: DB): Promise<void> {
 
 async function seedDefaultData(database: DB): Promise<void> {
   const result = await database.execute(
-    "SELECT COUNT(*) as count FROM tag_categories WHERE is_default = 1",
+    'SELECT COUNT(*) as count FROM tag_categories WHERE is_default = 1',
   );
   const count = result.rows[0]?.count ?? 0;
   if (count > 0) {
@@ -120,7 +120,13 @@ async function seedDefaultData(database: DB): Promise<void> {
   for (const category of DEFAULT_CATEGORIES) {
     await database.execute(
       'INSERT INTO tag_categories (id, name, sort_order, is_default, trigger_tag_id, created_at) VALUES (?, ?, ?, 1, ?, ?)',
-      [category.id, category.name, category.sortOrder, category.triggerTagId ?? null, now],
+      [
+        category.id,
+        category.name,
+        category.sortOrder,
+        category.triggerTagId ?? null,
+        now,
+      ],
     );
 
     for (const tag of category.tags) {

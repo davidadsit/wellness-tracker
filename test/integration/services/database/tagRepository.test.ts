@@ -45,7 +45,8 @@ describe('tagRepository', () => {
       const allTags = await tagRepository.getAllTags();
       expect(allTags.find(t => t.id === tag.id)).toBeUndefined();
 
-      const allIncludingArchived = await tagRepository.getAllTagsIncludingArchived();
+      const allIncludingArchived =
+        await tagRepository.getAllTagsIncludingArchived();
       const archived = allIncludingArchived.find(t => t.id === tag.id);
       expect(archived).toBeDefined();
       expect(archived?.isArchived).toBe(true);
@@ -74,7 +75,9 @@ describe('tagRepository', () => {
     });
 
     it('returns undefined for unknown id', async () => {
-      expect(await tagRepository.getCategoryById('nonexistent')).toBeUndefined();
+      expect(
+        await tagRepository.getCategoryById('nonexistent'),
+      ).toBeUndefined();
     });
   });
 

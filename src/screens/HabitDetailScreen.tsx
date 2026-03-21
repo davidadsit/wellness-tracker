@@ -1,6 +1,18 @@
 import React, {useState, useCallback} from 'react';
-import {View, Text, ScrollView, TouchableOpacity, Alert, StyleSheet} from 'react-native';
-import {useFocusEffect, useNavigation, useRoute, RouteProp} from '@react-navigation/native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  StyleSheet,
+} from 'react-native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+  RouteProp,
+} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useHabits} from '../hooks/useHabits';
 import {habitRepository} from '../services/database/habitRepository';
@@ -41,17 +53,21 @@ export function HabitDetailScreen() {
   }
 
   const handleDelete = () => {
-    Alert.alert('Delete Habit', `Are you sure you want to delete "${habit.name}"?`, [
-      {text: 'Cancel', style: 'cancel'},
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => {
-          remove(habit.id);
-          navigation.goBack();
+    Alert.alert(
+      'Delete Habit',
+      `Are you sure you want to delete "${habit.name}"?`,
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            remove(habit.id);
+            navigation.goBack();
+          },
         },
-      },
-    ]);
+      ],
+    );
   };
 
   return (
@@ -73,7 +89,9 @@ export function HabitDetailScreen() {
           <Text style={styles.emptyText}>No completions yet</Text>
         ) : (
           completionDates.slice(0, 14).map(date => (
-            <Text key={date} style={styles.dateItem}>{date}</Text>
+            <Text key={date} style={styles.dateItem}>
+              {date}
+            </Text>
           ))
         )}
       </Card>
@@ -100,16 +118,31 @@ const styles = StyleSheet.create({
   sectionTitle: commonStyles.sectionTitle,
   emptyText: {fontSize: 14, color: colors.textSecondary},
   dateItem: {fontSize: 14, color: colors.textSubtle, paddingVertical: 4},
-  notFound: {fontSize: 16, color: colors.textSecondary, textAlign: 'center', marginTop: 40},
-  actions: {flexDirection: 'row', justifyContent: 'center', marginTop: 16, marginBottom: 40},
+  notFound: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginTop: 40,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 16,
+    marginBottom: 40,
+  },
   editButton: {
-    paddingHorizontal: 24, paddingVertical: 12,
-    backgroundColor: colors.primary, borderRadius: 8, marginRight: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    marginRight: 12,
   },
   editButtonText: {color: '#fff', fontWeight: '600', fontSize: 15},
   deleteButton: {
-    paddingHorizontal: 24, paddingVertical: 12,
-    backgroundColor: colors.danger, borderRadius: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: colors.danger,
+    borderRadius: 8,
   },
   deleteButtonText: {color: '#fff', fontWeight: '600', fontSize: 15},
 });

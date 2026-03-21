@@ -14,11 +14,21 @@ import {Card} from '../components/common/Card';
 import {colors, commonStyles} from '../theme';
 
 export function TagManagementScreen() {
-  const {categories, tagsByCategory, loadTags, addTag, addCategory, editTag, removeTag} = useTags();
+  const {
+    categories,
+    tagsByCategory,
+    loadTags,
+    addTag,
+    addCategory,
+    editTag,
+    removeTag,
+  } = useTags();
   const [newCategoryName, setNewCategoryName] = useState('');
   const [editingTagId, setEditingTagId] = useState<string | null>(null);
   const [editingLabel, setEditingLabel] = useState('');
-  const [addingToCategoryId, setAddingToCategoryId] = useState<string | null>(null);
+  const [addingToCategoryId, setAddingToCategoryId] = useState<string | null>(
+    null,
+  );
   const [newTagLabel, setNewTagLabel] = useState('');
 
   useFocusEffect(
@@ -62,7 +72,10 @@ export function TagManagementScreen() {
       setNewTagLabel('');
       loadTags();
     } catch {
-      Alert.alert('Error', 'A tag with that name already exists in this category.');
+      Alert.alert(
+        'Error',
+        'A tag with that name already exists in this category.',
+      );
     }
   };
 
@@ -161,7 +174,10 @@ export function TagManagementScreen() {
                       </TouchableOpacity>
                       <TouchableOpacity
                         testID={`delete-tag-${tag.id}`}
-                        onPress={() => { handleCancelEdit(); handleRemoveTag(tag.id); }}
+                        onPress={() => {
+                          handleCancelEdit();
+                          handleRemoveTag(tag.id);
+                        }}
                         style={styles.editAction}>
                         <Text style={styles.deleteText}>Delete</Text>
                       </TouchableOpacity>
@@ -175,8 +191,14 @@ export function TagManagementScreen() {
                       styles.tagBadge,
                       tag.isDefault && styles.tagBadgeDefault,
                     ]}
-                    onPress={!tag.isDefault ? () => handleStartEdit(tag.id, tag.label) : undefined}
-                    onLongPress={!tag.isDefault ? () => handleRemoveTag(tag.id) : undefined}
+                    onPress={
+                      !tag.isDefault
+                        ? () => handleStartEdit(tag.id, tag.label)
+                        : undefined
+                    }
+                    onLongPress={
+                      !tag.isDefault ? () => handleRemoveTag(tag.id) : undefined
+                    }
                     activeOpacity={tag.isDefault ? 1 : 0.7}
                     testID={`tag-${tag.id}`}>
                     <Text style={styles.tagText}>{tag.label}</Text>
@@ -245,18 +267,35 @@ export function TagManagementScreen() {
 
 const styles = StyleSheet.create({
   container: commonStyles.screenContainerPadded,
-  title: {fontSize: 24, fontWeight: '700', color: colors.text, marginBottom: 16},
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 16,
+  },
   categoryBlock: {marginHorizontal: 0, marginVertical: 4},
-  categoryHeader: {flexDirection: 'row', alignItems: 'center', marginBottom: 10},
+  categoryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   categoryName: {fontSize: 16, fontWeight: '600', color: colors.text, flex: 1},
   triggerBadge: {
-    fontSize: 11, color: colors.warning, backgroundColor: colors.warningBackground,
-    paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8,
+    fontSize: 11,
+    color: colors.warning,
+    backgroundColor: colors.warningBackground,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
   },
   tagsWrap: {flexDirection: 'row', flexWrap: 'wrap'},
   tagBadge: {
-    backgroundColor: colors.primaryLight, paddingHorizontal: 12, paddingVertical: 6,
-    borderRadius: 16, marginRight: 8, marginBottom: 8,
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginRight: 8,
+    marginBottom: 8,
   },
   tagBadgeDefault: {borderWidth: 1, borderColor: colors.primaryBorder},
   tagText: {fontSize: 13, color: colors.primary},
@@ -265,9 +304,14 @@ const styles = StyleSheet.create({
   addTagText: {fontSize: 13, color: colors.primary, fontWeight: '600'},
   editRow: {flexDirection: 'row', alignItems: 'center', marginBottom: 8},
   editInput: {
-    borderWidth: 1, borderColor: colors.primary, borderRadius: 8,
-    paddingHorizontal: 10, paddingVertical: 4, fontSize: 13,
-    minWidth: 100, backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    fontSize: 13,
+    minWidth: 100,
+    backgroundColor: colors.surface,
   },
   editAction: {marginLeft: 8},
   saveText: {fontSize: 13, color: colors.primary, fontWeight: '600'},
@@ -278,8 +322,11 @@ const styles = StyleSheet.create({
   newCategoryRow: {flexDirection: 'row', alignItems: 'center'},
   input: {...commonStyles.textInput, flex: 1},
   addButton: {
-    marginLeft: 8, paddingHorizontal: 16, paddingVertical: 10,
-    backgroundColor: colors.primary, borderRadius: 8,
+    marginLeft: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: colors.primary,
+    borderRadius: 8,
   },
   addButtonText: {color: '#fff', fontWeight: '600', fontSize: 14},
 });

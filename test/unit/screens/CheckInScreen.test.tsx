@@ -22,14 +22,54 @@ jest.mock('../../../src/services/database/checkInRepository', () => ({
 jest.mock('../../../src/services/database/tagRepository', () => ({
   tagRepository: {
     getAllCategories: jest.fn().mockReturnValue([
-      {id: 'cat-mental', name: 'Mental Health', sortOrder: 1, isDefault: true, createdAt: 0},
-      {id: 'cat-physical', name: 'Physical Health', sortOrder: 2, isDefault: true, createdAt: 0},
-      {id: 'cat-symptoms', name: 'Symptoms', sortOrder: 4, isDefault: true, triggerTagId: 'tag-ill', createdAt: 0},
+      {
+        id: 'cat-mental',
+        name: 'Mental Health',
+        sortOrder: 1,
+        isDefault: true,
+        createdAt: 0,
+      },
+      {
+        id: 'cat-physical',
+        name: 'Physical Health',
+        sortOrder: 2,
+        isDefault: true,
+        createdAt: 0,
+      },
+      {
+        id: 'cat-symptoms',
+        name: 'Symptoms',
+        sortOrder: 4,
+        isDefault: true,
+        triggerTagId: 'tag-ill',
+        createdAt: 0,
+      },
     ]),
     getAllTags: jest.fn().mockReturnValue([
-      {id: 'tag-calm', categoryId: 'cat-mental', label: 'Calm', isDefault: true, isArchived: false, createdAt: 0},
-      {id: 'tag-ill', categoryId: 'cat-physical', label: 'Ill', isDefault: true, isArchived: false, createdAt: 0},
-      {id: 'tag-headache', categoryId: 'cat-symptoms', label: 'Headache', isDefault: true, isArchived: false, createdAt: 0},
+      {
+        id: 'tag-calm',
+        categoryId: 'cat-mental',
+        label: 'Calm',
+        isDefault: true,
+        isArchived: false,
+        createdAt: 0,
+      },
+      {
+        id: 'tag-ill',
+        categoryId: 'cat-physical',
+        label: 'Ill',
+        isDefault: true,
+        isArchived: false,
+        createdAt: 0,
+      },
+      {
+        id: 'tag-headache',
+        categoryId: 'cat-symptoms',
+        label: 'Headache',
+        isDefault: true,
+        isArchived: false,
+        createdAt: 0,
+      },
     ]),
     createTag: jest.fn(),
   },
@@ -37,14 +77,54 @@ jest.mock('../../../src/services/database/tagRepository', () => ({
 
 const tagPayload = {
   categories: [
-    {id: 'cat-mental', name: 'Mental Health', sortOrder: 1, isDefault: true, createdAt: 0},
-    {id: 'cat-physical', name: 'Physical Health', sortOrder: 2, isDefault: true, createdAt: 0},
-    {id: 'cat-symptoms', name: 'Symptoms', sortOrder: 4, isDefault: true, triggerTagId: 'tag-ill', createdAt: 0},
+    {
+      id: 'cat-mental',
+      name: 'Mental Health',
+      sortOrder: 1,
+      isDefault: true,
+      createdAt: 0,
+    },
+    {
+      id: 'cat-physical',
+      name: 'Physical Health',
+      sortOrder: 2,
+      isDefault: true,
+      createdAt: 0,
+    },
+    {
+      id: 'cat-symptoms',
+      name: 'Symptoms',
+      sortOrder: 4,
+      isDefault: true,
+      triggerTagId: 'tag-ill',
+      createdAt: 0,
+    },
   ],
   tags: [
-    {id: 'tag-calm', categoryId: 'cat-mental', label: 'Calm', isDefault: true, isArchived: false, createdAt: 0},
-    {id: 'tag-ill', categoryId: 'cat-physical', label: 'Ill', isDefault: true, isArchived: false, createdAt: 0},
-    {id: 'tag-headache', categoryId: 'cat-symptoms', label: 'Headache', isDefault: true, isArchived: false, createdAt: 0},
+    {
+      id: 'tag-calm',
+      categoryId: 'cat-mental',
+      label: 'Calm',
+      isDefault: true,
+      isArchived: false,
+      createdAt: 0,
+    },
+    {
+      id: 'tag-ill',
+      categoryId: 'cat-physical',
+      label: 'Ill',
+      isDefault: true,
+      isArchived: false,
+      createdAt: 0,
+    },
+    {
+      id: 'tag-headache',
+      categoryId: 'cat-symptoms',
+      label: 'Headache',
+      isDefault: true,
+      isArchived: false,
+      createdAt: 0,
+    },
   ],
 };
 
@@ -114,10 +194,16 @@ describe('CheckInScreen', () => {
   });
 
   it('auto-selects a newly added inline tag', async () => {
-    const {tagRepository} = require('../../../src/services/database/tagRepository');
+    const {
+      tagRepository,
+    } = require('../../../src/services/database/tagRepository');
     tagRepository.createTag.mockReturnValue({
-      id: 'new-tag', categoryId: 'cat-mental', label: 'Excited',
-      isDefault: false, isArchived: false, createdAt: 123,
+      id: 'new-tag',
+      categoryId: 'cat-mental',
+      label: 'Excited',
+      isDefault: false,
+      isArchived: false,
+      createdAt: 123,
     });
 
     const {getByTestId} = renderCheckInWithTags();
@@ -125,22 +211,33 @@ describe('CheckInScreen', () => {
     // Open inline add for Mental Health category (testID = add-tag-category-cat-mental)
     fireEvent.press(getByTestId('add-tag-category-cat-mental'));
 
-    fireEvent.changeText(getByTestId('add-tag-category-cat-mental-input'), 'Excited');
+    fireEvent.changeText(
+      getByTestId('add-tag-category-cat-mental-input'),
+      'Excited',
+    );
     fireEvent.press(getByTestId('add-tag-category-cat-mental-confirm'));
 
     await waitFor(() => {
-      expect(tagRepository.createTag).toHaveBeenCalledWith('cat-mental', 'Excited');
+      expect(tagRepository.createTag).toHaveBeenCalledWith(
+        'cat-mental',
+        'Excited',
+      );
     });
   });
 
   it('shows error alert when adding duplicate tag', async () => {
-    const {tagRepository} = require('../../../src/services/database/tagRepository');
+    const {
+      tagRepository,
+    } = require('../../../src/services/database/tagRepository');
     tagRepository.createTag.mockRejectedValue(new Error('duplicate'));
 
     const {getByTestId} = renderCheckInWithTags();
 
     fireEvent.press(getByTestId('add-tag-category-cat-mental'));
-    fireEvent.changeText(getByTestId('add-tag-category-cat-mental-input'), 'Calm');
+    fireEvent.changeText(
+      getByTestId('add-tag-category-cat-mental-input'),
+      'Calm',
+    );
     fireEvent.press(getByTestId('add-tag-category-cat-mental-confirm'));
 
     await waitFor(() => {

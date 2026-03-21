@@ -19,7 +19,9 @@ export interface JournalSection {
 const PAGE_SIZE = 14;
 
 function getTimestamp(entry: JournalEntry): number {
-  return entry.type === 'checkin' ? entry.data.timestamp : entry.data.completedAt;
+  return entry.type === 'checkin'
+    ? entry.data.timestamp
+    : entry.data.completedAt;
 }
 
 function buildSections(
@@ -50,7 +52,9 @@ function buildSections(
     // Flush gap before this populated day (but not at the very top)
     if (consecutiveEmpty > 0 && sections.length > 0) {
       sections.push({
-        title: `No data for ${consecutiveEmpty} day${consecutiveEmpty > 1 ? 's' : ''}`,
+        title: `No data for ${consecutiveEmpty} day${
+          consecutiveEmpty > 1 ? 's' : ''
+        }`,
         dateString: '',
         isGap: true,
         data: [],
@@ -82,33 +86,31 @@ export function useJournal() {
   const [hasMore, setHasMore] = useState(true);
   const [daysLoaded, setDaysLoaded] = useState(0);
 
-  const fetchRange = useCallback(
-    async (offsetDays: number, count: number) => {
-      const today = new Date();
-      const rangeStart = startOfDay(subDays(today, offsetDays + count - 1));
-      const rangeEnd = endOfDay(subDays(today, offsetDays));
+  const fetchRange = useCallback(async (offsetDays: number, count: number) => {
+    const today = new Date();
+    const rangeStart = startOfDay(subDays(today, offsetDays + count - 1));
+    const rangeEnd = endOfDay(subDays(today, offsetDays));
 
-      const checkIns = await checkInRepository.getByDateRange(
-        rangeStart.getTime(),
-        rangeEnd.getTime(),
+    const checkIns = await checkInRepository.getByDateRange(
+      rangeStart.getTime(),
+      rangeEnd.getTime(),
+    );
+
+    // Fetch completions for each day in range
+    const completions: HabitCompletion[] = [];
+    for (let i = 0; i < count; i++) {
+      const day = subDays(today, offsetDays + i);
+      const dateStr = formatDateString(day);
+      const dayCompletions = await habitRepository.getCompletionsForDate(
+        dateStr,
       );
+      completions.push(...dayCompletions);
+    }
 
-      // Fetch completions for each day in range
-      const completions: HabitCompletion[] = [];
-      for (let i = 0; i < count; i++) {
-        const day = subDays(today, offsetDays + i);
-        const dateStr = formatDateString(day);
-        const dayCompletions =
-          await habitRepository.getCompletionsForDate(dateStr);
-        completions.push(...dayCompletions);
-      }
-
-      // Build sections from most recent day first
-      const startDay = subDays(today, offsetDays);
-      return buildSections(checkIns, completions, startDay, count);
-    },
-    [],
-  );
+    // Build sections from most recent day first
+    const startDay = subDays(today, offsetDays);
+    return buildSections(checkIns, completions, startDay, count);
+  }, []);
 
   const loadInitial = useCallback(async () => {
     setLoading(true);

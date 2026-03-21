@@ -11,20 +11,32 @@ interface CheckInHistoryItemProps {
   compact?: boolean;
 }
 
-export function CheckInHistoryItem({checkIn, tagLabels, compact}: CheckInHistoryItemProps) {
+export function CheckInHistoryItem({
+  checkIn,
+  tagLabels,
+  compact,
+}: CheckInHistoryItemProps) {
   return (
     <View style={compact ? styles.compactContainer : styles.container}>
       {!compact && (
         <View style={styles.header}>
-          <Text style={styles.date}>{formatDisplayDate(checkIn.timestamp)}</Text>
-          <Text style={styles.time}>{formatDisplayTime(checkIn.timestamp)}</Text>
+          <Text style={styles.date}>
+            {formatDisplayDate(checkIn.timestamp)}
+          </Text>
+          <Text style={styles.time}>
+            {formatDisplayTime(checkIn.timestamp)}
+          </Text>
         </View>
       )}
       <View style={styles.tagsRow}>
         {checkIn.tagIds.map(tagId => (
           <TagBadge key={tagId} label={tagLabels[tagId] ?? tagId} />
         ))}
-        {compact && <Text style={styles.compactTime}>{formatDisplayTime(checkIn.timestamp)}</Text>}
+        {compact && (
+          <Text style={styles.compactTime}>
+            {formatDisplayTime(checkIn.timestamp)}
+          </Text>
+        )}
       </View>
       {checkIn.note ? <Text style={styles.note}>{checkIn.note}</Text> : null}
     </View>

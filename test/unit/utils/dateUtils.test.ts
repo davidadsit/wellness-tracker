@@ -46,7 +46,9 @@ describe('dateUtils', () => {
       const sevenDaysAgo = daysAgoTimestamp(7);
       const now = Date.now();
       const expectedApprox = now - 7 * 24 * 60 * 60 * 1000;
-      expect(Math.abs(sevenDaysAgo - expectedApprox)).toBeLessThan(24 * 60 * 60 * 1000);
+      expect(Math.abs(sevenDaysAgo - expectedApprox)).toBeLessThan(
+        24 * 60 * 60 * 1000,
+      );
     });
 
     it('returns start of today for 0 days ago', () => {

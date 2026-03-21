@@ -38,7 +38,9 @@ describe('habitRepository', () => {
       await habitRepository.completeHabit('habit-1', {date: '2024-01-15'});
       await habitRepository.completeHabit('habit-2', {date: '2024-01-15'});
 
-      const completions = await habitRepository.getCompletionsForDate('2024-01-15');
+      const completions = await habitRepository.getCompletionsForDate(
+        '2024-01-15',
+      );
       expect(completions).toHaveLength(2);
     });
 
@@ -57,14 +59,18 @@ describe('habitRepository', () => {
       await habitRepository.completeHabit('habit-2', {date: '2024-01-15'});
       await habitRepository.completeHabit('habit-1', {date: '2024-01-16'});
 
-      const completions = await habitRepository.getCompletionsForDate('2024-01-15');
+      const completions = await habitRepository.getCompletionsForDate(
+        '2024-01-15',
+      );
       expect(completions).toHaveLength(2);
       expect(completions.map(c => c.habitId)).toContain('habit-1');
       expect(completions.map(c => c.habitId)).toContain('habit-2');
     });
 
     it('returns empty array for date with no completions', async () => {
-      const completions = await habitRepository.getCompletionsForDate('2024-01-15');
+      const completions = await habitRepository.getCompletionsForDate(
+        '2024-01-15',
+      );
       expect(completions).toEqual([]);
     });
   });
@@ -109,7 +115,9 @@ describe('habitRepository', () => {
     });
 
     it('returns empty array for habit with no completions', async () => {
-      const dates = await habitRepository.getCompletionDatesForHabit('nonexistent');
+      const dates = await habitRepository.getCompletionDatesForHabit(
+        'nonexistent',
+      );
       expect(dates).toEqual([]);
     });
   });
@@ -121,7 +129,9 @@ describe('habitRepository', () => {
       });
       await habitRepository.deleteCompletion(completion.id);
 
-      const completions = await habitRepository.getCompletionsForDate('2024-01-15');
+      const completions = await habitRepository.getCompletionsForDate(
+        '2024-01-15',
+      );
       expect(completions).toHaveLength(0);
     });
   });

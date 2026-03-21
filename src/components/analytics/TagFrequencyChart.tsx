@@ -28,10 +28,7 @@ export function TagFrequencyChart({data, title}: TagFrequencyChartProps) {
           </Text>
           <View style={styles.barContainer}>
             <View
-              style={[
-                styles.bar,
-                {width: `${(item.count / maxCount) * 100}%`},
-              ]}
+              style={[styles.bar, {width: `${(item.count / maxCount) * 100}%`}]}
             />
           </View>
           <Text style={styles.count}>

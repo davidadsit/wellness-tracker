@@ -7,7 +7,9 @@ jest.mock('../../../../src/services/database/habitRepository');
 jest.mock('../../../../src/services/notifications/notificationService');
 
 const mockedHabitRepo = habitRepository as jest.Mocked<typeof habitRepository>;
-const mockedNotifService = notificationService as jest.Mocked<typeof notificationService>;
+const mockedNotifService = notificationService as jest.Mocked<
+  typeof notificationService
+>;
 
 describe('notificationHandlers', () => {
   let backgroundHandler: (event: any) => Promise<void>;
@@ -15,11 +17,14 @@ describe('notificationHandlers', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     registerNotificationHandlers();
-    backgroundHandler = (notifee.onBackgroundEvent as jest.Mock).mock.calls[0][0];
+    backgroundHandler = (notifee.onBackgroundEvent as jest.Mock).mock
+      .calls[0][0];
   });
 
   it('registers a background event handler', () => {
-    expect(notifee.onBackgroundEvent).toHaveBeenCalledWith(expect.any(Function));
+    expect(notifee.onBackgroundEvent).toHaveBeenCalledWith(
+      expect.any(Function),
+    );
   });
 
   it('ignores non-ACTION_PRESS events', async () => {
@@ -53,7 +58,9 @@ describe('notificationHandlers', () => {
         source: 'notification',
         date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
       });
-      expect(notifee.cancelNotification).toHaveBeenCalledWith('habit-reminder-h1');
+      expect(notifee.cancelNotification).toHaveBeenCalledWith(
+        'habit-reminder-h1',
+      );
     });
 
     it('does nothing if no habitId in notification data', async () => {

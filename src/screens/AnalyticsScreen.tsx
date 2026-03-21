@@ -1,5 +1,11 @@
 import React, {useState, useCallback, useEffect} from 'react';
-import {ScrollView, View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {
+  ScrollView,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {useHabits} from '../hooks/useHabits';
 import {useAnalytics, AnalyticsPeriod} from '../hooks/useAnalytics';
@@ -27,7 +33,9 @@ export function AnalyticsScreen() {
   const [symptomTagIds, setSymptomTagIds] = useState<Set<string>>(new Set());
   const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
   const [selectedTagColor, setSelectedTagColor] = useState(colors.primary);
-  const [timelineData, setTimelineData] = useState<Array<{date: string; count: number}>>([]);
+  const [timelineData, setTimelineData] = useState<
+    Array<{date: string; count: number}>
+  >([]);
   const [maxDailyFrequency, setMaxDailyFrequency] = useState(1);
   const {habits, loadHabits} = useHabits();
   const {tagFrequency, tagTrends, completionRates, loadAnalytics} =
@@ -42,7 +50,9 @@ export function AnalyticsScreen() {
             categories.filter(c => c.triggerTagId).map(c => c.id),
           );
           setSymptomTagIds(
-            new Set(tags.filter(t => symptomCatIds.has(t.categoryId)).map(t => t.id)),
+            new Set(
+              tags.filter(t => symptomCatIds.has(t.categoryId)).map(t => t.id),
+            ),
           );
         });
       });
@@ -68,7 +78,11 @@ export function AnalyticsScreen() {
     const range = getDateRange(period);
     Promise.all(
       tagFrequency.map(tf =>
-        checkInRepository.getTagDailyFrequency(tf.tagId, range.start, range.end),
+        checkInRepository.getTagDailyFrequency(
+          tf.tagId,
+          range.start,
+          range.end,
+        ),
       ),
     ).then(results => {
       let max = 1;
@@ -177,9 +191,12 @@ export function AnalyticsScreen() {
             const habit = habits.find(h => h.id === rate.habitId);
             return (
               <View key={rate.habitId} style={styles.rateRow}>
-                <Text style={styles.rateName}>{habit?.name ?? rate.habitId}</Text>
+                <Text style={styles.rateName}>
+                  {habit?.name ?? rate.habitId}
+                </Text>
                 <Text style={styles.rateValue}>
-                  {rate.daysWithCompletions} days ({rate.totalCompletions} total)
+                  {rate.daysWithCompletions} days ({rate.totalCompletions}{' '}
+                  total)
                 </Text>
               </View>
             );
@@ -195,16 +212,22 @@ const styles = StyleSheet.create({
   title: commonStyles.screenTitle,
   periodRow: {flexDirection: 'row', paddingHorizontal: 16, marginBottom: 8},
   periodPill: {
-    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20,
-    backgroundColor: colors.divider, marginRight: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: colors.divider,
+    marginRight: 8,
   },
   periodPillActive: {backgroundColor: colors.primary},
   periodText: {fontSize: 13, color: colors.textSubtle},
   periodTextActive: {color: '#fff', fontWeight: '600'},
   sectionTitle: {...commonStyles.sectionTitle, marginBottom: 12},
   rateRow: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.divider,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.divider,
   },
   rateName: {fontSize: 14, color: colors.text},
   rateValue: {fontSize: 13, color: colors.textSecondary},

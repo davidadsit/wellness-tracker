@@ -39,9 +39,7 @@ export const tagRepository = {
       'SELECT * FROM tag_categories WHERE id = ?',
       [id],
     );
-    return result.rows.length > 0
-      ? mapCategory(result.rows[0])
-      : undefined;
+    return result.rows.length > 0 ? mapCategory(result.rows[0]) : undefined;
   },
 
   async getTagsByCategory(categoryId: string): Promise<Tag[]> {
@@ -55,7 +53,9 @@ export const tagRepository = {
 
   async getAllTags(): Promise<Tag[]> {
     const db = getDatabase();
-    const result = await db.execute('SELECT * FROM tags WHERE is_archived = 0 ORDER BY label ASC');
+    const result = await db.execute(
+      'SELECT * FROM tags WHERE is_archived = 0 ORDER BY label ASC',
+    );
     return result.rows.map(mapTag);
   },
 
@@ -68,9 +68,7 @@ export const tagRepository = {
   async getTagById(id: string): Promise<Tag | undefined> {
     const db = getDatabase();
     const result = await db.execute('SELECT * FROM tags WHERE id = ?', [id]);
-    return result.rows.length > 0
-      ? mapTag(result.rows[0])
-      : undefined;
+    return result.rows.length > 0 ? mapTag(result.rows[0]) : undefined;
   },
 
   async createCategory(name: string, sortOrder: number): Promise<TagCategory> {
@@ -84,7 +82,11 @@ export const tagRepository = {
     return {id, name, sortOrder, isDefault: false, createdAt: now};
   },
 
-  async updateCategory(id: string, name: string, sortOrder: number): Promise<void> {
+  async updateCategory(
+    id: string,
+    name: string,
+    sortOrder: number,
+  ): Promise<void> {
     const db = getDatabase();
     await db.execute(
       'UPDATE tag_categories SET name = ?, sort_order = ? WHERE id = ?',
@@ -95,7 +97,10 @@ export const tagRepository = {
   async deleteCategory(id: string): Promise<void> {
     const db = getDatabase();
     await db.execute('DELETE FROM tags WHERE category_id = ?', [id]);
-    await db.execute('DELETE FROM tag_categories WHERE id = ? AND is_default = 0', [id]);
+    await db.execute(
+      'DELETE FROM tag_categories WHERE id = ? AND is_default = 0',
+      [id],
+    );
   },
 
   async createTag(categoryId: string, label: string): Promise<Tag> {
@@ -106,7 +111,14 @@ export const tagRepository = {
       'INSERT INTO tags (id, category_id, label, is_default, created_at) VALUES (?, ?, ?, 0, ?)',
       [id, categoryId, label, now],
     );
-    return {id, categoryId, label, isDefault: false, isArchived: false, createdAt: now};
+    return {
+      id,
+      categoryId,
+      label,
+      isDefault: false,
+      isArchived: false,
+      createdAt: now,
+    };
   },
 
   async hasCheckInUsage(tagId: string): Promise<boolean> {
@@ -146,7 +158,10 @@ export const tagRepository = {
     await db.execute('DELETE FROM tags WHERE id = ? AND is_default = 0', [id]);
   },
 
-  async setCategoryTrigger(categoryId: string, triggerTagId: string | null): Promise<void> {
+  async setCategoryTrigger(
+    categoryId: string,
+    triggerTagId: string | null,
+  ): Promise<void> {
     const db = getDatabase();
     await db.execute(
       'UPDATE tag_categories SET trigger_tag_id = ? WHERE id = ?',

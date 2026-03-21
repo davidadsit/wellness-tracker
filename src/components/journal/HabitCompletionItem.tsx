@@ -9,17 +9,27 @@ interface HabitCompletionItemProps {
   habit: Habit | undefined;
 }
 
-export function HabitCompletionItem({completion, habit}: HabitCompletionItemProps) {
-  const countText = habit?.targetCount != null
-    ? `${completion.count}/${habit.targetCount}${habit.unit ? ` ${habit.unit}` : ''}`
-    : null;
+export function HabitCompletionItem({
+  completion,
+  habit,
+}: HabitCompletionItemProps) {
+  const countText =
+    habit?.targetCount != null
+      ? `${completion.count}/${habit.targetCount}${
+          habit.unit ? ` ${habit.unit}` : ''
+        }`
+      : null;
 
   return (
     <View style={styles.container}>
-      <View style={[styles.dot, {backgroundColor: habit?.color ?? colors.primary}]} />
+      <View
+        style={[styles.dot, {backgroundColor: habit?.color ?? colors.primary}]}
+      />
       <Text style={styles.name}>{habit?.name ?? 'Unknown Habit'}</Text>
       {countText && <Text style={styles.count}>{countText}</Text>}
-      <Text style={styles.time}>{formatDisplayTime(completion.completedAt)}</Text>
+      <Text style={styles.time}>
+        {formatDisplayTime(completion.completedAt)}
+      </Text>
     </View>
   );
 }

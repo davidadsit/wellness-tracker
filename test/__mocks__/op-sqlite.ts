@@ -11,7 +11,7 @@ function getDb(): Database.Database {
   return db;
 }
 
-export function open(options: {name: string; location?: string}) {
+export function open(_options: {name: string; location?: string}) {
   const instance = getDb();
   return {
     execute: async (sql: string, params?: any[]) => {
@@ -24,7 +24,11 @@ export function open(options: {name: string; location?: string}) {
         return {rows, rowsAffected: 0};
       }
       const result = params ? stmt.run(...params) : stmt.run();
-      return {rows: [], rowsAffected: result.changes, insertId: result.lastInsertRowid};
+      return {
+        rows: [],
+        rowsAffected: result.changes,
+        insertId: result.lastInsertRowid,
+      };
     },
     executeBatch: async (commands: Array<{sql: string; params?: any[]}>) => {
       const transaction = instance.transaction(() => {

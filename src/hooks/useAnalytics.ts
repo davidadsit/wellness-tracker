@@ -15,7 +15,11 @@ export function useAnalytics(tagLabels: Record<string, string>) {
   const [tagFrequency, setTagFrequency] = useState<TagFrequencyItem[]>([]);
   const [tagTrends, setTagTrends] = useState<TagTrend[]>([]);
   const [completionRates, setCompletionRates] = useState<
-    Array<{habitId: string; totalCompletions: number; daysWithCompletions: number}>
+    Array<{
+      habitId: string;
+      totalCompletions: number;
+      daysWithCompletions: number;
+    }>
   >([]);
   const [loading, setLoading] = useState(false);
 
@@ -52,7 +56,11 @@ export function useAnalytics(tagLabels: Record<string, string>) {
         const startDate = formatDateString(new Date(currentRange.start));
         const endDate = formatDateString(new Date(currentRange.end));
         setCompletionRates(
-          await habitRepository.getCompletionRates(habitIds, startDate, endDate),
+          await habitRepository.getCompletionRates(
+            habitIds,
+            startDate,
+            endDate,
+          ),
         );
       }
 

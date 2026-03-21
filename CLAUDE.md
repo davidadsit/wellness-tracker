@@ -11,9 +11,19 @@ npm run test:integration  # Integration tests only (real database)
 npm run test:acceptance   # Acceptance/feature tests only (full stack below UI)
 npm run android       # Run on Android
 npm run ios           # Run on iOS
-npm run lint          # ESLint
+npm run lint          # ESLint (errors + warnings)
+npm run lint:fix      # ESLint with auto-fix
+npm run format        # Prettier auto-format
+npm run format:check  # Prettier check (CI-friendly)
 make test             # Tests with maxWorkers=1
 ```
+
+## Linting & Formatting
+
+- **ESLint**: `@react-native/eslint-config` (includes TypeScript, React, React Hooks, Jest)
+- **Prettier**: React Native defaults (`.prettierrc.js`)
+- A PostToolUse hook in `.claude/settings.json` auto-runs `eslint --fix` and `prettier --write` on every file edit.
+- Before code is ready to commit, run `npm run lint:fix && npm run format` across the full codebase to catch anything the per-file hook missed.
 
 ## Tech Stack
 

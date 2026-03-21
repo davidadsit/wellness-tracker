@@ -33,20 +33,36 @@ describe('HabitsScreen', () => {
   it('renders habit cards when habits exist', () => {
     const {getByText} = renderWithStore(<HabitsScreen />, {
       tags: {categories: [], tags: [], loading: false, error: null},
-      checkIn: {todayCheckIns: [], recentCheckIns: [], loading: false, error: null},
+      checkIn: {
+        todayCheckIns: [],
+        recentCheckIns: [],
+        loading: false,
+        error: null,
+      },
       habits: {
         habits: [
           {
-            id: 'h1', name: 'Drink Water', category: 'water',
-            frequency: 'daily', targetCount: 8, unit: 'glasses',
-            color: '#3498db', icon: 'water', isActive: true, createdAt: 0,
+            id: 'h1',
+            name: 'Drink Water',
+            category: 'water',
+            frequency: 'daily',
+            targetCount: 8,
+            unit: 'glasses',
+            color: '#3498db',
+            icon: 'water',
+            isActive: true,
+            createdAt: 0,
           },
         ],
         todayCompletions: [],
         loading: false,
         error: null,
       },
-      settings: {notificationsEnabled: true, dailyCheckInTime: '09:00', theme: 'system'},
+      settings: {
+        notificationsEnabled: true,
+        dailyCheckInTime: '09:00',
+        theme: 'system',
+      },
     });
 
     expect(getByText('Drink Water')).toBeTruthy();
@@ -59,20 +75,36 @@ describe('HabitsScreen', () => {
 
     const {getByTestId} = renderWithStore(<HabitsScreen />, {
       tags: {categories: [], tags: [], loading: false, error: null},
-      checkIn: {todayCheckIns: [], recentCheckIns: [], loading: false, error: null},
+      checkIn: {
+        todayCheckIns: [],
+        recentCheckIns: [],
+        loading: false,
+        error: null,
+      },
       habits: {
         habits: [
           {
-            id: 'h1', name: 'Drink Water', category: 'water',
-            frequency: 'daily', targetCount: 8, unit: 'glasses',
-            color: '#3498db', icon: 'water', isActive: true, createdAt: 0,
+            id: 'h1',
+            name: 'Drink Water',
+            category: 'water',
+            frequency: 'daily',
+            targetCount: 8,
+            unit: 'glasses',
+            color: '#3498db',
+            icon: 'water',
+            isActive: true,
+            createdAt: 0,
           },
         ],
         todayCompletions: [],
         loading: false,
         error: null,
       },
-      settings: {notificationsEnabled: true, dailyCheckInTime: '09:00', theme: 'system'},
+      settings: {
+        notificationsEnabled: true,
+        dailyCheckInTime: '09:00',
+        theme: 'system',
+      },
     });
 
     fireEvent.press(getByTestId('add-habit-fab'));
@@ -86,20 +118,36 @@ describe('HabitsScreen', () => {
 
     const {getByText} = renderWithStore(<HabitsScreen />, {
       tags: {categories: [], tags: [], loading: false, error: null},
-      checkIn: {todayCheckIns: [], recentCheckIns: [], loading: false, error: null},
+      checkIn: {
+        todayCheckIns: [],
+        recentCheckIns: [],
+        loading: false,
+        error: null,
+      },
       habits: {
         habits: [
           {
-            id: 'h1', name: 'Drink Water', category: 'water',
-            frequency: 'daily', targetCount: 8, unit: 'glasses',
-            color: '#3498db', icon: 'water', isActive: true, createdAt: 0,
+            id: 'h1',
+            name: 'Drink Water',
+            category: 'water',
+            frequency: 'daily',
+            targetCount: 8,
+            unit: 'glasses',
+            color: '#3498db',
+            icon: 'water',
+            isActive: true,
+            createdAt: 0,
           },
         ],
         todayCompletions: [],
         loading: false,
         error: null,
       },
-      settings: {notificationsEnabled: true, dailyCheckInTime: '09:00', theme: 'system'},
+      settings: {
+        notificationsEnabled: true,
+        dailyCheckInTime: '09:00',
+        theme: 'system',
+      },
     });
 
     fireEvent.press(getByText('Drink Water'));

@@ -35,7 +35,9 @@ const notifee = {
   onForegroundEvent: jest.fn().mockReturnValue(() => {}),
   displayNotification: jest.fn().mockResolvedValue('notification-id'),
   requestPermission: jest.fn().mockResolvedValue({authorizationStatus: 1}),
-  getNotificationSettings: jest.fn().mockResolvedValue({authorizationStatus: 1}),
+  getNotificationSettings: jest
+    .fn()
+    .mockResolvedValue({authorizationStatus: 1}),
 };
 
 export default notifee;

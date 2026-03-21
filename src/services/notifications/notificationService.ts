@@ -30,7 +30,10 @@ export const notificationService = {
           channelId: CHANNEL_ID,
           pressAction: {id: 'default'},
           actions: [
-            {title: 'Check In', pressAction: {id: 'CHECK_IN', launchActivity: 'default'}},
+            {
+              title: 'Check In',
+              pressAction: {id: 'CHECK_IN', launchActivity: 'default'},
+            },
             {title: 'Dismiss', pressAction: {id: 'DISMISS'}},
           ],
         },

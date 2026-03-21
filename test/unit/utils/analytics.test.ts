@@ -166,22 +166,18 @@ describe('calculateTagTrends', () => {
   });
 
   it('handles tag only in current period', () => {
-    const result = calculateTagTrends(
-      [{tagId: 'tag-new', count: 3}],
-      [],
-      {'tag-new': 'New Tag'},
-    );
+    const result = calculateTagTrends([{tagId: 'tag-new', count: 3}], [], {
+      'tag-new': 'New Tag',
+    });
     expect(result[0].trend).toBe('up');
     expect(result[0].periods[0].count).toBe(0);
     expect(result[0].periods[1].count).toBe(3);
   });
 
   it('handles tag only in previous period', () => {
-    const result = calculateTagTrends(
-      [],
-      [{tagId: 'tag-old', count: 3}],
-      {'tag-old': 'Old Tag'},
-    );
+    const result = calculateTagTrends([], [{tagId: 'tag-old', count: 3}], {
+      'tag-old': 'Old Tag',
+    });
     expect(result[0].trend).toBe('down');
   });
 });

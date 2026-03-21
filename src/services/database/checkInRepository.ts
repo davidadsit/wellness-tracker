@@ -13,7 +13,10 @@ function mapCheckIn(row: any, tagIds: string[]): CheckIn {
   };
 }
 
-async function getTagIdsForCheckIn(db: ReturnType<typeof getDatabase>, checkInId: string): Promise<string[]> {
+async function getTagIdsForCheckIn(
+  db: ReturnType<typeof getDatabase>,
+  checkInId: string,
+): Promise<string[]> {
   const result = await db.execute(
     'SELECT tag_id FROM check_in_tags WHERE check_in_id = ?',
     [checkInId],
@@ -44,12 +47,20 @@ export const checkInRepository = {
       );
     }
 
-    return {id, timestamp: now, tagIds: params.tagIds, note: params.note, source};
+    return {
+      id,
+      timestamp: now,
+      tagIds: params.tagIds,
+      note: params.note,
+      source,
+    };
   },
 
   async getById(id: string): Promise<CheckIn | undefined> {
     const db = getDatabase();
-    const result = await db.execute('SELECT * FROM check_ins WHERE id = ?', [id]);
+    const result = await db.execute('SELECT * FROM check_ins WHERE id = ?', [
+      id,
+    ]);
     if (result.rows.length === 0) {
       return undefined;
     }
@@ -58,7 +69,10 @@ export const checkInRepository = {
     return mapCheckIn(row, tagIds);
   },
 
-  async getByDateRange(startTimestamp: number, endTimestamp: number): Promise<CheckIn[]> {
+  async getByDateRange(
+    startTimestamp: number,
+    endTimestamp: number,
+  ): Promise<CheckIn[]> {
     const db = getDatabase();
     const result = await db.execute(
       'SELECT * FROM check_ins WHERE timestamp >= ? AND timestamp <= ? ORDER BY timestamp DESC',

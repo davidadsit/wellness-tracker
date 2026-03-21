@@ -43,7 +43,12 @@ describe('HomeScreen', () => {
     const {getByText} = renderWithStore(<HomeScreen />, {
       checkIn: {
         todayCheckIns: [
-          {id: '1', timestamp: Date.now(), tagIds: ['tag-happy'], source: 'manual'},
+          {
+            id: '1',
+            timestamp: Date.now(),
+            tagIds: ['tag-happy'],
+            source: 'manual',
+          },
         ],
         recentCheckIns: [],
         loading: false,
@@ -51,12 +56,25 @@ describe('HomeScreen', () => {
       },
       tags: {
         categories: [],
-        tags: [{id: 'tag-happy', categoryId: 'c1', label: 'Happy', isDefault: true, isArchived: false, createdAt: 0}],
+        tags: [
+          {
+            id: 'tag-happy',
+            categoryId: 'c1',
+            label: 'Happy',
+            isDefault: true,
+            isArchived: false,
+            createdAt: 0,
+          },
+        ],
         loading: false,
         error: null,
       },
       habits: {habits: [], todayCompletions: [], loading: false, error: null},
-      settings: {notificationsEnabled: true, dailyCheckInTime: '09:00', theme: 'system'},
+      settings: {
+        notificationsEnabled: true,
+        dailyCheckInTime: '09:00',
+        theme: 'system',
+      },
     });
 
     expect(getByText("Today's Check-Ins")).toBeTruthy();
@@ -65,17 +83,36 @@ describe('HomeScreen', () => {
 
   it('shows habit summary', () => {
     const {getByText} = renderWithStore(<HomeScreen />, {
-      checkIn: {todayCheckIns: [], recentCheckIns: [], loading: false, error: null},
+      checkIn: {
+        todayCheckIns: [],
+        recentCheckIns: [],
+        loading: false,
+        error: null,
+      },
       tags: {categories: [], tags: [], loading: false, error: null},
       habits: {
         habits: [
-          {id: 'h1', name: 'Water', category: 'water', frequency: 'daily', targetCount: 8, color: '#3498db', icon: 'water', isActive: true, createdAt: 0},
+          {
+            id: 'h1',
+            name: 'Water',
+            category: 'water',
+            frequency: 'daily',
+            targetCount: 8,
+            color: '#3498db',
+            icon: 'water',
+            isActive: true,
+            createdAt: 0,
+          },
         ],
         todayCompletions: [],
         loading: false,
         error: null,
       },
-      settings: {notificationsEnabled: true, dailyCheckInTime: '09:00', theme: 'system'},
+      settings: {
+        notificationsEnabled: true,
+        dailyCheckInTime: '09:00',
+        theme: 'system',
+      },
     });
 
     expect(getByText('0/1 completed today')).toBeTruthy();
@@ -98,17 +135,36 @@ describe('HomeScreen', () => {
     useNavigation.mockReturnValue({navigate: mockNavigate, goBack: jest.fn()});
 
     const {getByText} = renderWithStore(<HomeScreen />, {
-      checkIn: {todayCheckIns: [], recentCheckIns: [], loading: false, error: null},
+      checkIn: {
+        todayCheckIns: [],
+        recentCheckIns: [],
+        loading: false,
+        error: null,
+      },
       tags: {categories: [], tags: [], loading: false, error: null},
       habits: {
         habits: [
-          {id: 'h1', name: 'Water', category: 'water', frequency: 'daily', targetCount: 8, color: '#3498db', icon: 'water', isActive: true, createdAt: 0},
+          {
+            id: 'h1',
+            name: 'Water',
+            category: 'water',
+            frequency: 'daily',
+            targetCount: 8,
+            color: '#3498db',
+            icon: 'water',
+            isActive: true,
+            createdAt: 0,
+          },
         ],
         todayCompletions: [],
         loading: false,
         error: null,
       },
-      settings: {notificationsEnabled: true, dailyCheckInTime: '09:00', theme: 'system'},
+      settings: {
+        notificationsEnabled: true,
+        dailyCheckInTime: '09:00',
+        theme: 'system',
+      },
     });
 
     fireEvent.press(getByText('Water'));
@@ -120,19 +176,45 @@ describe('HomeScreen', () => {
 
   it('shows Done for completed habits', () => {
     const {getByText} = renderWithStore(<HomeScreen />, {
-      checkIn: {todayCheckIns: [], recentCheckIns: [], loading: false, error: null},
+      checkIn: {
+        todayCheckIns: [],
+        recentCheckIns: [],
+        loading: false,
+        error: null,
+      },
       tags: {categories: [], tags: [], loading: false, error: null},
       habits: {
         habits: [
-          {id: 'h1', name: 'Water', category: 'water', frequency: 'daily', targetCount: 2, color: '#3498db', icon: 'water', isActive: true, createdAt: 0},
+          {
+            id: 'h1',
+            name: 'Water',
+            category: 'water',
+            frequency: 'daily',
+            targetCount: 2,
+            color: '#3498db',
+            icon: 'water',
+            isActive: true,
+            createdAt: 0,
+          },
         ],
         todayCompletions: [
-          {id: 'c1', habitId: 'h1', date: '2026-03-20', count: 2, completedAt: 100, source: 'manual'},
+          {
+            id: 'c1',
+            habitId: 'h1',
+            date: '2026-03-20',
+            count: 2,
+            completedAt: 100,
+            source: 'manual',
+          },
         ],
         loading: false,
         error: null,
       },
-      settings: {notificationsEnabled: true, dailyCheckInTime: '09:00', theme: 'system'},
+      settings: {
+        notificationsEnabled: true,
+        dailyCheckInTime: '09:00',
+        theme: 'system',
+      },
     });
 
     expect(getByText('Done')).toBeTruthy();

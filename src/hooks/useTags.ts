@@ -1,7 +1,13 @@
 import {useState, useCallback, useMemo} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {RootState, AppDispatch} from '../store';
-import {fetchAllTags, createTag, createCategory, updateTag, removeTag} from '../store/tagsSlice';
+import {
+  fetchAllTags,
+  createTag,
+  createCategory,
+  updateTag,
+  removeTag,
+} from '../store/tagsSlice';
 import {Tag, TagCategory} from '../types';
 import {tagRepository} from '../services/database/tagRepository';
 

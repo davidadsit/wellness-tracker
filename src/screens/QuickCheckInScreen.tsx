@@ -56,7 +56,12 @@ export function QuickCheckInScreen() {
 
 const styles = StyleSheet.create({
   container: commonStyles.screenContainerPadded,
-  title: {fontSize: 22, fontWeight: '700', color: colors.text, marginBottom: 16},
+  title: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 16,
+  },
   submitButton: {
     ...commonStyles.primaryButton,
     borderRadius: 10,

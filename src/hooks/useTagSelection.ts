@@ -5,9 +5,7 @@ export function useTagSelection() {
 
   const toggleTag = useCallback((tagId: string) => {
     setSelectedTagIds(prev =>
-      prev.includes(tagId)
-        ? prev.filter(id => id !== tagId)
-        : [...prev, tagId],
+      prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId],
     );
   }, []);
 
