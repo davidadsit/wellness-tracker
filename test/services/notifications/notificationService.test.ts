@@ -1,23 +1,9 @@
 import notifee, {TriggerType, RepeatFrequency} from '@notifee/react-native';
 import {notificationService} from '../../../src/services/notifications/notificationService';
-import {Habit} from '../../../src/types';
+import {makeHabit} from '../../helpers/factories';
 
 beforeEach(() => {
   jest.clearAllMocks();
-});
-
-const makeHabit = (overrides: Partial<Habit> = {}): Habit => ({
-  id: 'h1',
-  name: 'Drink Water',
-  category: 'water',
-  frequency: 'daily',
-  targetCount: 8,
-  color: '#3498db',
-  icon: 'water',
-  isActive: true,
-  createdAt: 100,
-  reminderTime: '09:00',
-  ...overrides,
 });
 
 describe('notificationService', () => {
@@ -62,7 +48,7 @@ describe('notificationService', () => {
 
   describe('scheduleHabitReminder', () => {
     it('creates a trigger notification with stable ID', async () => {
-      const habit = makeHabit();
+      const habit = makeHabit({reminderTime: '09:00'});
       await notificationService.scheduleHabitReminder(habit);
 
       expect(notifee.createTriggerNotification).toHaveBeenCalledWith(
@@ -79,7 +65,7 @@ describe('notificationService', () => {
     });
 
     it('includes COMPLETE_HABIT and SNOOZE_HABIT actions', async () => {
-      await notificationService.scheduleHabitReminder(makeHabit());
+      await notificationService.scheduleHabitReminder(makeHabit({reminderTime: '09:00'}));
 
       const call = (notifee.createTriggerNotification as jest.Mock).mock.calls[0];
       const actions = call[0].android.actions;
@@ -107,11 +93,41 @@ describe('notificationService', () => {
 
   describe('rescheduleHabitReminder', () => {
     it('cancels then reschedules', async () => {
-      const habit = makeHabit();
+      const habit = makeHabit({reminderTime: '09:00'});
       await notificationService.rescheduleHabitReminder(habit);
 
       expect(notifee.cancelNotification).toHaveBeenCalledWith('habit-reminder-h1');
       expect(notifee.createTriggerNotification).toHaveBeenCalled();
+    });
+  });
+
+  describe('snoozeNotification', () => {
+    it('reschedules an existing notification with delayed timestamp', async () => {
+      const originalNotification = {
+        id: 'habit-reminder-h1',
+        title: 'Time for: Drink Water',
+      };
+      (notifee.getTriggerNotifications as jest.Mock).mockResolvedValueOnce([
+        {notification: originalNotification},
+      ]);
+
+      await notificationService.snoozeNotification('habit-reminder-h1', 30);
+
+      expect(notifee.getTriggerNotifications).toHaveBeenCalled();
+      expect(notifee.createTriggerNotification).toHaveBeenCalledWith(
+        originalNotification,
+        expect.objectContaining({
+          type: TriggerType.TIMESTAMP,
+        }),
+      );
+    });
+
+    it('does nothing when notification not found', async () => {
+      (notifee.getTriggerNotifications as jest.Mock).mockResolvedValueOnce([]);
+
+      await notificationService.snoozeNotification('nonexistent');
+
+      expect(notifee.createTriggerNotification).not.toHaveBeenCalled();
     });
   });
 

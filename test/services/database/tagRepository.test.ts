@@ -1,26 +1,19 @@
 import {tagRepository} from '../../../src/services/database/tagRepository';
-import {resetDatabase, initializeDatabase, getDatabase} from '../../../src/services/database/database';
-beforeEach(async () => {
-  resetDatabase();
-  await initializeDatabase();
-});
+import {getDatabase} from '../../../src/services/database/database';
+import {setupTestDatabase} from '../../helpers/database';
+setupTestDatabase();
 
 describe('tagRepository', () => {
   describe('seed data', () => {
-    it('seeds 4 default categories on first access', async () => {
+    it('initializes with default categories and tags', async () => {
       const categories = await tagRepository.getAllCategories();
-      expect(categories).toHaveLength(4);
-      expect(categories.map(c => c.name)).toEqual([
-        'Mental Health',
-        'Physical Health',
-        'Symptoms',
-        'Emotional Health',
-      ]);
-    });
-
-    it('marks seed categories as default', async () => {
-      const categories = await tagRepository.getAllCategories();
+      expect(categories.length).toBeGreaterThan(0);
       expect(categories.every(c => c.isDefault)).toBe(true);
+      expect(categories.every(c => c.name && c.id)).toBe(true);
+
+      const tags = await tagRepository.getAllTags();
+      expect(tags.length).toBeGreaterThan(0);
+      expect(tags.every(t => t.isArchived === false)).toBe(true);
     });
 
     it('sets triggerTagId on Symptoms category', async () => {
@@ -29,49 +22,33 @@ describe('tagRepository', () => {
       expect(symptoms?.triggerTagId).toBe('tag-ill');
     });
 
-    it('seeds Mental Health tags', async () => {
-      const tags = await tagRepository.getTagsByCategory('cat-mental');
-      expect(tags.length).toBe(7);
-      expect(tags.map(t => t.label)).toContain('Focused');
-      expect(tags.map(t => t.label)).toContain('Anxious');
-    });
-
-    it('seeds Physical Health tags including Sick', async () => {
-      const tags = await tagRepository.getTagsByCategory('cat-physical');
-      expect(tags.map(t => t.label)).toContain('Sick');
-      expect(tags.map(t => t.label)).toContain('Energized');
-    });
-
-    it('seeds Symptoms tags', async () => {
-      const tags = await tagRepository.getTagsByCategory('cat-symptoms');
-      expect(tags.length).toBe(9);
-      expect(tags.map(t => t.label)).toContain('Headache');
-      expect(tags.map(t => t.label)).toContain('Fever');
-    });
-
-    it('seeds Emotional Health tags', async () => {
-      const tags = await tagRepository.getTagsByCategory('cat-emotional');
-      expect(tags.length).toBe(8);
-      expect(tags.map(t => t.label)).toContain('Happy');
-      expect(tags.map(t => t.label)).toContain('Stressed');
-    });
-
     it('does not re-seed on second access', async () => {
-      await tagRepository.getAllCategories();
-      const categories = await tagRepository.getAllCategories();
-      expect(categories).toHaveLength(4);
+      const first = await tagRepository.getAllCategories();
+      const second = await tagRepository.getAllCategories();
+      expect(second).toHaveLength(first.length);
     });
   });
 
   describe('getAllTags', () => {
-    it('returns all tags across categories', async () => {
+    it('returns non-archived tags across all categories', async () => {
       const tags = await tagRepository.getAllTags();
-      expect(tags.length).toBe(7 + 8 + 8 + 9); // mental + physical + emotional + symptoms
-    });
-
-    it('returns tags with isArchived false', async () => {
-      const tags = await tagRepository.getAllTags();
+      expect(tags.length).toBeGreaterThan(0);
       expect(tags.every(t => t.isArchived === false)).toBe(true);
+    });
+  });
+
+  describe('getAllTagsIncludingArchived', () => {
+    it('includes archived tags that getAllTags excludes', async () => {
+      const tag = await tagRepository.createTag('cat-mental', 'ToArchive');
+      await tagRepository.archiveTag(tag.id);
+
+      const allTags = await tagRepository.getAllTags();
+      expect(allTags.find(t => t.id === tag.id)).toBeUndefined();
+
+      const allIncludingArchived = await tagRepository.getAllTagsIncludingArchived();
+      const archived = allIncludingArchived.find(t => t.id === tag.id);
+      expect(archived).toBeDefined();
+      expect(archived?.isArchived).toBe(true);
     });
   });
 

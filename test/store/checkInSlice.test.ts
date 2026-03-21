@@ -1,5 +1,6 @@
 import checkInReducer, {
   fetchTodayCheckIns,
+  fetchRecentCheckIns,
   submitCheckIn,
   removeCheckIn,
   CheckInState,
@@ -45,6 +46,19 @@ describe('checkInSlice', () => {
         fetchTodayCheckIns.rejected(new Error('fail'), '', undefined),
       );
       expect(state.loading).toBe(false);
+    });
+  });
+
+  describe('fetchRecentCheckIns', () => {
+    it('stores recent check-ins on fulfilled', () => {
+      const checkIns = [
+        {id: '1', timestamp: 100, tagIds: ['t1'], source: 'manual' as const},
+      ];
+      const state = checkInReducer(
+        initialState,
+        fetchRecentCheckIns.fulfilled(checkIns, '', 20),
+      );
+      expect(state.recentCheckIns).toEqual(checkIns);
     });
   });
 

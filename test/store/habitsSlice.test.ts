@@ -7,21 +7,8 @@ import habitsReducer, {
   completeHabit,
   HabitsState,
 } from '../../src/store/habitsSlice';
-import {Habit, HabitCompletion} from '../../src/types';
-
-const makeHabit = (overrides: Partial<Habit> = {}): Habit => ({
-  id: 'h1',
-  name: 'Drink Water',
-  category: 'water',
-  frequency: 'daily',
-  targetCount: 8,
-  unit: 'glasses',
-  color: '#3498db',
-  icon: 'water',
-  isActive: true,
-  createdAt: 100,
-  ...overrides,
-});
+import {HabitCompletion} from '../../src/types';
+import {makeHabit} from '../helpers/factories';
 
 const initialState: HabitsState = {
   habits: [],

@@ -1,12 +1,6 @@
 import React from 'react';
-import {render, fireEvent} from '@testing-library/react-native';
-import {Provider} from 'react-redux';
-import {configureStore} from '@reduxjs/toolkit';
 import {HomeScreen} from '../../src/screens/HomeScreen';
-import tagsReducer from '../../src/store/tagsSlice';
-import checkInReducer from '../../src/store/checkInSlice';
-import habitsReducer from '../../src/store/habitsSlice';
-import settingsReducer from '../../src/store/settingsSlice';
+import {renderWithStore} from '../helpers/renderWithStore';
 
 jest.mock('../../src/services/database/tagRepository', () => ({
   tagRepository: {
@@ -28,45 +22,24 @@ jest.mock('../../src/services/database/habitRepository', () => ({
   },
 }));
 
-function makeStore(preloaded: any = {}) {
-  return configureStore({
-    reducer: {
-      tags: tagsReducer,
-      checkIn: checkInReducer,
-      habits: habitsReducer,
-      settings: settingsReducer,
-    },
-    preloadedState: preloaded,
-  });
-}
-
-function renderWithStore(preloaded: any = {}) {
-  const store = makeStore(preloaded);
-  return render(
-    <Provider store={store}>
-      <HomeScreen />
-    </Provider>,
-  );
-}
-
 describe('HomeScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders the screen', () => {
-    const {getByTestId} = renderWithStore();
+    const {getByTestId} = renderWithStore(<HomeScreen />);
     expect(getByTestId('home-screen')).toBeTruthy();
   });
 
   it('shows CTA when no check-ins today', () => {
-    const {getByTestId, getByText} = renderWithStore();
+    const {getByTestId, getByText} = renderWithStore(<HomeScreen />);
     expect(getByText("You haven't checked in yet today")).toBeTruthy();
     expect(getByTestId('cta-check-in')).toBeTruthy();
   });
 
   it('shows today check-ins when present', () => {
-    const {getByText} = renderWithStore({
+    const {getByText} = renderWithStore(<HomeScreen />, {
       checkIn: {
         todayCheckIns: [
           {id: '1', timestamp: Date.now(), tagIds: ['tag-happy'], source: 'manual'},
@@ -90,7 +63,7 @@ describe('HomeScreen', () => {
   });
 
   it('shows habit summary', () => {
-    const {getByText} = renderWithStore({
+    const {getByText} = renderWithStore(<HomeScreen />, {
       checkIn: {todayCheckIns: [], recentCheckIns: [], loading: false, error: null},
       tags: {categories: [], tags: [], loading: false, error: null},
       habits: {

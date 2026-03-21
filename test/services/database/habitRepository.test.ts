@@ -1,9 +1,6 @@
 import {habitRepository} from '../../../src/services/database/habitRepository';
-import {resetDatabase, initializeDatabase} from '../../../src/services/database/database';
-beforeEach(async () => {
-  resetDatabase();
-  await initializeDatabase();
-});
+import {setupTestDatabase} from '../../helpers/database';
+setupTestDatabase();
 
 describe('habitRepository', () => {
   describe('completeHabit', () => {
