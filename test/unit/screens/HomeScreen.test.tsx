@@ -1,4 +1,5 @@
 import React from 'react';
+import {fireEvent} from '@testing-library/react-native';
 import {HomeScreen} from '../../../src/screens/HomeScreen';
 import {renderWithStore} from '../../helpers/renderWithStore';
 
@@ -79,5 +80,62 @@ describe('HomeScreen', () => {
 
     expect(getByText('0/1 completed today')).toBeTruthy();
     expect(getByText('Water')).toBeTruthy();
+  });
+
+  it('navigates to Check-In when CTA is pressed', () => {
+    const mockNavigate = jest.fn();
+    const {useNavigation} = require('@react-navigation/native');
+    useNavigation.mockReturnValue({navigate: mockNavigate, goBack: jest.fn()});
+
+    const {getByTestId} = renderWithStore(<HomeScreen />);
+    fireEvent.press(getByTestId('cta-check-in'));
+    expect(mockNavigate).toHaveBeenCalledWith('Check-In');
+  });
+
+  it('navigates to HabitDetail when a habit row is pressed', () => {
+    const mockNavigate = jest.fn();
+    const {useNavigation} = require('@react-navigation/native');
+    useNavigation.mockReturnValue({navigate: mockNavigate, goBack: jest.fn()});
+
+    const {getByText} = renderWithStore(<HomeScreen />, {
+      checkIn: {todayCheckIns: [], recentCheckIns: [], loading: false, error: null},
+      tags: {categories: [], tags: [], loading: false, error: null},
+      habits: {
+        habits: [
+          {id: 'h1', name: 'Water', category: 'water', frequency: 'daily', targetCount: 8, color: '#3498db', icon: 'water', isActive: true, createdAt: 0},
+        ],
+        todayCompletions: [],
+        loading: false,
+        error: null,
+      },
+      settings: {notificationsEnabled: true, dailyCheckInTime: '09:00', theme: 'system'},
+    });
+
+    fireEvent.press(getByText('Water'));
+    expect(mockNavigate).toHaveBeenCalledWith('Habits', {
+      screen: 'HabitDetail',
+      params: {habitId: 'h1'},
+    });
+  });
+
+  it('shows Done for completed habits', () => {
+    const {getByText} = renderWithStore(<HomeScreen />, {
+      checkIn: {todayCheckIns: [], recentCheckIns: [], loading: false, error: null},
+      tags: {categories: [], tags: [], loading: false, error: null},
+      habits: {
+        habits: [
+          {id: 'h1', name: 'Water', category: 'water', frequency: 'daily', targetCount: 2, color: '#3498db', icon: 'water', isActive: true, createdAt: 0},
+        ],
+        todayCompletions: [
+          {id: 'c1', habitId: 'h1', date: '2026-03-20', count: 2, completedAt: 100, source: 'manual'},
+        ],
+        loading: false,
+        error: null,
+      },
+      settings: {notificationsEnabled: true, dailyCheckInTime: '09:00', theme: 'system'},
+    });
+
+    expect(getByText('Done')).toBeTruthy();
+    expect(getByText('1/1 completed today')).toBeTruthy();
   });
 });

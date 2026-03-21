@@ -1,5 +1,5 @@
 import React from 'react';
-import {fireEvent} from '@testing-library/react-native';
+import {fireEvent, waitFor} from '@testing-library/react-native';
 import {Alert} from 'react-native';
 import {CheckInScreen} from '../../../src/screens/CheckInScreen';
 import {makeStore, renderWithStore} from '../../helpers/renderWithStore';
@@ -88,5 +88,66 @@ describe('CheckInScreen', () => {
       'Select Tags',
       'Please select at least one tag for your check-in.',
     );
+  });
+
+  it('submits check-in and shows success alert when tags are selected', async () => {
+    const {getByTestId} = renderCheckInWithTags();
+
+    fireEvent.press(getByTestId('tag-tag-calm'));
+    fireEvent.press(getByTestId('checkin-submit'));
+
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalledWith('Saved', 'Check-in recorded!');
+    });
+  });
+
+  it('resets note after successful submission', async () => {
+    const {getByTestId} = renderCheckInWithTags();
+
+    fireEvent.press(getByTestId('tag-tag-calm'));
+    fireEvent.changeText(getByTestId('checkin-note'), 'feeling good');
+    fireEvent.press(getByTestId('checkin-submit'));
+
+    await waitFor(() => {
+      expect(getByTestId('checkin-note').props.value).toBe('');
+    });
+  });
+
+  it('auto-selects a newly added inline tag', async () => {
+    const {tagRepository} = require('../../../src/services/database/tagRepository');
+    tagRepository.createTag.mockReturnValue({
+      id: 'new-tag', categoryId: 'cat-mental', label: 'Excited',
+      isDefault: false, isArchived: false, createdAt: 123,
+    });
+
+    const {getByTestId} = renderCheckInWithTags();
+
+    // Open inline add for Mental Health category (testID = add-tag-category-cat-mental)
+    fireEvent.press(getByTestId('add-tag-category-cat-mental'));
+
+    fireEvent.changeText(getByTestId('add-tag-category-cat-mental-input'), 'Excited');
+    fireEvent.press(getByTestId('add-tag-category-cat-mental-confirm'));
+
+    await waitFor(() => {
+      expect(tagRepository.createTag).toHaveBeenCalledWith('cat-mental', 'Excited');
+    });
+  });
+
+  it('shows error alert when adding duplicate tag', async () => {
+    const {tagRepository} = require('../../../src/services/database/tagRepository');
+    tagRepository.createTag.mockRejectedValue(new Error('duplicate'));
+
+    const {getByTestId} = renderCheckInWithTags();
+
+    fireEvent.press(getByTestId('add-tag-category-cat-mental'));
+    fireEvent.changeText(getByTestId('add-tag-category-cat-mental-input'), 'Calm');
+    fireEvent.press(getByTestId('add-tag-category-cat-mental-confirm'));
+
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Error',
+        'A tag with that name already exists in this category.',
+      );
+    });
   });
 });

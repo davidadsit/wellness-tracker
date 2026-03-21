@@ -51,4 +51,58 @@ describe('HabitsScreen', () => {
 
     expect(getByText('Drink Water')).toBeTruthy();
   });
+
+  it('shows FAB that navigates to HabitForm when habits exist', () => {
+    const mockNavigate = jest.fn();
+    const {useNavigation} = require('@react-navigation/native');
+    useNavigation.mockReturnValue({navigate: mockNavigate, goBack: jest.fn()});
+
+    const {getByTestId} = renderWithStore(<HabitsScreen />, {
+      tags: {categories: [], tags: [], loading: false, error: null},
+      checkIn: {todayCheckIns: [], recentCheckIns: [], loading: false, error: null},
+      habits: {
+        habits: [
+          {
+            id: 'h1', name: 'Drink Water', category: 'water',
+            frequency: 'daily', targetCount: 8, unit: 'glasses',
+            color: '#3498db', icon: 'water', isActive: true, createdAt: 0,
+          },
+        ],
+        todayCompletions: [],
+        loading: false,
+        error: null,
+      },
+      settings: {notificationsEnabled: true, dailyCheckInTime: '09:00', theme: 'system'},
+    });
+
+    fireEvent.press(getByTestId('add-habit-fab'));
+    expect(mockNavigate).toHaveBeenCalledWith('HabitForm', {});
+  });
+
+  it('navigates to HabitDetail when pressing a habit card', () => {
+    const mockNavigate = jest.fn();
+    const {useNavigation} = require('@react-navigation/native');
+    useNavigation.mockReturnValue({navigate: mockNavigate, goBack: jest.fn()});
+
+    const {getByText} = renderWithStore(<HabitsScreen />, {
+      tags: {categories: [], tags: [], loading: false, error: null},
+      checkIn: {todayCheckIns: [], recentCheckIns: [], loading: false, error: null},
+      habits: {
+        habits: [
+          {
+            id: 'h1', name: 'Drink Water', category: 'water',
+            frequency: 'daily', targetCount: 8, unit: 'glasses',
+            color: '#3498db', icon: 'water', isActive: true, createdAt: 0,
+          },
+        ],
+        todayCompletions: [],
+        loading: false,
+        error: null,
+      },
+      settings: {notificationsEnabled: true, dailyCheckInTime: '09:00', theme: 'system'},
+    });
+
+    fireEvent.press(getByText('Drink Water'));
+    expect(mockNavigate).toHaveBeenCalledWith('HabitDetail', {habitId: 'h1'});
+  });
 });
