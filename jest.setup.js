@@ -47,3 +47,11 @@ jest.mock('@react-navigation/bottom-tabs', () => ({
     Screen: ({children}) => children,
   }),
 }));
+
+// Mock @react-native-vector-icons/ionicons (loads font files Jest can't parse)
+jest.mock('@react-native-vector-icons/ionicons', () => {
+  const React = require('react');
+  return {
+    Ionicons: (props) => React.createElement('Ionicons', props),
+  };
+});
