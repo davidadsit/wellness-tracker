@@ -3,6 +3,7 @@ import {Habit, HabitCompletion} from '../types';
 import {habitRepository} from '../services/database/habitRepository';
 import {MMKV} from 'react-native-mmkv';
 import {todayDateString} from '../utils/dateUtils';
+import {ulid} from '../utils/ulid';
 
 const HABITS_KEY = 'habits';
 
@@ -42,16 +43,20 @@ export const fetchHabits = createAsyncThunk('habits/fetch', () => {
 export const fetchTodayCompletions = createAsyncThunk(
   'habits/fetchTodayCompletions',
   async () => {
-    return habitRepository.getCompletionsForDate(todayDateString());
+    return habitRepository.loadCompletionsForDate(todayDateString());
   },
 );
 
 export const completeHabit = createAsyncThunk(
   'habits/complete',
   async (params: {habitId: string; source?: 'manual' | 'notification'}) => {
-    return habitRepository.completeHabit(params.habitId, {
-      source: params.source ?? 'manual',
+    return habitRepository.saveCompletion({
+      id: ulid(),
+      habitId: params.habitId,
       date: todayDateString(),
+      count: 1,
+      completedAt: Date.now(),
+      source: params.source ?? 'manual',
     });
   },
 );

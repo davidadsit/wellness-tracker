@@ -1,6 +1,5 @@
 import {getDatabase} from './database';
 import {HabitCompletion} from '../../types';
-import {uuid} from '../../utils/uuid';
 
 function mapCompletion(row: any): HabitCompletion {
   return {
@@ -14,32 +13,33 @@ function mapCompletion(row: any): HabitCompletion {
 }
 
 export const habitRepository = {
-  async completeHabit(
-    habitId: string,
-    params: {source?: 'manual' | 'notification'; date: string},
-  ): Promise<HabitCompletion> {
+  async saveCompletion(completion: HabitCompletion): Promise<HabitCompletion> {
     const db = getDatabase();
-    const id = uuid();
-    const now = Date.now();
-    const source = params.source ?? 'manual';
 
     await db.execute(
       `INSERT INTO habit_completions (id, habit_id, date, count, completed_at, source)
-       VALUES (?, ?, ?, 1, ?, ?)
+       VALUES (?, ?, ?, ?, ?, ?)
        ON CONFLICT(habit_id, date) DO UPDATE SET
-         count = count + 1,
+         count = count + excluded.count,
          completed_at = excluded.completed_at`,
-      [id, habitId, params.date, now, source],
+      [
+        completion.id,
+        completion.habitId,
+        completion.date,
+        completion.count,
+        completion.completedAt,
+        completion.source,
+      ],
     );
 
     const result = await db.execute(
       'SELECT * FROM habit_completions WHERE habit_id = ? AND date = ?',
-      [habitId, params.date],
+      [completion.habitId, completion.date],
     );
     return mapCompletion(result.rows[0]);
   },
 
-  async getCompletionsForDate(date: string): Promise<HabitCompletion[]> {
+  async loadCompletionsForDate(date: string): Promise<HabitCompletion[]> {
     const db = getDatabase();
     const result = await db.execute(
       'SELECT * FROM habit_completions WHERE date = ?',
@@ -48,7 +48,7 @@ export const habitRepository = {
     return result.rows.map(mapCompletion);
   },
 
-  async getCompletionsForHabit(
+  async loadCompletionsForHabit(
     habitId: string,
     startDate: string,
     endDate: string,
@@ -61,7 +61,7 @@ export const habitRepository = {
     return result.rows.map(mapCompletion);
   },
 
-  async getCompletionDatesForHabit(habitId: string): Promise<string[]> {
+  async loadCompletionDatesForHabit(habitId: string): Promise<string[]> {
     const db = getDatabase();
     const result = await db.execute(
       'SELECT DISTINCT date FROM habit_completions WHERE habit_id = ? ORDER BY date DESC',
@@ -75,7 +75,7 @@ export const habitRepository = {
     await db.execute('DELETE FROM habit_completions WHERE id = ?', [id]);
   },
 
-  async getCompletionRates(
+  async loadCompletionRates(
     habitIds: string[],
     startDate: string,
     endDate: string,

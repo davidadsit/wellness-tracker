@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import {Habit, HabitCategory} from '../../types';
-import {uuid} from '../../utils/uuid';
+import {ulid} from '../../utils/ulid';
 
 const CATEGORIES: HabitCategory[] = [
   'sleep',
@@ -54,7 +54,7 @@ export function HabitForm({initial, onSubmit, onCancel}: HabitFormProps) {
       return;
     }
     onSubmit({
-      id: initial?.id ?? uuid(),
+      id: initial?.id ?? ulid(),
       name: name.trim(),
       category,
       frequency,

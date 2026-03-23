@@ -37,7 +37,9 @@ export function HabitDetailScreen() {
   useFocusEffect(
     useCallback(() => {
       (async () => {
-        const dates = await habitRepository.getCompletionDatesForHabit(habitId);
+        const dates = await habitRepository.loadCompletionDatesForHabit(
+          habitId,
+        );
         setCompletionDates(dates);
         setStreak(calculateStreak(dates));
       })();

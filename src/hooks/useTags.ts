@@ -42,7 +42,7 @@ export function useTags() {
   const [allTagLabels, setAllTagLabels] = useState<Record<string, string>>({});
 
   const loadAllTagLabels = useCallback(async () => {
-    const allTags = await tagRepository.getAllTagsIncludingArchived();
+    const allTags = await tagRepository.loadAllTagsIncludingArchived();
     const labels: Record<string, string> = {};
     for (const tag of allTags) {
       labels[tag.id] = tag.label;

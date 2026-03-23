@@ -1,6 +1,7 @@
 import notifee, {TriggerType, AndroidImportance} from '@notifee/react-native';
 import {Habit, ReminderPeriod} from '../../types';
 import {notificationOutcomeRepository} from '../database/notificationOutcomeRepository';
+import {ulid} from '../../utils/ulid';
 
 const CHANNEL_ID = 'wellness-tracker-default';
 
@@ -73,9 +74,13 @@ export const notificationService = {
     const trigger = buildOneShotTrigger(hours, minutes);
     const copy = REMINDER_COPY[period];
 
-    const outcomeRecord = await notificationOutcomeRepository.recordSent({
+    const outcomeRecord = await notificationOutcomeRepository.save({
+      id: ulid(),
       reminderPeriod: period,
+      outcome: null,
       scheduledTime: time,
+      sentAt: Date.now(),
+      respondedAt: null,
     });
 
     await notifee.createTriggerNotification(

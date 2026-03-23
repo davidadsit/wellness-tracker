@@ -6,9 +6,9 @@ import {useCheckIn} from '../../../src/hooks/useCheckIn';
 
 jest.mock('../../../src/services/database/checkInRepository', () => ({
   checkInRepository: {
-    getToday: jest.fn().mockReturnValue([]),
-    getRecent: jest.fn().mockReturnValue([]),
-    create: jest.fn(),
+    loadToday: jest.fn().mockReturnValue([]),
+    loadRecent: jest.fn().mockReturnValue([]),
+    save: jest.fn(),
     delete: jest.fn(),
   },
 }));

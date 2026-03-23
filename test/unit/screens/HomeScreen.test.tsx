@@ -5,21 +5,21 @@ import {renderWithStore} from '../../helpers/renderWithStore';
 
 jest.mock('../../../src/services/database/tagRepository', () => ({
   tagRepository: {
-    getAllCategories: jest.fn().mockReturnValue([]),
-    getAllTags: jest.fn().mockReturnValue([]),
+    loadAllCategories: jest.fn().mockReturnValue([]),
+    loadAllTags: jest.fn().mockReturnValue([]),
   },
 }));
 
 jest.mock('../../../src/services/database/checkInRepository', () => ({
   checkInRepository: {
-    getToday: jest.fn().mockReturnValue([]),
-    getRecent: jest.fn().mockReturnValue([]),
+    loadToday: jest.fn().mockReturnValue([]),
+    loadRecent: jest.fn().mockReturnValue([]),
   },
 }));
 
 jest.mock('../../../src/services/database/habitRepository', () => ({
   habitRepository: {
-    getCompletionsForDate: jest.fn().mockReturnValue([]),
+    loadCompletionsForDate: jest.fn().mockReturnValue([]),
   },
 }));
 

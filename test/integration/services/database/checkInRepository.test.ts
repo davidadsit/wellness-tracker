@@ -1,5 +1,7 @@
 import {checkInRepository} from '../../../../src/services/database/checkInRepository';
 import {setupTestDatabase} from '../../../helpers/database';
+import {makeCheckIn} from '../../../helpers/factories';
+
 setupTestDatabase();
 
 function rangeAroundNow() {
@@ -9,49 +11,67 @@ function rangeAroundNow() {
 }
 
 describe('checkInRepository', () => {
-  describe('create', () => {
-    it('creates a check-in with tags', async () => {
-      const checkIn = await checkInRepository.create({
+  describe('save', () => {
+    it('persists a check-in with tags', async () => {
+      const checkIn = makeCheckIn({
         tagIds: ['tag-happy', 'tag-energized'],
         note: 'Great morning',
       });
 
-      expect(checkIn.id).toBeDefined();
-      expect(checkIn.tagIds).toEqual(['tag-happy', 'tag-energized']);
-      expect(checkIn.note).toBe('Great morning');
-      expect(checkIn.source).toBe('manual');
-      expect(checkIn.timestamp).toBeGreaterThan(0);
+      const saved = await checkInRepository.save(checkIn);
+
+      expect(saved.id).toBe(checkIn.id);
+      expect(saved.tagIds).toEqual(['tag-happy', 'tag-energized']);
+      expect(saved.note).toBe('Great morning');
+      expect(saved.source).toBe('manual');
     });
 
-    it('creates a check-in without note', async () => {
-      const checkIn = await checkInRepository.create({
-        tagIds: ['tag-calm'],
-      });
-      expect(checkIn.note).toBeUndefined();
+    it('persists a check-in without note', async () => {
+      const checkIn = makeCheckIn({tagIds: ['tag-calm']});
+      const saved = await checkInRepository.save(checkIn);
+      expect(saved.note).toBeUndefined();
     });
 
-    it('creates a check-in with notification source', async () => {
-      const checkIn = await checkInRepository.create({
+    it('persists a check-in with notification source', async () => {
+      const checkIn = makeCheckIn({
         tagIds: ['tag-tired'],
         source: 'notification',
       });
-      expect(checkIn.source).toBe('notification');
+      const saved = await checkInRepository.save(checkIn);
+      expect(saved.source).toBe('notification');
     });
 
-    it('creates a check-in with empty tags', async () => {
-      const checkIn = await checkInRepository.create({tagIds: []});
-      expect(checkIn.tagIds).toEqual([]);
+    it('persists a check-in with empty tags', async () => {
+      const checkIn = makeCheckIn();
+      const saved = await checkInRepository.save(checkIn);
+      expect(saved.tagIds).toEqual([]);
+    });
+
+    it('upserts when saving a check-in with an existing id', async () => {
+      const checkIn = makeCheckIn({
+        tagIds: ['tag-happy'],
+        note: 'original',
+      });
+      await checkInRepository.save(checkIn);
+
+      const updated = {...checkIn, note: 'updated', tagIds: ['tag-sad']};
+      await checkInRepository.save(updated);
+
+      const loaded = await checkInRepository.load(checkIn.id);
+      expect(loaded?.note).toBe('updated');
+      expect(loaded?.tagIds).toEqual(['tag-sad']);
     });
   });
 
-  describe('getById', () => {
+  describe('load', () => {
     it('retrieves a check-in by id', async () => {
-      const created = await checkInRepository.create({
+      const checkIn = makeCheckIn({
         tagIds: ['tag-happy', 'tag-focused'],
         note: 'Test',
       });
+      await checkInRepository.save(checkIn);
 
-      const fetched = await checkInRepository.getById(created.id);
+      const fetched = await checkInRepository.load(checkIn.id);
       expect(fetched).toBeDefined();
       expect(fetched?.tagIds).toHaveLength(2);
       expect(fetched?.tagIds).toContain('tag-happy');
@@ -60,42 +80,37 @@ describe('checkInRepository', () => {
     });
 
     it('returns undefined for unknown id', async () => {
-      expect(await checkInRepository.getById('nonexistent')).toBeUndefined();
+      expect(await checkInRepository.load('nonexistent')).toBeUndefined();
     });
   });
 
-  describe('getByDateRange', () => {
+  describe('loadDateRange', () => {
     it('returns check-ins within the date range', async () => {
-      const c1 = await checkInRepository.create({tagIds: ['tag-happy']});
-      const c2 = await checkInRepository.create({tagIds: ['tag-sad']});
-      const beforeFirstCheckIn = c1.timestamp - 1000;
-      const afterLastCheckIn = c2.timestamp + 1000;
+      const c1 = makeCheckIn({tagIds: ['tag-happy']});
+      const c2 = makeCheckIn({tagIds: ['tag-sad']});
+      await checkInRepository.save(c1);
+      await checkInRepository.save(c2);
 
-      const results = await checkInRepository.getByDateRange(
-        beforeFirstCheckIn,
-        afterLastCheckIn,
+      const results = await checkInRepository.loadDateRange(
+        c1.timestamp - 1000,
+        c2.timestamp + 1000,
       );
       expect(results).toHaveLength(2);
     });
 
     it('excludes check-ins outside the range', async () => {
-      await checkInRepository.create({tagIds: ['tag-happy']});
-      const distantPastStart = 0;
-      const distantPastEnd = 1;
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-happy']}));
 
-      const results = await checkInRepository.getByDateRange(
-        distantPastStart,
-        distantPastEnd,
-      );
+      const results = await checkInRepository.loadDateRange(0, 1);
       expect(results).toHaveLength(0);
     });
 
     it('returns results in descending timestamp order', async () => {
-      await checkInRepository.create({tagIds: ['tag-happy']});
-      await checkInRepository.create({tagIds: ['tag-sad']});
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-happy']}));
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-sad']}));
 
       const {start, end} = rangeAroundNow();
-      const results = await checkInRepository.getByDateRange(start, end);
+      const results = await checkInRepository.loadDateRange(start, end);
       if (results.length >= 2) {
         expect(results[0].timestamp).toBeGreaterThanOrEqual(
           results[1].timestamp,
@@ -104,36 +119,39 @@ describe('checkInRepository', () => {
     });
   });
 
-  describe('getRecent', () => {
+  describe('loadRecent', () => {
     it('returns the most recent check-ins up to the limit', async () => {
-      await checkInRepository.create({tagIds: ['tag-happy']});
-      await checkInRepository.create({tagIds: ['tag-sad']});
-      await checkInRepository.create({tagIds: ['tag-calm']});
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-happy']}));
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-sad']}));
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-calm']}));
 
-      const results = await checkInRepository.getRecent(2);
+      const results = await checkInRepository.loadRecent(2);
       expect(results).toHaveLength(2);
     });
   });
 
   describe('delete', () => {
     it('deletes a check-in and its tags via cascade', async () => {
-      const checkIn = await checkInRepository.create({
-        tagIds: ['tag-happy', 'tag-focused'],
-      });
+      const checkIn = makeCheckIn({tagIds: ['tag-happy', 'tag-focused']});
+      await checkInRepository.save(checkIn);
 
       await checkInRepository.delete(checkIn.id);
-      expect(await checkInRepository.getById(checkIn.id)).toBeUndefined();
+      expect(await checkInRepository.load(checkIn.id)).toBeUndefined();
     });
   });
 
-  describe('getTagFrequency', () => {
+  describe('loadTagFrequency', () => {
     it('returns tag counts for check-ins in date range', async () => {
-      await checkInRepository.create({tagIds: ['tag-happy', 'tag-energized']});
-      await checkInRepository.create({tagIds: ['tag-happy', 'tag-focused']});
-      await checkInRepository.create({tagIds: ['tag-sad']});
+      await checkInRepository.save(
+        makeCheckIn({tagIds: ['tag-happy', 'tag-energized']}),
+      );
+      await checkInRepository.save(
+        makeCheckIn({tagIds: ['tag-happy', 'tag-focused']}),
+      );
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-sad']}));
 
       const {start, end} = rangeAroundNow();
-      const freq = await checkInRepository.getTagFrequency(start, end);
+      const freq = await checkInRepository.loadTagFrequency(start, end);
 
       const happyCount = freq.find(f => f.tagId === 'tag-happy');
       expect(happyCount?.count).toBe(2);
@@ -143,31 +161,33 @@ describe('checkInRepository', () => {
     });
 
     it('returns results ordered by count descending', async () => {
-      await checkInRepository.create({tagIds: ['tag-happy']});
-      await checkInRepository.create({tagIds: ['tag-happy']});
-      await checkInRepository.create({tagIds: ['tag-sad']});
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-happy']}));
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-happy']}));
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-sad']}));
 
       const {start, end} = rangeAroundNow();
-      const freq = await checkInRepository.getTagFrequency(start, end);
+      const freq = await checkInRepository.loadTagFrequency(start, end);
       expect(freq[0].tagId).toBe('tag-happy');
     });
 
     it('returns empty array when no check-ins in range', async () => {
-      const freq = await checkInRepository.getTagFrequency(0, 1);
+      const freq = await checkInRepository.loadTagFrequency(0, 1);
       expect(freq).toEqual([]);
     });
   });
 
-  describe('getTagCoOccurrence', () => {
+  describe('loadTagCoOccurrence', () => {
     it('returns tags that co-occur with the given tag', async () => {
-      await checkInRepository.create({
-        tagIds: ['tag-happy', 'tag-energized', 'tag-focused'],
-      });
-      await checkInRepository.create({tagIds: ['tag-happy', 'tag-energized']});
-      await checkInRepository.create({tagIds: ['tag-sad']});
+      await checkInRepository.save(
+        makeCheckIn({tagIds: ['tag-happy', 'tag-energized', 'tag-focused']}),
+      );
+      await checkInRepository.save(
+        makeCheckIn({tagIds: ['tag-happy', 'tag-energized']}),
+      );
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-sad']}));
 
       const {start, end} = rangeAroundNow();
-      const coOccurrences = await checkInRepository.getTagCoOccurrence(
+      const coOccurrences = await checkInRepository.loadTagCoOccurrence(
         'tag-happy',
         start,
         end,
@@ -183,10 +203,10 @@ describe('checkInRepository', () => {
     });
 
     it('returns empty array for tag with no co-occurrences', async () => {
-      await checkInRepository.create({tagIds: ['tag-sad']});
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-sad']}));
 
       const {start, end} = rangeAroundNow();
-      const coOccurrences = await checkInRepository.getTagCoOccurrence(
+      const coOccurrences = await checkInRepository.loadTagCoOccurrence(
         'tag-sad',
         start,
         end,
@@ -195,24 +215,24 @@ describe('checkInRepository', () => {
     });
   });
 
-  describe('getToday', () => {
+  describe('loadToday', () => {
     it('returns check-ins created today', async () => {
-      await checkInRepository.create({tagIds: ['tag-happy']});
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-happy']}));
 
       const {start, end} = rangeAroundNow();
-      const results = await checkInRepository.getToday(start, end);
+      const results = await checkInRepository.loadToday(start, end);
       expect(results).toHaveLength(1);
       expect(results[0].tagIds).toContain('tag-happy');
     });
   });
 
-  describe('getTagDailyFrequency', () => {
+  describe('loadTagDailyFrequency', () => {
     it('groups check-ins by local date and returns counts', async () => {
-      await checkInRepository.create({tagIds: ['tag-happy']});
-      await checkInRepository.create({tagIds: ['tag-happy']});
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-happy']}));
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-happy']}));
 
       const {start, end} = rangeAroundNow();
-      const freq = await checkInRepository.getTagDailyFrequency(
+      const freq = await checkInRepository.loadTagDailyFrequency(
         'tag-happy',
         start,
         end,
@@ -224,10 +244,10 @@ describe('checkInRepository', () => {
     });
 
     it('returns results sorted by date ascending', async () => {
-      await checkInRepository.create({tagIds: ['tag-happy']});
+      await checkInRepository.save(makeCheckIn({tagIds: ['tag-happy']}));
 
       const {start, end} = rangeAroundNow();
-      const freq = await checkInRepository.getTagDailyFrequency(
+      const freq = await checkInRepository.loadTagDailyFrequency(
         'tag-happy',
         start,
         end,
@@ -239,7 +259,7 @@ describe('checkInRepository', () => {
     });
 
     it('returns empty array when tag has no check-ins in range', async () => {
-      const freq = await checkInRepository.getTagDailyFrequency(
+      const freq = await checkInRepository.loadTagDailyFrequency(
         'tag-happy',
         0,
         1,

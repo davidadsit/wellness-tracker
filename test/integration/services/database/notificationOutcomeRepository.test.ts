@@ -1,15 +1,13 @@
 import {notificationOutcomeRepository} from '../../../../src/services/database/notificationOutcomeRepository';
 import {setupTestDatabase} from '../../../helpers/database';
+import {makeNotificationOutcome as makeOutcome} from '../../../helpers/factories';
 
 setupTestDatabase();
 
 describe('notificationOutcomeRepository', () => {
-  describe('recordSent', () => {
-    it('inserts a row with null outcome', async () => {
-      const record = await notificationOutcomeRepository.recordSent({
-        reminderPeriod: 'morning',
-        scheduledTime: '09:00',
-      });
+  describe('save', () => {
+    it('inserts a record with null outcome', async () => {
+      const record = await notificationOutcomeRepository.save(makeOutcome());
 
       expect(record.id).toBeDefined();
       expect(record.reminderPeriod).toBe('morning');
@@ -20,19 +18,15 @@ describe('notificationOutcomeRepository', () => {
     });
   });
 
-  describe('recordOutcome', () => {
+  describe('saveOutcome', () => {
     it('updates the outcome and respondedAt for an existing record', async () => {
-      const record = await notificationOutcomeRepository.recordSent({
-        reminderPeriod: 'midday',
-        scheduledTime: '13:00',
-      });
-
-      await notificationOutcomeRepository.recordOutcome(
-        record.id,
-        'interacted',
+      const record = await notificationOutcomeRepository.save(
+        makeOutcome({reminderPeriod: 'midday', scheduledTime: '13:00'}),
       );
 
-      const results = await notificationOutcomeRepository.getRecentByPeriod(
+      await notificationOutcomeRepository.saveOutcome(record.id, 'interacted');
+
+      const results = await notificationOutcomeRepository.loadRecentByPeriod(
         'midday',
         1,
       );
@@ -41,14 +35,13 @@ describe('notificationOutcomeRepository', () => {
     });
 
     it('records a dismissed outcome', async () => {
-      const record = await notificationOutcomeRepository.recordSent({
-        reminderPeriod: 'evening',
-        scheduledTime: '19:00',
-      });
+      const record = await notificationOutcomeRepository.save(
+        makeOutcome({reminderPeriod: 'evening', scheduledTime: '19:00'}),
+      );
 
-      await notificationOutcomeRepository.recordOutcome(record.id, 'dismissed');
+      await notificationOutcomeRepository.saveOutcome(record.id, 'dismissed');
 
-      const results = await notificationOutcomeRepository.getRecentByPeriod(
+      const results = await notificationOutcomeRepository.loadRecentByPeriod(
         'evening',
         1,
       );
@@ -56,14 +49,13 @@ describe('notificationOutcomeRepository', () => {
     });
 
     it('records a snoozed outcome', async () => {
-      const record = await notificationOutcomeRepository.recordSent({
-        reminderPeriod: 'morning',
-        scheduledTime: '09:00',
-      });
+      const record = await notificationOutcomeRepository.save(
+        makeOutcome({reminderPeriod: 'morning', scheduledTime: '09:00'}),
+      );
 
-      await notificationOutcomeRepository.recordOutcome(record.id, 'snoozed');
+      await notificationOutcomeRepository.saveOutcome(record.id, 'snoozed');
 
-      const results = await notificationOutcomeRepository.getRecentByPeriod(
+      const results = await notificationOutcomeRepository.loadRecentByPeriod(
         'morning',
         1,
       );
@@ -71,20 +63,16 @@ describe('notificationOutcomeRepository', () => {
     });
   });
 
-  describe('getByDateRange', () => {
+  describe('loadDateRange', () => {
     it('returns outcomes within the range', async () => {
       const before = Date.now();
-      await notificationOutcomeRepository.recordSent({
-        reminderPeriod: 'morning',
-        scheduledTime: '09:00',
-      });
-      await notificationOutcomeRepository.recordSent({
-        reminderPeriod: 'midday',
-        scheduledTime: '13:00',
-      });
+      await notificationOutcomeRepository.save(makeOutcome());
+      await notificationOutcomeRepository.save(
+        makeOutcome({reminderPeriod: 'midday', scheduledTime: '13:00'}),
+      );
       const after = Date.now();
 
-      const results = await notificationOutcomeRepository.getByDateRange(
+      const results = await notificationOutcomeRepository.loadDateRange(
         before - 1000,
         after + 1000,
       );
@@ -92,43 +80,33 @@ describe('notificationOutcomeRepository', () => {
     });
 
     it('excludes outcomes outside the range', async () => {
-      await notificationOutcomeRepository.recordSent({
-        reminderPeriod: 'morning',
-        scheduledTime: '09:00',
-      });
+      await notificationOutcomeRepository.save(makeOutcome());
 
-      const results = await notificationOutcomeRepository.getByDateRange(0, 1);
+      const results = await notificationOutcomeRepository.loadDateRange(0, 1);
       expect(results).toHaveLength(0);
     });
   });
 
-  describe('getRecentByPeriod', () => {
+  describe('loadRecentByPeriod', () => {
     it('filters by period and respects limit', async () => {
-      await notificationOutcomeRepository.recordSent({
-        reminderPeriod: 'morning',
-        scheduledTime: '09:00',
-      });
-      await notificationOutcomeRepository.recordSent({
-        reminderPeriod: 'morning',
-        scheduledTime: '09:00',
-      });
-      await notificationOutcomeRepository.recordSent({
-        reminderPeriod: 'evening',
-        scheduledTime: '19:00',
-      });
+      await notificationOutcomeRepository.save(makeOutcome());
+      await notificationOutcomeRepository.save(makeOutcome());
+      await notificationOutcomeRepository.save(
+        makeOutcome({reminderPeriod: 'evening', scheduledTime: '19:00'}),
+      );
 
       const morningResults =
-        await notificationOutcomeRepository.getRecentByPeriod('morning', 1);
+        await notificationOutcomeRepository.loadRecentByPeriod('morning', 1);
       expect(morningResults).toHaveLength(1);
 
-      const allMorning = await notificationOutcomeRepository.getRecentByPeriod(
+      const allMorning = await notificationOutcomeRepository.loadRecentByPeriod(
         'morning',
         10,
       );
       expect(allMorning).toHaveLength(2);
 
       const eveningResults =
-        await notificationOutcomeRepository.getRecentByPeriod('evening', 10);
+        await notificationOutcomeRepository.loadRecentByPeriod('evening', 10);
       expect(eveningResults).toHaveLength(1);
     });
   });

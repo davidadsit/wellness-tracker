@@ -1,6 +1,5 @@
 import {getDatabase} from './database';
 import {CheckIn} from '../../types';
-import {uuid} from '../../utils/uuid';
 import {formatDateString} from '../../utils/dateUtils';
 
 function mapCheckIn(row: any, tagIds: string[]): CheckIn {
@@ -13,7 +12,7 @@ function mapCheckIn(row: any, tagIds: string[]): CheckIn {
   };
 }
 
-async function getTagIdsForCheckIn(
+async function loadTagIdsForCheckIn(
   db: ReturnType<typeof getDatabase>,
   checkInId: string,
 ): Promise<string[]> {
@@ -25,38 +24,28 @@ async function getTagIdsForCheckIn(
 }
 
 export const checkInRepository = {
-  async create(params: {
-    tagIds: string[];
-    note?: string;
-    source?: 'manual' | 'notification';
-  }): Promise<CheckIn> {
+  async save(checkIn: CheckIn): Promise<CheckIn> {
     const db = getDatabase();
-    const id = uuid();
-    const now = Date.now();
-    const source = params.source ?? 'manual';
 
     await db.execute(
-      'INSERT INTO check_ins (id, timestamp, note, source) VALUES (?, ?, ?, ?)',
-      [id, now, params.note ?? null, source],
+      'INSERT OR REPLACE INTO check_ins (id, timestamp, note, source) VALUES (?, ?, ?, ?)',
+      [checkIn.id, checkIn.timestamp, checkIn.note ?? null, checkIn.source],
     );
 
-    for (const tagId of params.tagIds) {
+    await db.execute('DELETE FROM check_in_tags WHERE check_in_id = ?', [
+      checkIn.id,
+    ]);
+    for (const tagId of checkIn.tagIds) {
       await db.execute(
         'INSERT INTO check_in_tags (check_in_id, tag_id) VALUES (?, ?)',
-        [id, tagId],
+        [checkIn.id, tagId],
       );
     }
 
-    return {
-      id,
-      timestamp: now,
-      tagIds: params.tagIds,
-      note: params.note,
-      source,
-    };
+    return checkIn;
   },
 
-  async getById(id: string): Promise<CheckIn | undefined> {
+  async load(id: string): Promise<CheckIn | undefined> {
     const db = getDatabase();
     const result = await db.execute('SELECT * FROM check_ins WHERE id = ?', [
       id,
@@ -65,11 +54,11 @@ export const checkInRepository = {
       return undefined;
     }
     const row = result.rows[0];
-    const tagIds = await getTagIdsForCheckIn(db, id);
+    const tagIds = await loadTagIdsForCheckIn(db, id);
     return mapCheckIn(row, tagIds);
   },
 
-  async getByDateRange(
+  async loadDateRange(
     startTimestamp: number,
     endTimestamp: number,
   ): Promise<CheckIn[]> {
@@ -80,17 +69,17 @@ export const checkInRepository = {
     );
     const checkIns: CheckIn[] = [];
     for (const row of result.rows) {
-      const tagIds = await getTagIdsForCheckIn(db, row.id);
+      const tagIds = await loadTagIdsForCheckIn(db, row.id);
       checkIns.push(mapCheckIn(row, tagIds));
     }
     return checkIns;
   },
 
-  async getToday(todayStart: number, todayEnd: number): Promise<CheckIn[]> {
-    return this.getByDateRange(todayStart, todayEnd);
+  async loadToday(todayStart: number, todayEnd: number): Promise<CheckIn[]> {
+    return this.loadDateRange(todayStart, todayEnd);
   },
 
-  async getRecent(limit: number): Promise<CheckIn[]> {
+  async loadRecent(limit: number): Promise<CheckIn[]> {
     const db = getDatabase();
     const result = await db.execute(
       'SELECT * FROM check_ins ORDER BY timestamp DESC LIMIT ?',
@@ -98,7 +87,7 @@ export const checkInRepository = {
     );
     const checkIns: CheckIn[] = [];
     for (const row of result.rows) {
-      const tagIds = await getTagIdsForCheckIn(db, row.id);
+      const tagIds = await loadTagIdsForCheckIn(db, row.id);
       checkIns.push(mapCheckIn(row, tagIds));
     }
     return checkIns;
@@ -109,7 +98,7 @@ export const checkInRepository = {
     await db.execute('DELETE FROM check_ins WHERE id = ?', [id]);
   },
 
-  async getTagFrequency(
+  async loadTagFrequency(
     startTimestamp: number,
     endTimestamp: number,
   ): Promise<Array<{tagId: string; count: number}>> {
@@ -129,7 +118,7 @@ export const checkInRepository = {
     }));
   },
 
-  async getTagDailyFrequency(
+  async loadTagDailyFrequency(
     tagId: string,
     startTimestamp: number,
     endTimestamp: number,
@@ -143,7 +132,6 @@ export const checkInRepository = {
        ORDER BY ci.timestamp ASC`,
       [tagId, startTimestamp, endTimestamp],
     );
-    // Group by local date in JS to avoid SQLite timezone issues
     const counts = new Map<string, number>();
     for (const row of result.rows) {
       const date = new Date(row.timestamp);
@@ -155,7 +143,7 @@ export const checkInRepository = {
       .sort((a, b) => a.date.localeCompare(b.date));
   },
 
-  async getTagCoOccurrence(
+  async loadTagCoOccurrence(
     tagId: string,
     startTimestamp: number,
     endTimestamp: number,

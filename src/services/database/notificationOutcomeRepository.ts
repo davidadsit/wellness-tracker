@@ -4,7 +4,6 @@ import {
   ReminderPeriod,
   NotificationOutcome,
 } from '../../types';
-import {uuid} from '../../utils/uuid';
 
 function mapRow(row: any): NotificationOutcomeRecord {
   return {
@@ -18,30 +17,25 @@ function mapRow(row: any): NotificationOutcomeRecord {
 }
 
 export const notificationOutcomeRepository = {
-  async recordSent(params: {
-    reminderPeriod: ReminderPeriod;
-    scheduledTime: string;
-  }): Promise<NotificationOutcomeRecord> {
+  async save(
+    record: NotificationOutcomeRecord,
+  ): Promise<NotificationOutcomeRecord> {
     const db = getDatabase();
-    const id = uuid();
-    const now = Date.now();
-
     await db.execute(
-      'INSERT INTO notification_outcomes (id, reminder_period, outcome, scheduled_time, sent_at, responded_at) VALUES (?, ?, NULL, ?, ?, NULL)',
-      [id, params.reminderPeriod, params.scheduledTime, now],
+      'INSERT INTO notification_outcomes (id, reminder_period, outcome, scheduled_time, sent_at, responded_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET reminder_period = excluded.reminder_period, outcome = excluded.outcome, scheduled_time = excluded.scheduled_time, sent_at = excluded.sent_at, responded_at = excluded.responded_at',
+      [
+        record.id,
+        record.reminderPeriod,
+        record.outcome,
+        record.scheduledTime,
+        record.sentAt,
+        record.respondedAt,
+      ],
     );
-
-    return {
-      id,
-      reminderPeriod: params.reminderPeriod,
-      outcome: null,
-      scheduledTime: params.scheduledTime,
-      sentAt: now,
-      respondedAt: null,
-    };
+    return record;
   },
 
-  async recordOutcome(id: string, outcome: NotificationOutcome): Promise<void> {
+  async saveOutcome(id: string, outcome: NotificationOutcome): Promise<void> {
     const db = getDatabase();
     const now = Date.now();
     await db.execute(
@@ -50,7 +44,7 @@ export const notificationOutcomeRepository = {
     );
   },
 
-  async getByDateRange(
+  async loadDateRange(
     startTimestamp: number,
     endTimestamp: number,
   ): Promise<NotificationOutcomeRecord[]> {
@@ -62,7 +56,7 @@ export const notificationOutcomeRepository = {
     return result.rows.map(mapRow);
   },
 
-  async getRecentByPeriod(
+  async loadRecentByPeriod(
     period: ReminderPeriod,
     limit: number,
   ): Promise<NotificationOutcomeRecord[]> {

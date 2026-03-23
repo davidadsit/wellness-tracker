@@ -91,7 +91,7 @@ export function useJournal() {
     const rangeStart = startOfDay(subDays(today, offsetDays + count - 1));
     const rangeEnd = endOfDay(subDays(today, offsetDays));
 
-    const checkIns = await checkInRepository.getByDateRange(
+    const checkIns = await checkInRepository.loadDateRange(
       rangeStart.getTime(),
       rangeEnd.getTime(),
     );
@@ -101,7 +101,7 @@ export function useJournal() {
     for (let i = 0; i < count; i++) {
       const day = subDays(today, offsetDays + i);
       const dateStr = formatDateString(day);
-      const dayCompletions = await habitRepository.getCompletionsForDate(
+      const dayCompletions = await habitRepository.loadCompletionsForDate(
         dateStr,
       );
       completions.push(...dayCompletions);

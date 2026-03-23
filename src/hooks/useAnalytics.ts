@@ -33,16 +33,16 @@ export function useAnalytics(tagLabels: Record<string, string>) {
         end: currentRange.start - 1,
       };
 
-      const currentFreq = await checkInRepository.getTagFrequency(
+      const currentFreq = await checkInRepository.loadTagFrequency(
         currentRange.start,
         currentRange.end,
       );
-      const previousFreq = await checkInRepository.getTagFrequency(
+      const previousFreq = await checkInRepository.loadTagFrequency(
         previousRange.start,
         previousRange.end,
       );
 
-      const currentCheckIns = await checkInRepository.getByDateRange(
+      const currentCheckIns = await checkInRepository.loadDateRange(
         currentRange.start,
         currentRange.end,
       );
@@ -56,7 +56,7 @@ export function useAnalytics(tagLabels: Record<string, string>) {
         const startDate = formatDateString(new Date(currentRange.start));
         const endDate = formatDateString(new Date(currentRange.end));
         setCompletionRates(
-          await habitRepository.getCompletionRates(
+          await habitRepository.loadCompletionRates(
             habitIds,
             startDate,
             endDate,

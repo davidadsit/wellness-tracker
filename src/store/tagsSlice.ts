@@ -1,6 +1,7 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import {TagCategory, Tag} from '../types';
 import {tagRepository} from '../services/database/tagRepository';
+import {ulid} from '../utils/ulid';
 
 export interface TagsState {
   categories: TagCategory[];
@@ -15,29 +16,45 @@ const initialState: TagsState = {
 };
 
 export const fetchAllTags = createAsyncThunk('tags/fetchAll', async () => {
-  const categories = await tagRepository.getAllCategories();
-  const tags = await tagRepository.getAllTags();
+  const categories = await tagRepository.loadAllCategories();
+  const tags = await tagRepository.loadAllTags();
   return {categories, tags};
 });
 
 export const createCategory = createAsyncThunk(
   'tags/createCategory',
   async (params: {name: string; sortOrder: number}) => {
-    return tagRepository.createCategory(params.name, params.sortOrder);
+    return tagRepository.saveCategory({
+      id: ulid(),
+      name: params.name,
+      sortOrder: params.sortOrder,
+      isDefault: false,
+      createdAt: Date.now(),
+    });
   },
 );
 
 export const createTag = createAsyncThunk(
   'tags/createTag',
   async (params: {categoryId: string; label: string}) => {
-    return tagRepository.createTag(params.categoryId, params.label);
+    return tagRepository.saveTag({
+      id: ulid(),
+      categoryId: params.categoryId,
+      label: params.label,
+      isDefault: false,
+      isArchived: false,
+      createdAt: Date.now(),
+    });
   },
 );
 
 export const updateTag = createAsyncThunk(
   'tags/updateTag',
   async (params: {id: string; label: string}) => {
-    await tagRepository.updateTag(params.id, params.label);
+    const tag = await tagRepository.loadTag(params.id);
+    if (tag) {
+      await tagRepository.saveTag({...tag, label: params.label});
+    }
     return params;
   },
 );

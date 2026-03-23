@@ -4,6 +4,7 @@ import {notificationOutcomeRepository} from '../database/notificationOutcomeRepo
 import {notificationService} from './notificationService';
 import {NotificationOutcome} from '../../types';
 import {format} from 'date-fns';
+import {ulid} from '../../utils/ulid';
 
 function isCheckInReminder(notification: any): boolean {
   return notification?.data?.type === 'check-in-reminder';
@@ -15,7 +16,7 @@ async function recordCheckInOutcome(
 ): Promise<void> {
   const outcomeId = notification?.data?.outcomeId as string | undefined;
   if (outcomeId) {
-    await notificationOutcomeRepository.recordOutcome(outcomeId, outcome);
+    await notificationOutcomeRepository.saveOutcome(outcomeId, outcome);
   }
 }
 
@@ -52,9 +53,13 @@ export function registerNotificationHandlers(): void {
 
       case 'COMPLETE_HABIT':
         if (habitId) {
-          await habitRepository.completeHabit(habitId, {
-            source: 'notification',
+          await habitRepository.saveCompletion({
+            id: ulid(),
+            habitId,
             date: format(new Date(), 'yyyy-MM-dd'),
+            count: 1,
+            completedAt: Date.now(),
+            source: 'notification',
           });
           await notifee.cancelNotification(notification!.id!);
         }

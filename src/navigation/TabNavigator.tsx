@@ -19,6 +19,7 @@ import {SettingsScreen} from '../screens/SettingsScreen';
 import {AnalyticsScreen} from '../screens/AnalyticsScreen';
 import {TagManagementScreen} from '../screens/TagManagementScreen';
 import {QuickCheckInScreen} from '../screens/QuickCheckInScreen';
+import {TestControlScreen} from '../screens/TestControlScreen';
 import {HabitDetailScreen} from '../screens/HabitDetailScreen';
 import {HabitFormScreen} from '../screens/HabitFormScreen';
 import {TabParamList, HomeStackParamList, HabitsStackParamList} from '../types';
@@ -79,6 +80,13 @@ function HomeStackScreen() {
         component={QuickCheckInScreen}
         options={{title: 'Quick Check-In'}}
       />
+      {__DEV__ && (
+        <HomeStack.Screen
+          name="TestControl"
+          component={TestControlScreen}
+          options={{title: 'Test Controls'}}
+        />
+      )}
     </HomeStack.Navigator>
   );
 }

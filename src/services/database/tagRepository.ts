@@ -1,6 +1,5 @@
 import {getDatabase} from './database';
 import {TagCategory, Tag} from '../../types';
-import {uuid} from '../../utils/uuid';
 
 function mapCategory(row: any): TagCategory {
   return {
@@ -25,7 +24,7 @@ function mapTag(row: any): Tag {
 }
 
 export const tagRepository = {
-  async getAllCategories(): Promise<TagCategory[]> {
+  async loadAllCategories(): Promise<TagCategory[]> {
     const db = getDatabase();
     const result = await db.execute(
       'SELECT * FROM tag_categories ORDER BY sort_order ASC',
@@ -33,7 +32,7 @@ export const tagRepository = {
     return result.rows.map(mapCategory);
   },
 
-  async getCategoryById(id: string): Promise<TagCategory | undefined> {
+  async loadCategory(id: string): Promise<TagCategory | undefined> {
     const db = getDatabase();
     const result = await db.execute(
       'SELECT * FROM tag_categories WHERE id = ?',
@@ -42,7 +41,7 @@ export const tagRepository = {
     return result.rows.length > 0 ? mapCategory(result.rows[0]) : undefined;
   },
 
-  async getTagsByCategory(categoryId: string): Promise<Tag[]> {
+  async loadTagsByCategory(categoryId: string): Promise<Tag[]> {
     const db = getDatabase();
     const result = await db.execute(
       'SELECT * FROM tags WHERE category_id = ? AND is_archived = 0 ORDER BY label ASC',
@@ -51,7 +50,7 @@ export const tagRepository = {
     return result.rows.map(mapTag);
   },
 
-  async getAllTags(): Promise<Tag[]> {
+  async loadAllTags(): Promise<Tag[]> {
     const db = getDatabase();
     const result = await db.execute(
       'SELECT * FROM tags WHERE is_archived = 0 ORDER BY label ASC',
@@ -59,39 +58,48 @@ export const tagRepository = {
     return result.rows.map(mapTag);
   },
 
-  async getAllTagsIncludingArchived(): Promise<Tag[]> {
+  async loadAllTagsIncludingArchived(): Promise<Tag[]> {
     const db = getDatabase();
     const result = await db.execute('SELECT * FROM tags ORDER BY label ASC');
     return result.rows.map(mapTag);
   },
 
-  async getTagById(id: string): Promise<Tag | undefined> {
+  async loadTag(id: string): Promise<Tag | undefined> {
     const db = getDatabase();
     const result = await db.execute('SELECT * FROM tags WHERE id = ?', [id]);
     return result.rows.length > 0 ? mapTag(result.rows[0]) : undefined;
   },
 
-  async createCategory(name: string, sortOrder: number): Promise<TagCategory> {
+  async saveCategory(category: TagCategory): Promise<TagCategory> {
     const db = getDatabase();
-    const id = uuid();
-    const now = Date.now();
     await db.execute(
-      'INSERT INTO tag_categories (id, name, sort_order, is_default, created_at) VALUES (?, ?, ?, 0, ?)',
-      [id, name, sortOrder, now],
+      'INSERT INTO tag_categories (id, name, sort_order, is_default, trigger_tag_id, created_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET name = excluded.name, sort_order = excluded.sort_order, is_default = excluded.is_default, trigger_tag_id = excluded.trigger_tag_id, created_at = excluded.created_at',
+      [
+        category.id,
+        category.name,
+        category.sortOrder,
+        category.isDefault ? 1 : 0,
+        category.triggerTagId ?? null,
+        category.createdAt,
+      ],
     );
-    return {id, name, sortOrder, isDefault: false, createdAt: now};
+    return category;
   },
 
-  async updateCategory(
-    id: string,
-    name: string,
-    sortOrder: number,
-  ): Promise<void> {
+  async saveTag(tag: Tag): Promise<Tag> {
     const db = getDatabase();
     await db.execute(
-      'UPDATE tag_categories SET name = ?, sort_order = ? WHERE id = ?',
-      [name, sortOrder, id],
+      'INSERT INTO tags (id, category_id, label, is_default, is_archived, created_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET category_id = excluded.category_id, label = excluded.label, is_default = excluded.is_default, is_archived = excluded.is_archived, created_at = excluded.created_at',
+      [
+        tag.id,
+        tag.categoryId,
+        tag.label,
+        tag.isDefault ? 1 : 0,
+        tag.isArchived ? 1 : 0,
+        tag.createdAt,
+      ],
     );
+    return tag;
   },
 
   async deleteCategory(id: string): Promise<void> {
@@ -101,24 +109,6 @@ export const tagRepository = {
       'DELETE FROM tag_categories WHERE id = ? AND is_default = 0',
       [id],
     );
-  },
-
-  async createTag(categoryId: string, label: string): Promise<Tag> {
-    const db = getDatabase();
-    const id = uuid();
-    const now = Date.now();
-    await db.execute(
-      'INSERT INTO tags (id, category_id, label, is_default, created_at) VALUES (?, ?, ?, 0, ?)',
-      [id, categoryId, label, now],
-    );
-    return {
-      id,
-      categoryId,
-      label,
-      isDefault: false,
-      isArchived: false,
-      createdAt: now,
-    };
   },
 
   async hasCheckInUsage(tagId: string): Promise<boolean> {
@@ -145,11 +135,6 @@ export const tagRepository = {
     } else {
       await this.deleteTag(id);
     }
-  },
-
-  async updateTag(id: string, label: string): Promise<void> {
-    const db = getDatabase();
-    await db.execute('UPDATE tags SET label = ? WHERE id = ?', [label, id]);
   },
 
   async deleteTag(id: string): Promise<void> {

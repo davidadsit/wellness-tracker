@@ -127,7 +127,7 @@ describe('check-in reminders', () => {
       expect(notifee.createTriggerNotification).toHaveBeenCalled();
     });
 
-    const outcomes = await notificationOutcomeRepository.getRecentByPeriod(
+    const outcomes = await notificationOutcomeRepository.loadRecentByPeriod(
       'morning',
       1,
     );
@@ -152,7 +152,7 @@ describe('check-in reminders', () => {
       expect(notifee.createTriggerNotification).toHaveBeenCalled();
     });
 
-    const outcomes = await notificationOutcomeRepository.getRecentByPeriod(
+    const outcomes = await notificationOutcomeRepository.loadRecentByPeriod(
       'morning',
       1,
     );
@@ -174,7 +174,7 @@ describe('check-in reminders', () => {
       },
     });
 
-    const updated = await notificationOutcomeRepository.getRecentByPeriod(
+    const updated = await notificationOutcomeRepository.loadRecentByPeriod(
       'morning',
       1,
     );
@@ -195,7 +195,7 @@ describe('check-in reminders', () => {
       expect(notifee.createTriggerNotification).toHaveBeenCalled();
     });
 
-    const outcomes = await notificationOutcomeRepository.getRecentByPeriod(
+    const outcomes = await notificationOutcomeRepository.loadRecentByPeriod(
       'morning',
       1,
     );
@@ -218,7 +218,7 @@ describe('check-in reminders', () => {
       },
     });
 
-    const updated = await notificationOutcomeRepository.getRecentByPeriod(
+    const updated = await notificationOutcomeRepository.loadRecentByPeriod(
       'morning',
       1,
     );
@@ -240,7 +240,7 @@ describe('check-in reminders', () => {
     });
 
     // No interaction — the outcome stays null
-    const outcomes = await notificationOutcomeRepository.getRecentByPeriod(
+    const outcomes = await notificationOutcomeRepository.loadRecentByPeriod(
       'morning',
       1,
     );

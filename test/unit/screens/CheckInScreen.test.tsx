@@ -8,20 +8,20 @@ jest.spyOn(Alert, 'alert');
 
 jest.mock('../../../src/services/database/checkInRepository', () => ({
   checkInRepository: {
-    create: jest.fn().mockReturnValue({
+    save: jest.fn().mockReturnValue({
       id: 'new-1',
       timestamp: Date.now(),
       tagIds: ['tag-happy'],
       source: 'manual',
     }),
-    getToday: jest.fn().mockReturnValue([]),
-    getRecent: jest.fn().mockReturnValue([]),
+    loadToday: jest.fn().mockReturnValue([]),
+    loadRecent: jest.fn().mockReturnValue([]),
   },
 }));
 
 jest.mock('../../../src/services/database/tagRepository', () => ({
   tagRepository: {
-    getAllCategories: jest.fn().mockReturnValue([
+    loadAllCategories: jest.fn().mockReturnValue([
       {
         id: 'cat-mental',
         name: 'Mental Health',
@@ -45,7 +45,7 @@ jest.mock('../../../src/services/database/tagRepository', () => ({
         createdAt: 0,
       },
     ]),
-    getAllTags: jest.fn().mockReturnValue([
+    loadAllTags: jest.fn().mockReturnValue([
       {
         id: 'tag-calm',
         categoryId: 'cat-mental',
@@ -71,7 +71,7 @@ jest.mock('../../../src/services/database/tagRepository', () => ({
         createdAt: 0,
       },
     ]),
-    createTag: jest.fn(),
+    saveTag: jest.fn(),
   },
 }));
 
@@ -197,7 +197,7 @@ describe('CheckInScreen', () => {
     const {
       tagRepository,
     } = require('../../../src/services/database/tagRepository');
-    tagRepository.createTag.mockReturnValue({
+    tagRepository.saveTag.mockReturnValue({
       id: 'new-tag',
       categoryId: 'cat-mental',
       label: 'Excited',
@@ -218,9 +218,11 @@ describe('CheckInScreen', () => {
     fireEvent.press(getByTestId('add-tag-category-cat-mental-confirm'));
 
     await waitFor(() => {
-      expect(tagRepository.createTag).toHaveBeenCalledWith(
-        'cat-mental',
-        'Excited',
+      expect(tagRepository.saveTag).toHaveBeenCalledWith(
+        expect.objectContaining({
+          categoryId: 'cat-mental',
+          label: 'Excited',
+        }),
       );
     });
   });
@@ -229,7 +231,7 @@ describe('CheckInScreen', () => {
     const {
       tagRepository,
     } = require('../../../src/services/database/tagRepository');
-    tagRepository.createTag.mockRejectedValue(new Error('duplicate'));
+    tagRepository.saveTag.mockRejectedValue(new Error('duplicate'));
 
     const {getByTestId} = renderCheckInWithTags();
 

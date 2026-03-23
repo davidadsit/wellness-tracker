@@ -65,7 +65,7 @@ describe('habit tracking workflow', () => {
       expect(getByText('1/8 glasses')).toBeTruthy();
     });
 
-    const completions = await habitRepository.getCompletionsForDate(
+    const completions = await habitRepository.loadCompletionsForDate(
       todayDateString(),
     );
     expect(completions).toHaveLength(1);
@@ -95,7 +95,7 @@ describe('habit tracking workflow', () => {
       expect(getByText('2/8 glasses')).toBeTruthy();
     });
 
-    const completions = await habitRepository.getCompletionsForDate(
+    const completions = await habitRepository.loadCompletionsForDate(
       todayDateString(),
     );
     expect(completions[0].count).toBe(2);

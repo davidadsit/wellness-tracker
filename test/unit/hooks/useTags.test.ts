@@ -7,12 +7,12 @@ import {TagCategory, Tag} from '../../../src/types';
 
 jest.mock('../../../src/services/database/tagRepository', () => ({
   tagRepository: {
-    getAllCategories: jest.fn().mockReturnValue([]),
-    getAllTags: jest.fn().mockReturnValue([]),
-    getAllTagsIncludingArchived: jest.fn().mockReturnValue([]),
-    createTag: jest.fn(),
-    createCategory: jest.fn(),
-    updateTag: jest.fn(),
+    loadAllCategories: jest.fn().mockReturnValue([]),
+    loadAllTags: jest.fn().mockReturnValue([]),
+    loadAllTagsIncludingArchived: jest.fn().mockReturnValue([]),
+    loadTag: jest.fn(),
+    saveTag: jest.fn(),
+    saveCategory: jest.fn(),
     removeTag: jest.fn(),
   },
 }));

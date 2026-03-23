@@ -4,6 +4,7 @@ import {habitRepository} from '../../../../src/services/database/habitRepository
 import {notificationService} from '../../../../src/services/notifications/notificationService';
 import {notificationOutcomeRepository} from '../../../../src/services/database/notificationOutcomeRepository';
 import {setupTestDatabase} from '../../../helpers/database';
+import {makeNotificationOutcome} from '../../../helpers/factories';
 
 jest.mock('../../../../src/services/database/habitRepository');
 jest.mock('../../../../src/services/notifications/notificationService');
@@ -36,12 +37,12 @@ describe('notificationHandlers', () => {
       type: EventType.DELIVERED,
       detail: {notification: {id: 'n1'}, pressAction: {id: 'COMPLETE_HABIT'}},
     });
-    expect(mockedHabitRepo.completeHabit).not.toHaveBeenCalled();
+    expect(mockedHabitRepo.saveCompletion).not.toHaveBeenCalled();
   });
 
   describe('COMPLETE_HABIT action', () => {
     it('completes habit via repository and cancels notification', async () => {
-      mockedHabitRepo.completeHabit.mockReturnValue({
+      mockedHabitRepo.saveCompletion.mockReturnValue({
         id: 'c1',
         habitId: 'h1',
         date: '2024-01-15',
@@ -58,10 +59,13 @@ describe('notificationHandlers', () => {
         },
       });
 
-      expect(mockedHabitRepo.completeHabit).toHaveBeenCalledWith('h1', {
-        source: 'notification',
-        date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
-      });
+      expect(mockedHabitRepo.saveCompletion).toHaveBeenCalledWith(
+        expect.objectContaining({
+          habitId: 'h1',
+          source: 'notification',
+          date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+        }),
+      );
       expect(notifee.cancelNotification).toHaveBeenCalledWith(
         'habit-reminder-h1',
       );
@@ -75,7 +79,7 @@ describe('notificationHandlers', () => {
           pressAction: {id: 'COMPLETE_HABIT'},
         },
       });
-      expect(mockedHabitRepo.completeHabit).not.toHaveBeenCalled();
+      expect(mockedHabitRepo.saveCompletion).not.toHaveBeenCalled();
     });
   });
 
@@ -115,10 +119,9 @@ describe('notificationHandlers', () => {
 
   describe('check-in reminder outcome tracking', () => {
     async function createOutcomeAndGetId(): Promise<string> {
-      const record = await notificationOutcomeRepository.recordSent({
-        reminderPeriod: 'morning',
-        scheduledTime: '09:00',
-      });
+      const record = await notificationOutcomeRepository.save(
+        makeNotificationOutcome(),
+      );
       return record.id;
     }
 
@@ -140,7 +143,7 @@ describe('notificationHandlers', () => {
         },
       });
 
-      const outcomes = await notificationOutcomeRepository.getRecentByPeriod(
+      const outcomes = await notificationOutcomeRepository.loadRecentByPeriod(
         'morning',
         1,
       );
@@ -167,7 +170,7 @@ describe('notificationHandlers', () => {
         },
       });
 
-      const outcomes = await notificationOutcomeRepository.getRecentByPeriod(
+      const outcomes = await notificationOutcomeRepository.loadRecentByPeriod(
         'morning',
         1,
       );
@@ -194,7 +197,7 @@ describe('notificationHandlers', () => {
         },
       });
 
-      const outcomes = await notificationOutcomeRepository.getRecentByPeriod(
+      const outcomes = await notificationOutcomeRepository.loadRecentByPeriod(
         'morning',
         1,
       );
@@ -216,7 +219,7 @@ describe('notificationHandlers', () => {
         },
       });
 
-      const outcomes = await notificationOutcomeRepository.getRecentByPeriod(
+      const outcomes = await notificationOutcomeRepository.loadRecentByPeriod(
         'morning',
         10,
       );

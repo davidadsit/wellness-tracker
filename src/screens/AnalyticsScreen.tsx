@@ -44,8 +44,8 @@ export function AnalyticsScreen() {
   useFocusEffect(
     useCallback(() => {
       loadAllTagLabels();
-      tagRepository.getAllTagsIncludingArchived().then(tags => {
-        tagRepository.getAllCategories().then(categories => {
+      tagRepository.loadAllTagsIncludingArchived().then(tags => {
+        tagRepository.loadAllCategories().then(categories => {
           const symptomCatIds = new Set(
             categories.filter(c => c.triggerTagId).map(c => c.id),
           );
@@ -78,7 +78,7 @@ export function AnalyticsScreen() {
     const range = getDateRange(period);
     Promise.all(
       tagFrequency.map(tf =>
-        checkInRepository.getTagDailyFrequency(
+        checkInRepository.loadTagDailyFrequency(
           tf.tagId,
           range.start,
           range.end,
@@ -100,7 +100,7 @@ export function AnalyticsScreen() {
   const loadTimelineForTag = useCallback(
     async (tagId: string, days: AnalyticsPeriod) => {
       const range = getDateRange(days);
-      const daily = await checkInRepository.getTagDailyFrequency(
+      const daily = await checkInRepository.loadTagDailyFrequency(
         tagId,
         range.start,
         range.end,

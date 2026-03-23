@@ -9,8 +9,8 @@ import {HabitCompletion} from '../../../src/types';
 jest.mock('../../../src/services/database/habitRepository', () => ({
   habitRepository: {
     getAll: jest.fn().mockReturnValue([]),
-    getCompletionsForDate: jest.fn().mockReturnValue([]),
-    completeHabit: jest.fn(),
+    loadCompletionsForDate: jest.fn().mockReturnValue([]),
+    saveCompletion: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),

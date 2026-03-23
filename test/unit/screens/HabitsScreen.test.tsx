@@ -5,7 +5,7 @@ import {renderWithStore} from '../../helpers/renderWithStore';
 
 jest.mock('../../../src/services/database/habitRepository', () => ({
   habitRepository: {
-    getCompletionsForDate: jest.fn().mockReturnValue([]),
+    loadCompletionsForDate: jest.fn().mockReturnValue([]),
   },
 }));
 

@@ -128,6 +128,18 @@ export function SettingsScreen() {
           <Text style={styles.chevron}>&gt;</Text>
         </TouchableOpacity>
       </Card>
+
+      {__DEV__ && (
+        <Card>
+          <TouchableOpacity
+            testID="test-controls-button"
+            style={styles.row}
+            onPress={() => navigation.navigate('TestControl')}>
+            <Text style={styles.label}>Test Controls</Text>
+            <Text style={styles.chevron}>&gt;</Text>
+          </TouchableOpacity>
+        </Card>
+      )}
     </View>
   );
 }

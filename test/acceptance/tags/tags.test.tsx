@@ -8,6 +8,7 @@ import {setupTestDatabase} from '../../helpers/database';
 import {makeStore} from '../../helpers/renderWithStore';
 import {tagRepository} from '../../../src/services/database/tagRepository';
 import {checkInRepository} from '../../../src/services/database/checkInRepository';
+import {makeTag, makeCheckIn} from '../../helpers/factories';
 import {MMKV} from 'react-native-mmkv';
 
 jest.spyOn(Alert, 'alert');
@@ -60,7 +61,7 @@ describe('tag management workflow', () => {
       expect(getByText('Social')).toBeTruthy();
     });
 
-    const categories = await tagRepository.getAllCategories();
+    const categories = await tagRepository.loadAllCategories();
     expect(categories.find(c => c.name === 'Social')).toBeTruthy();
   });
 
@@ -73,7 +74,7 @@ describe('tag management workflow', () => {
       expect(getByText('Mental Health')).toBeTruthy();
     });
 
-    const categories = await tagRepository.getAllCategories();
+    const categories = await tagRepository.loadAllCategories();
     const mentalCategory = categories.find(c => c.name === 'Mental Health')!;
 
     const addTagButtons = getAllByText('+ Add Tag');
@@ -93,12 +94,12 @@ describe('tag management workflow', () => {
       expect(getByText('Inspired')).toBeTruthy();
     });
 
-    const tags = await tagRepository.getAllTags();
+    const tags = await tagRepository.loadAllTags();
     expect(tags.find(t => t.label === 'Inspired')).toBeTruthy();
   });
 
   it('user edits a custom tag name', async () => {
-    const customTag = await tagRepository.createTag('cat-mental', 'Inspired');
+    const customTag = await tagRepository.saveTag(makeTag({label: 'Inspired'}));
 
     const {getByText, getByTestId} = renderScreen(<TagManagementScreen />);
 
@@ -122,12 +123,14 @@ describe('tag management workflow', () => {
       expect(getByText('Creative')).toBeTruthy();
     });
 
-    const tags = await tagRepository.getAllTags();
+    const tags = await tagRepository.loadAllTags();
     expect(tags.find(t => t.id === customTag.id)?.label).toBe('Creative');
   });
 
   it('user removes a tag that has no check-in usage and it is deleted', async () => {
-    const customTag = await tagRepository.createTag('cat-mental', 'Temporary');
+    const customTag = await tagRepository.saveTag(
+      makeTag({label: 'Temporary'}),
+    );
 
     const {getByText, getByTestId, queryByText} = renderScreen(
       <TagManagementScreen />,
@@ -161,17 +164,16 @@ describe('tag management workflow', () => {
       expect(queryByText('Temporary')).toBeNull();
     });
 
-    const tags = await tagRepository.getAllTags();
+    const tags = await tagRepository.loadAllTags();
     expect(tags.find(t => t.id === customTag.id)).toBeUndefined();
   });
 
   it('user removes a tag that has check-in usage and it is archived', async () => {
-    const customTag = await tagRepository.createTag('cat-mental', 'Used Tag');
+    const customTag = await tagRepository.saveTag(makeTag({label: 'Used Tag'}));
 
-    await checkInRepository.create({
-      tagIds: [customTag.id],
-      note: 'test',
-    });
+    await checkInRepository.save(
+      makeCheckIn({tagIds: [customTag.id], note: 'test'}),
+    );
 
     const {getByText, getByTestId, queryByText} = renderScreen(
       <TagManagementScreen />,
@@ -201,10 +203,10 @@ describe('tag management workflow', () => {
       expect(queryByText('Used Tag')).toBeNull();
     });
 
-    const activeTags = await tagRepository.getAllTags();
+    const activeTags = await tagRepository.loadAllTags();
     expect(activeTags.find(t => t.id === customTag.id)).toBeUndefined();
 
-    const allTags = await tagRepository.getAllTagsIncludingArchived();
+    const allTags = await tagRepository.loadAllTagsIncludingArchived();
     const archivedTag = allTags.find(t => t.id === customTag.id);
     expect(archivedTag).toBeTruthy();
     expect(archivedTag!.isArchived).toBe(true);
@@ -234,7 +236,7 @@ describe('tag management workflow', () => {
       expect(getByText('Motivated')).toBeTruthy();
     });
 
-    const tags = await tagRepository.getAllTags();
+    const tags = await tagRepository.loadAllTags();
     expect(tags.find(t => t.label === 'Motivated')).toBeTruthy();
   });
 });

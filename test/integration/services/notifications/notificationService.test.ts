@@ -65,7 +65,7 @@ describe('notificationService', () => {
     it('records a sent outcome with null outcome', async () => {
       await notificationService.scheduleCheckInReminder('morning', '09:00');
 
-      const outcomes = await notificationOutcomeRepository.getRecentByPeriod(
+      const outcomes = await notificationOutcomeRepository.loadRecentByPeriod(
         'morning',
         1,
       );
@@ -81,7 +81,7 @@ describe('notificationService', () => {
         .calls[0][0];
       expect(notification.data.outcomeId).toBeDefined();
 
-      const outcomes = await notificationOutcomeRepository.getRecentByPeriod(
+      const outcomes = await notificationOutcomeRepository.loadRecentByPeriod(
         'midday',
         1,
       );

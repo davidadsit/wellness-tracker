@@ -41,7 +41,7 @@ describe('check-in workflow', () => {
       expect(Alert.alert).toHaveBeenCalledWith('Saved', 'Check-in recorded!');
     });
 
-    const checkIns = await checkInRepository.getRecent(10);
+    const checkIns = await checkInRepository.loadRecent(10);
     expect(checkIns).toHaveLength(1);
     expect(checkIns[0].tagIds).toContain('tag-focused');
     expect(checkIns[0].tagIds).toContain('tag-calm');
@@ -73,7 +73,7 @@ describe('check-in workflow', () => {
       expect(Alert.alert).toHaveBeenCalledWith('Saved', 'Check-in recorded!');
     });
 
-    const checkIns = await checkInRepository.getRecent(10);
+    const checkIns = await checkInRepository.loadRecent(10);
     expect(checkIns).toHaveLength(1);
     expect(checkIns[0].note).toBe('Great morning workout!');
   });
@@ -94,7 +94,7 @@ describe('check-in workflow', () => {
       );
     });
 
-    const checkIns = await checkInRepository.getRecent(10);
+    const checkIns = await checkInRepository.loadRecent(10);
     expect(checkIns).toHaveLength(0);
   });
 

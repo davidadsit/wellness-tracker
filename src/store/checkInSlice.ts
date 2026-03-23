@@ -2,6 +2,7 @@ import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import {CheckIn} from '../types';
 import {checkInRepository} from '../services/database/checkInRepository';
 import {todayStartTimestamp, todayEndTimestamp} from '../utils/dateUtils';
+import {ulid} from '../utils/ulid';
 
 export interface CheckInState {
   todayCheckIns: CheckIn[];
@@ -18,7 +19,7 @@ const initialState: CheckInState = {
 export const fetchTodayCheckIns = createAsyncThunk(
   'checkIn/fetchToday',
   async () => {
-    return checkInRepository.getToday(
+    return checkInRepository.loadToday(
       todayStartTimestamp(),
       todayEndTimestamp(),
     );
@@ -28,7 +29,7 @@ export const fetchTodayCheckIns = createAsyncThunk(
 export const fetchRecentCheckIns = createAsyncThunk(
   'checkIn/fetchRecent',
   async (limit: number = 20) => {
-    return checkInRepository.getRecent(limit);
+    return checkInRepository.loadRecent(limit);
   },
 );
 
@@ -39,7 +40,14 @@ export const submitCheckIn = createAsyncThunk(
     note?: string;
     source?: 'manual' | 'notification';
   }) => {
-    return checkInRepository.create(params);
+    const checkIn: CheckIn = {
+      id: ulid(),
+      timestamp: Date.now(),
+      tagIds: params.tagIds,
+      note: params.note,
+      source: params.source ?? 'manual',
+    };
+    return checkInRepository.save(checkIn);
   },
 );
 

@@ -86,6 +86,7 @@ export type HomeStackParamList = {
   Analytics: undefined;
   TagManagement: undefined;
   QuickCheckIn: undefined;
+  TestControl: undefined;
 };
 
 export type HabitsStackParamList = {
