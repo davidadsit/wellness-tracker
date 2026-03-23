@@ -43,18 +43,18 @@ make test             # Tests with maxWorkers=1
 src/
   components/         # UI components grouped by domain (checkin/, habits/, analytics/, journal/, common/)
   hooks/              # Custom hooks (useCheckIn, useTags, useHabits, useJournal, useAnalytics)
-  screens/            # Screen components (10 screens)
+  screens/            # Screen components
   services/database/  # Repository pattern (checkInRepository, habitRepository, tagRepository)
   services/notifications/
   store/              # Redux slices (checkInSlice, habitsSlice, tagsSlice, settingsSlice)
   navigation/         # RootNavigator (stack), TabNavigator (bottom tabs), linking.ts
   types/              # Centralized TypeScript interfaces
-  utils/              # dateUtils, analytics, uuid
+  utils/              # dateUtils, analytics, ulid
   theme.ts            # Colors and common StyleSheet styles
 test/
-  __mocks__/          # Mocks for op-sqlite, notifee, react-native-mmkv, uuid
+  __mocks__/          # Mocks for op-sqlite, notifee, react-native-mmkv
   helpers/            # Shared test utilities (database setup, renderWithStore, factories)
-  unit/               # Unit tests — isolated, all deps mocked (store, components, utils, hooks)
+  unit/               # Unit tests — isolated, all deps mocked
   integration/        # Integration tests — real database, one concrete dependency
   acceptance/         # Acceptance tests — full stack below UI, no mocks
 ```
@@ -68,8 +68,6 @@ All code changes should be evaluated against these rules, in priority order:
 3. **No duplication** — Every piece of knowledge should have a single, unambiguous representation. Extract shared logic rather than copying it, but only when duplication actually exists (not speculatively).
 4. **Fewest elements** — Remove anything that doesn't serve the first three rules. No speculative abstractions, unused code, or unnecessary complexity. Less is more.
 
-Rules are listed in priority order — e.g., don't sacrifice clarity (rule 2) to reduce duplication (rule 3), and don't add abstractions (violating rule 4) unless they genuinely serve the higher rules.
-
 ## Architecture Patterns
 
 - **Repository pattern**: Database operations isolated in `src/services/database/`. Repositories are singleton objects with async methods. Use these for all DB access.
@@ -80,10 +78,8 @@ Rules are listed in priority order — e.g., don't sacrifice clarity (rule 2) to
 
 ## Navigation
 
-- **RootNavigator** (stack): Tabs, HabitDetail, HabitForm, Settings, TagManagement, QuickCheckIn, Analytics
-- **TabNavigator** (bottom tabs): Home, Check-In, Habits, Journal
 - Deep links: `wellnesstracker://` prefix (e.g., `wellnesstracker://journal`, `wellnesstracker://analytics`)
-- Navigation types: `RootStackParamList` and `TabParamList` in `src/types/index.ts`
+- Navigation types: `HomeStackParamList`, `HabitsStackParamList`, and `TabParamList` in `src/types/index.ts`
 
 ## Database
 
@@ -91,7 +87,7 @@ OP SQLite with 6 tables: `tag_categories`, `tags`, `check_ins`, `check_in_tags`,
 
 Key behaviors:
 - Tags are archived (not deleted) when they have check-in usage — see `tagRepository.removeTag()`
-- Use `getAllTagsIncludingArchived()` when displaying historical data (e.g., Journal screen)
+- Use `loadAllTagsIncludingArchived()` when displaying historical data (e.g., Journal screen)
 - Habit completions use upsert (ON CONFLICT) to increment count per day
 
 ### Schema Migrations
@@ -135,13 +131,6 @@ All code must be written using Test-Driven Development. TDD is the corollary of 
 - Run the full test suite (`npm test`) frequently, not just the test you're working on.
 - When fixing a bug, first write a test that reproduces the bug, then fix it.
 
-**General test structure:**
-- Tests live in `test/` (not alongside source), organized into three suites: `unit/`, `integration/`, `acceptance/`
-- Jest config: `jest.config.js` with custom `moduleNameMapper` for native module mocks
-- Navigation and safe-area mocked in `jest.setup.js`
-- Shared helpers live in `test/helpers/` (database setup, store rendering, factories)
-- Run all: `npm test` or `make test`. Run one suite: `npm run test:unit`, `npm run test:integration`, `npm run test:acceptance`
-
 ### Three Test Suites
 
 Tests are organized into three distinct suites. Each suite has a different purpose, speed, and set of constraints. When adding a test, choose the suite that matches what you are validating.
@@ -158,20 +147,11 @@ Tests are organized into three distinct suites. Each suite has a different purpo
 
 **What belongs here:**
 - Redux slice reducers and action creators (mock repository calls in thunks)
-- Pure utility functions (`dateUtils`, `analytics`, `uuid`)
+- Pure utility functions (`dateUtils`, `analytics`, `ulid`)
 - Component rendering and interaction (mock hooks/stores via `test/helpers/renderWithStore`)
 - Custom hook logic (mock dispatched thunks)
 
 **Smells:** Too much setup, slow execution, race conditions, reliance on real database or services.
-
-**Directory structure mirrors `src/`:**
-```
-test/unit/
-  store/              # Slice reducer tests
-  utils/              # Pure function tests
-  components/         # Component render/interaction tests
-  hooks/              # Hook behavior tests
-```
 
 #### 2. Integration Tests (`test/integration/`)
 
@@ -185,19 +165,7 @@ test/unit/
 - Tests must be atomic, isolated, and order-independent.
 - Only test the features of the external system that you actually use — don't attempt exhaustive coverage of the dependency.
 
-**What belongs here:**
-- Repository tests (`checkInRepository`, `habitRepository`, `tagRepository`) — these run real SQL against the in-memory OP SQLite database
-- Notification service tests that verify scheduling/cancellation against the notifee API
-- Any adapter or proxy that wraps an external system
-
 **Smells:** Any mocks or stubs for the dependency being integrated, testing features of the external system that the app doesn't use.
-
-**Directory structure mirrors `src/`:**
-```
-test/integration/
-  services/database/       # Repository tests with real DB
-  services/notifications/  # Notification service tests
-```
 
 #### 3. Acceptance Tests (`test/acceptance/`)
 
@@ -210,20 +178,7 @@ test/integration/
 - These are the slowest tests. Run them less frequently than unit tests during development, but always before committing.
 - Each test exercises a complete user workflow or acceptance criterion: e.g., "user submits a check-in and sees it on the home screen."
 
-**What belongs here:**
-- Full user workflow tests: check-in creation end-to-end, habit completion lifecycle, tag management flows
-- Feature/story acceptance criteria: "when a user selects the Ill tag, the Symptoms category appears"
-- Cross-cutting concerns: data persists across screen navigations, state stays consistent after multiple operations
-
 **Smells:** Mocking application code (repositories, slices, hooks), testing implementation details rather than behavior, attempting to validate every code path (that's what unit tests are for), tests written in technical jargon rather than business language.
-
-**Directory structure organized by feature/workflow:**
-```
-test/acceptance/
-  checkin/          # Check-in workflow tests
-  habits/           # Habit tracking workflow tests
-  tags/             # Tag management workflow tests
-```
 
 ### Choosing the Right Test Suite
 
@@ -239,7 +194,7 @@ test/acceptance/
 
 - `database.ts` — `setupTestDatabase()`: resets and initializes the OP SQLite database in `beforeEach`. Used by integration and acceptance tests.
 - `renderWithStore.tsx` — `makeStore(preloadedState?)` and `renderWithStore(ui, preloadedState?)`: creates a Redux store with all reducers and wraps a component in `<Provider>`. Used by unit tests (with mocked repositories) and acceptance tests (with real repositories).
-- `factories.ts` — `makeHabit(overrides?)`: builds a valid `Habit` object for testing. Used across all suites.
+- `factories.ts` — `makeHabit`, `makeTag`, `makeCategory`, `makeCheckIn`, `makeCompletion`, `makeNotificationOutcome`: build valid domain objects for testing. All accept optional `overrides`. Used across all suites.
 
 ## Android Emulator
 
