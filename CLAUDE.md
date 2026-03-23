@@ -87,12 +87,38 @@ Rules are listed in priority order — e.g., don't sacrifice clarity (rule 2) to
 
 ## Database
 
-OP SQLite with 5 tables: `tag_categories`, `tags`, `check_ins`, `check_in_tags`, `habit_completions`. Schema and seed data in `src/services/database/database.ts`. Default tags defined in `src/seed/defaultTags.ts`.
+OP SQLite with 6 tables: `tag_categories`, `tags`, `check_ins`, `check_in_tags`, `habit_completions`, `notification_outcomes`. Schema and seed data in `src/services/database/database.ts`. Default tags defined in `src/seed/defaultTags.ts`.
 
 Key behaviors:
 - Tags are archived (not deleted) when they have check-in usage — see `tagRepository.removeTag()`
 - Use `getAllTagsIncludingArchived()` when displaying historical data (e.g., Journal screen)
 - Habit completions use upsert (ON CONFLICT) to increment count per day
+
+### Schema Migrations
+
+The app has real users — **all schema changes must be nondestructive**. The database uses a versioned migration system in `src/services/database/migrations.ts`.
+
+**How it works:**
+- SQLite's `PRAGMA user_version` tracks the current schema version (starts at 0 for fresh DBs)
+- Migrations are an ordered array of async functions in `migrations.ts`
+- On startup, the runner reads the current version, executes only newer migrations in order, and bumps `user_version` after each one
+- No rollback mechanism — SQLite DDL is limited; keep migrations additive
+
+**Adding a new migration:**
+1. Write a new async migration function (e.g., `migrationV2`) in `migrations.ts`
+2. Append it to the `migrations` array — ordering is determined by array position
+3. The migration function receives the database handle and runs DDL/DML statements
+4. Add integration tests in `test/integration/services/database/migrations.test.ts`
+5. That's it — the runner handles version detection and execution automatically
+
+**Migration rules:**
+- Use `CREATE TABLE IF NOT EXISTS` and `CREATE INDEX IF NOT EXISTS` — migrations may re-run on fresh databases
+- Never drop or rename tables/columns — existing user data must be preserved
+- Add columns with defaults: `ALTER TABLE x ADD COLUMN y TYPE NOT NULL DEFAULT z`
+- Test that migrations work both on fresh databases (version 0 → latest) and incremental upgrades (version N → N+1)
+
+**Mock considerations:**
+- The OP SQLite mock in `test/__mocks__/op-sqlite.ts` must handle `PRAGMA` reads (no `=` sign, returns rows) differently from `PRAGMA` writes (has `=` sign, executes only)
 
 ## Testing — TDD Required
 

@@ -16,10 +16,12 @@ export function open(_options: {name: string; location?: string}) {
   return {
     execute: async (sql: string, params?: any[]) => {
       const stmt = instance.prepare(sql);
-      if (
-        sql.trimStart().toUpperCase().startsWith('SELECT') ||
-        sql.trimStart().toUpperCase().startsWith('WITH')
-      ) {
+      const upper = sql.trimStart().toUpperCase();
+      const isRead =
+        upper.startsWith('SELECT') ||
+        upper.startsWith('WITH') ||
+        (upper.startsWith('PRAGMA') && !upper.includes('='));
+      if (isRead) {
         const rows = params ? stmt.all(...params) : stmt.all();
         return {rows, rowsAffected: 0};
       }
