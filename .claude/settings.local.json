@@ -3,7 +3,8 @@
     "allow": [
       "Bash(npx react-native:*)",
       "Bash(node:*)",
-      "Bash(find /Users/davidadsit/code/wellness-tracker/test/acceptance -type f -name *.test.ts)"
+      "Bash(find /Users/davidadsit/code/wellness-tracker/test/acceptance -type f -name *.test.ts)",
+      "Bash(done)"
     ]
   }
 }

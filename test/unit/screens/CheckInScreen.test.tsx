@@ -139,30 +139,39 @@ describe('CheckInScreen', () => {
     jest.clearAllMocks();
   });
 
-  it('renders the screen with title', () => {
+  it('renders the screen with title', async () => {
     const {getByText} = renderWithStore(<CheckInScreen />);
-    expect(getByText('How are you feeling?')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByText('How are you feeling?')).toBeTruthy();
+    });
   });
 
-  it('shows Mental Health and Physical Health categories but hides Symptoms', () => {
+  it('shows Mental Health and Physical Health categories but hides Symptoms', async () => {
     const {getByText, queryByText} = renderCheckInWithTags();
 
-    expect(getByText('Mental Health')).toBeTruthy();
-    expect(getByText('Physical Health')).toBeTruthy();
-    expect(queryByText('Symptoms')).toBeNull();
+    await waitFor(() => {
+      expect(getByText('Mental Health')).toBeTruthy();
+      expect(getByText('Physical Health')).toBeTruthy();
+      expect(queryByText('Symptoms')).toBeNull();
+    });
   });
 
-  it('reveals Symptoms when Ill is selected', () => {
+  it('reveals Symptoms when Ill is selected', async () => {
     const {getByTestId, getByText, queryByText} = renderCheckInWithTags();
 
-    expect(queryByText('Symptoms')).toBeNull();
+    await waitFor(() => {
+      expect(queryByText('Symptoms')).toBeNull();
+    });
     fireEvent.press(getByTestId('tag-tag-ill'));
     expect(getByText('Symptoms')).toBeTruthy();
     expect(getByText('Headache')).toBeTruthy();
   });
 
-  it('alerts when submitting with no tags', () => {
+  it('alerts when submitting with no tags', async () => {
     const {getByTestId} = renderWithStore(<CheckInScreen />);
+    await waitFor(() => {
+      expect(getByTestId('checkin-submit')).toBeTruthy();
+    });
     fireEvent.press(getByTestId('checkin-submit'));
     expect(Alert.alert).toHaveBeenCalledWith(
       'Select Tags',

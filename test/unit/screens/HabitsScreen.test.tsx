@@ -1,8 +1,9 @@
 import React from 'react';
-import {fireEvent} from '@testing-library/react-native';
+import {fireEvent, waitFor} from '@testing-library/react-native';
 import {HabitsScreen} from '../../../src/screens/HabitsScreen';
 import {renderWithStore} from '../../helpers/renderWithStore';
 import {makeHabit} from '../../helpers/factories';
+import {MMKV} from 'react-native-mmkv';
 
 jest.mock('../../../src/services/database/habitRepository', () => ({
   habitRepository: {
@@ -10,117 +11,76 @@ jest.mock('../../../src/services/database/habitRepository', () => ({
   },
 }));
 
+const testHabit = makeHabit({id: 'h1'});
+
+function storeHabits(habits: object[]) {
+  new MMKV().set('habits', JSON.stringify(habits));
+}
+
 describe('HabitsScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    new MMKV().clearAll();
   });
 
-  it('shows empty state when no habits', () => {
+  it('shows empty state when no habits', async () => {
     const {getByText} = renderWithStore(<HabitsScreen />);
-    expect(getByText('No habits yet')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByText('No habits yet')).toBeTruthy();
+    });
   });
 
-  it('shows FAB button', () => {
+  it('shows FAB button', async () => {
     const {getByTestId} = renderWithStore(<HabitsScreen />);
-    expect(getByTestId('add-habit-fab')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByTestId('add-habit-fab')).toBeTruthy();
+    });
   });
 
-  it('navigates on FAB press', () => {
+  it('navigates on FAB press', async () => {
     const {getByTestId} = renderWithStore(<HabitsScreen />);
+    await waitFor(() => {
+      expect(getByTestId('add-habit-fab')).toBeTruthy();
+    });
     fireEvent.press(getByTestId('add-habit-fab'));
     // Navigation is handled by the global mock — just verify it doesn't crash
   });
 
-  it('renders habit cards when habits exist', () => {
-    const {getByText} = renderWithStore(<HabitsScreen />, {
-      tags: {categories: [], tags: [], loading: false, error: null},
-      checkIn: {
-        todayCheckIns: [],
-        recentCheckIns: [],
-        loading: false,
-        error: null,
-      },
-      habits: {
-        habits: [makeHabit({id: 'h1'})],
-        todayCompletions: [],
-        loading: false,
-        error: null,
-      },
-      settings: {
-        reminders: {
-          morning: {enabled: false, time: '09:00'},
-          midday: {enabled: true, time: '13:00'},
-          evening: {enabled: false, time: '19:00'},
-        },
-        theme: 'system',
-      },
-    });
+  it('renders habit cards when habits exist', async () => {
+    storeHabits([testHabit]);
+    const {getByText} = renderWithStore(<HabitsScreen />);
 
-    expect(getByText('Drink Water')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByText('Drink Water')).toBeTruthy();
+    });
   });
 
-  it('shows FAB that navigates to HabitForm when habits exist', () => {
+  it('shows FAB that navigates to HabitForm when habits exist', async () => {
+    storeHabits([testHabit]);
     const mockNavigate = jest.fn();
     const {useNavigation} = require('@react-navigation/native');
     useNavigation.mockReturnValue({navigate: mockNavigate, goBack: jest.fn()});
 
-    const {getByTestId} = renderWithStore(<HabitsScreen />, {
-      tags: {categories: [], tags: [], loading: false, error: null},
-      checkIn: {
-        todayCheckIns: [],
-        recentCheckIns: [],
-        loading: false,
-        error: null,
-      },
-      habits: {
-        habits: [makeHabit({id: 'h1'})],
-        todayCompletions: [],
-        loading: false,
-        error: null,
-      },
-      settings: {
-        reminders: {
-          morning: {enabled: false, time: '09:00'},
-          midday: {enabled: true, time: '13:00'},
-          evening: {enabled: false, time: '19:00'},
-        },
-        theme: 'system',
-      },
-    });
+    const {getByTestId} = renderWithStore(<HabitsScreen />);
 
+    await waitFor(() => {
+      expect(getByTestId('add-habit-fab')).toBeTruthy();
+    });
     fireEvent.press(getByTestId('add-habit-fab'));
     expect(mockNavigate).toHaveBeenCalledWith('HabitForm', {});
   });
 
-  it('navigates to HabitDetail when pressing a habit card', () => {
+  it('navigates to HabitDetail when pressing a habit card', async () => {
+    storeHabits([testHabit]);
     const mockNavigate = jest.fn();
     const {useNavigation} = require('@react-navigation/native');
     useNavigation.mockReturnValue({navigate: mockNavigate, goBack: jest.fn()});
 
-    const {getByText} = renderWithStore(<HabitsScreen />, {
-      tags: {categories: [], tags: [], loading: false, error: null},
-      checkIn: {
-        todayCheckIns: [],
-        recentCheckIns: [],
-        loading: false,
-        error: null,
-      },
-      habits: {
-        habits: [makeHabit({id: 'h1'})],
-        todayCompletions: [],
-        loading: false,
-        error: null,
-      },
-      settings: {
-        reminders: {
-          morning: {enabled: false, time: '09:00'},
-          midday: {enabled: true, time: '13:00'},
-          evening: {enabled: false, time: '19:00'},
-        },
-        theme: 'system',
-      },
-    });
+    const {getByText} = renderWithStore(<HabitsScreen />);
 
+    await waitFor(() => {
+      expect(getByText('Drink Water')).toBeTruthy();
+    });
     fireEvent.press(getByText('Drink Water'));
     expect(mockNavigate).toHaveBeenCalledWith('HabitDetail', {habitId: 'h1'});
   });

@@ -46,7 +46,7 @@ export function TagManagementScreen() {
       const maxOrder = Math.max(0, ...categories.map(c => c.sortOrder));
       await addCategory(name, maxOrder + 1);
       setNewCategoryName('');
-      loadTags();
+      await loadTags();
     } catch {
       Alert.alert('Error', 'Could not create category.');
     }
@@ -70,7 +70,7 @@ export function TagManagementScreen() {
       await addTag(addingToCategoryId, label);
       setAddingToCategoryId(null);
       setNewTagLabel('');
-      loadTags();
+      await loadTags();
     } catch {
       Alert.alert(
         'Error',
@@ -101,7 +101,7 @@ export function TagManagementScreen() {
     try {
       await editTag(editingTagId, label);
       setEditingTagId(null);
-      loadTags();
+      await loadTags();
     } catch {
       Alert.alert('Error', 'Could not update tag.');
     }
@@ -123,7 +123,7 @@ export function TagManagementScreen() {
           onPress: async () => {
             try {
               await removeTag(tagId);
-              loadTags();
+              await loadTags();
             } catch {
               Alert.alert('Error', 'Could not remove tag.');
             }

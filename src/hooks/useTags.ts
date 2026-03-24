@@ -17,9 +17,7 @@ export function useTags() {
     (state: RootState) => state.tags,
   );
 
-  const loadTags = useCallback(() => {
-    dispatch(fetchAllTags());
-  }, [dispatch]);
+  const loadTags = useCallback(() => dispatch(fetchAllTags()), [dispatch]);
 
   const tagsByCategory = useMemo(() => {
     const map = new Map<string, Tag[]>();

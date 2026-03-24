@@ -1,7 +1,8 @@
 import React from 'react';
-import {fireEvent} from '@testing-library/react-native';
+import {fireEvent, waitFor} from '@testing-library/react-native';
 import {HomeScreen} from '../../../src/screens/HomeScreen';
 import {renderWithStore} from '../../helpers/renderWithStore';
+import {MMKV} from 'react-native-mmkv';
 
 jest.mock('../../../src/services/database/tagRepository', () => ({
   tagRepository: {
@@ -23,23 +24,44 @@ jest.mock('../../../src/services/database/habitRepository', () => ({
   },
 }));
 
+const waterHabit = {
+  id: 'h1',
+  name: 'Water',
+  category: 'water',
+  frequency: 'daily',
+  targetCount: 8,
+  color: '#3498db',
+  icon: 'water',
+  isActive: true,
+  createdAt: 0,
+};
+
+function storeHabits(habits: object[]) {
+  new MMKV().set('habits', JSON.stringify(habits));
+}
+
 describe('HomeScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    new MMKV().clearAll();
   });
 
-  it('renders the screen', () => {
+  it('renders the screen', async () => {
     const {getByTestId} = renderWithStore(<HomeScreen />);
-    expect(getByTestId('home-screen')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByTestId('home-screen')).toBeTruthy();
+    });
   });
 
-  it('shows CTA when no check-ins today', () => {
+  it('shows CTA when no check-ins today', async () => {
     const {getByTestId, getByText} = renderWithStore(<HomeScreen />);
-    expect(getByText("You haven't checked in yet today")).toBeTruthy();
-    expect(getByTestId('cta-check-in')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByText("You haven't checked in yet today")).toBeTruthy();
+      expect(getByTestId('cta-check-in')).toBeTruthy();
+    });
   });
 
-  it('shows today check-ins when present', () => {
+  it('shows today check-ins when present', async () => {
     const {getByText} = renderWithStore(<HomeScreen />, {
       checkIn: {
         todayCheckIns: [
@@ -80,102 +102,46 @@ describe('HomeScreen', () => {
       },
     });
 
-    expect(getByText("Today's Check-Ins")).toBeTruthy();
-    expect(getByText('Happy')).toBeTruthy();
-  });
-
-  it('shows habit summary', () => {
-    const {getByText} = renderWithStore(<HomeScreen />, {
-      checkIn: {
-        todayCheckIns: [],
-        recentCheckIns: [],
-        loading: false,
-        error: null,
-      },
-      tags: {categories: [], tags: [], loading: false, error: null},
-      habits: {
-        habits: [
-          {
-            id: 'h1',
-            name: 'Water',
-            category: 'water',
-            frequency: 'daily',
-            targetCount: 8,
-            color: '#3498db',
-            icon: 'water',
-            isActive: true,
-            createdAt: 0,
-          },
-        ],
-        todayCompletions: [],
-        loading: false,
-        error: null,
-      },
-      settings: {
-        reminders: {
-          morning: {enabled: false, time: '09:00'},
-          midday: {enabled: true, time: '13:00'},
-          evening: {enabled: false, time: '19:00'},
-        },
-        theme: 'system',
-      },
+    await waitFor(() => {
+      expect(getByText("Today's Check-Ins")).toBeTruthy();
+      expect(getByText('Happy')).toBeTruthy();
     });
-
-    expect(getByText('0/1 completed today')).toBeTruthy();
-    expect(getByText('Water')).toBeTruthy();
   });
 
-  it('navigates to Check-In when CTA is pressed', () => {
+  it('shows habit summary', async () => {
+    storeHabits([waterHabit]);
+    const {getByText} = renderWithStore(<HomeScreen />);
+
+    await waitFor(() => {
+      expect(getByText('0/1 completed today')).toBeTruthy();
+      expect(getByText('Water')).toBeTruthy();
+    });
+  });
+
+  it('navigates to Check-In when CTA is pressed', async () => {
     const mockNavigate = jest.fn();
     const {useNavigation} = require('@react-navigation/native');
     useNavigation.mockReturnValue({navigate: mockNavigate, goBack: jest.fn()});
 
     const {getByTestId} = renderWithStore(<HomeScreen />);
+    await waitFor(() => {
+      expect(getByTestId('cta-check-in')).toBeTruthy();
+    });
     fireEvent.press(getByTestId('cta-check-in'));
     expect(mockNavigate).toHaveBeenCalledWith('Check-In');
   });
 
-  it('navigates to HabitDetail when a habit row is pressed', () => {
+  it('navigates to HabitDetail when a habit row is pressed', async () => {
+    storeHabits([waterHabit]);
     const mockNavigate = jest.fn();
     const {useNavigation} = require('@react-navigation/native');
     useNavigation.mockReturnValue({navigate: mockNavigate, goBack: jest.fn()});
 
-    const {getByText} = renderWithStore(<HomeScreen />, {
-      checkIn: {
-        todayCheckIns: [],
-        recentCheckIns: [],
-        loading: false,
-        error: null,
-      },
-      tags: {categories: [], tags: [], loading: false, error: null},
-      habits: {
-        habits: [
-          {
-            id: 'h1',
-            name: 'Water',
-            category: 'water',
-            frequency: 'daily',
-            targetCount: 8,
-            color: '#3498db',
-            icon: 'water',
-            isActive: true,
-            createdAt: 0,
-          },
-        ],
-        todayCompletions: [],
-        loading: false,
-        error: null,
-      },
-      settings: {
-        reminders: {
-          morning: {enabled: false, time: '09:00'},
-          midday: {enabled: true, time: '13:00'},
-          evening: {enabled: false, time: '19:00'},
-        },
-        theme: 'system',
-      },
-    });
+    const {getByText} = renderWithStore(<HomeScreen />);
 
+    await waitFor(() => {
+      expect(getByText('Water')).toBeTruthy();
+    });
     fireEvent.press(getByText('Water'));
     expect(mockNavigate).toHaveBeenCalledWith('Habits', {
       screen: 'HabitDetail',
@@ -183,29 +149,11 @@ describe('HomeScreen', () => {
     });
   });
 
-  it('shows Done for completed habits', () => {
+  it('shows Done for completed habits', async () => {
+    storeHabits([{...waterHabit, targetCount: 2}]);
     const {getByText} = renderWithStore(<HomeScreen />, {
-      checkIn: {
-        todayCheckIns: [],
-        recentCheckIns: [],
-        loading: false,
-        error: null,
-      },
-      tags: {categories: [], tags: [], loading: false, error: null},
       habits: {
-        habits: [
-          {
-            id: 'h1',
-            name: 'Water',
-            category: 'water',
-            frequency: 'daily',
-            targetCount: 2,
-            color: '#3498db',
-            icon: 'water',
-            isActive: true,
-            createdAt: 0,
-          },
-        ],
+        habits: [{...waterHabit, targetCount: 2}],
         todayCompletions: [
           {
             id: 'c1',
@@ -219,17 +167,11 @@ describe('HomeScreen', () => {
         loading: false,
         error: null,
       },
-      settings: {
-        reminders: {
-          morning: {enabled: false, time: '09:00'},
-          midday: {enabled: true, time: '13:00'},
-          evening: {enabled: false, time: '19:00'},
-        },
-        theme: 'system',
-      },
     });
 
-    expect(getByText('Done')).toBeTruthy();
-    expect(getByText('1/1 completed today')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByText('Done')).toBeTruthy();
+      expect(getByText('1/1 completed today')).toBeTruthy();
+    });
   });
 });

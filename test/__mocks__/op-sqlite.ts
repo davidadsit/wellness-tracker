@@ -11,6 +11,20 @@ function getDb(): Database.Database {
   return db;
 }
 
+function dropAllTables(instance: Database.Database): void {
+  const tables = instance
+    .prepare(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
+    )
+    .all() as Array<{name: string}>;
+  instance.pragma('foreign_keys = OFF');
+  for (const {name} of tables) {
+    instance.prepare(`DROP TABLE IF EXISTS "${name}"`).run();
+  }
+  instance.pragma('foreign_keys = ON');
+  instance.pragma('user_version = 0');
+}
+
 export function open(_options: {name: string; location?: string}) {
   const instance = getDb();
   return {
@@ -47,8 +61,7 @@ export function open(_options: {name: string; location?: string}) {
     },
     close: () => {
       if (db) {
-        db.close();
-        db = null;
+        dropAllTables(db);
       }
     },
     _getTestDb: () => instance,

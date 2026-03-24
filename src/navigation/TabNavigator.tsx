@@ -51,10 +51,18 @@ function SettingsButton() {
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate('Home', {screen: 'Settings'})}
-      style={{marginRight: 8}}>
+      style={styles.settingsButton}>
       <Ionicons name="settings-outline" size={24} color={colors.primary} />
     </TouchableOpacity>
   );
+}
+
+function renderSettingsButton() {
+  return <SettingsButton />;
+}
+
+function renderCustomTabBar(props: BottomTabBarProps) {
+  return <CustomTabBar {...props} />;
 }
 
 // Home stack
@@ -62,8 +70,7 @@ const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
 function HomeStackScreen() {
   return (
-    <HomeStack.Navigator
-      screenOptions={{headerRight: () => <SettingsButton />}}>
+    <HomeStack.Navigator screenOptions={{headerRight: renderSettingsButton}}>
       <HomeStack.Screen
         name="HomeMain"
         component={HomeScreen}
@@ -97,8 +104,7 @@ const HabitsStack = createNativeStackNavigator<HabitsStackParamList>();
 
 function HabitsStackScreen() {
   return (
-    <HabitsStack.Navigator
-      screenOptions={{headerRight: () => <SettingsButton />}}>
+    <HabitsStack.Navigator screenOptions={{headerRight: renderSettingsButton}}>
       <HabitsStack.Screen
         name="HabitsMain"
         component={HabitsScreen}
@@ -173,25 +179,28 @@ const Tab = createBottomTabNavigator<TabParamList>();
 export function TabNavigator() {
   return (
     <Tab.Navigator
-      tabBar={props => <CustomTabBar {...props} />}
+      tabBar={renderCustomTabBar}
       screenOptions={{headerShown: false}}>
       <Tab.Screen name="Home" component={HomeStackScreen} />
       <Tab.Screen
         name="Check-In"
         component={CheckInScreen}
-        options={{headerShown: true, headerRight: () => <SettingsButton />}}
+        options={{headerShown: true, headerRight: renderSettingsButton}}
       />
       <Tab.Screen name="Habits" component={HabitsStackScreen} />
       <Tab.Screen
         name="Journal"
         component={JournalScreen}
-        options={{headerShown: true, headerRight: () => <SettingsButton />}}
+        options={{headerShown: true, headerRight: renderSettingsButton}}
       />
     </Tab.Navigator>
   );
 }
 
 const styles = StyleSheet.create({
+  settingsButton: {
+    marginRight: 8,
+  },
   tabBar: {
     flexDirection: 'row',
     backgroundColor: '#fff',

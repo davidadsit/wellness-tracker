@@ -94,7 +94,7 @@ export function CheckInScreen() {
       <Text style={styles.noteLabel}>Note (optional)</Text>
       <TextInput
         testID="checkin-note"
-        style={[styles.noteInput, {height: 60}]}
+        style={styles.noteInput}
         value={note}
         onChangeText={setNote}
         placeholder="Anything else you want to capture..."
@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
   },
   noteInput: {
     ...commonStyles.textInput,
+    height: 60,
     padding: 12,
     textAlignVertical: 'top',
     marginBottom: 16,

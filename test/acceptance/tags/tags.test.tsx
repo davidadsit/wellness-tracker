@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {act} from 'react';
 import {Alert} from 'react-native';
 import {render, fireEvent, waitFor} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
@@ -158,7 +158,7 @@ describe('tag management workflow', () => {
 
     const alertArgs = (Alert.alert as jest.Mock).mock.calls[0];
     const removeButton = alertArgs[2].find((b: any) => b.text === 'Remove');
-    await removeButton.onPress();
+    await act(() => removeButton.onPress());
 
     await waitFor(() => {
       expect(queryByText('Temporary')).toBeNull();
@@ -197,7 +197,7 @@ describe('tag management workflow', () => {
 
     const alertArgs = (Alert.alert as jest.Mock).mock.calls[0];
     const removeButton = alertArgs[2].find((b: any) => b.text === 'Remove');
-    await removeButton.onPress();
+    await act(() => removeButton.onPress());
 
     await waitFor(() => {
       expect(queryByText('Used Tag')).toBeNull();
