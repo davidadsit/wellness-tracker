@@ -72,6 +72,4 @@ export function closeDatabase(): void {
 
 export function resetDatabase(): void {
   closeDatabase();
-  db = null;
-  initialized = false;
 }

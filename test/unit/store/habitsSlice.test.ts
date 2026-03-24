@@ -23,34 +23,34 @@ describe('habitsSlice', () => {
     });
 
     it('addHabit adds a habit', () => {
-      const habit = makeHabit();
+      const habit = makeHabit({id: 'h1'});
       const state = habitsReducer(initialState, addHabit(habit));
       expect(state.habits).toHaveLength(1);
       expect(state.habits[0].name).toBe('Drink Water');
     });
 
     it('updateHabit replaces a habit by id', () => {
-      const stateWith = {...initialState, habits: [makeHabit()]};
-      const updated = makeHabit({name: 'Drink More Water'});
+      const stateWith = {...initialState, habits: [makeHabit({id: 'h1'})]};
+      const updated = makeHabit({id: 'h1', name: 'Drink More Water'});
       const state = habitsReducer(stateWith, updateHabit(updated));
       expect(state.habits[0].name).toBe('Drink More Water');
     });
 
     it('updateHabit does nothing for unknown id', () => {
-      const stateWith = {...initialState, habits: [makeHabit()]};
+      const stateWith = {...initialState, habits: [makeHabit({id: 'h1'})]};
       const unknown = makeHabit({id: 'h999', name: 'Unknown'});
       const state = habitsReducer(stateWith, updateHabit(unknown));
       expect(state.habits[0].name).toBe('Drink Water');
     });
 
     it('removeHabit removes a habit by id', () => {
-      const stateWith = {...initialState, habits: [makeHabit()]};
+      const stateWith = {...initialState, habits: [makeHabit({id: 'h1'})]};
       const state = habitsReducer(stateWith, removeHabit('h1'));
       expect(state.habits).toHaveLength(0);
     });
 
     it('toggleHabitActive flips isActive', () => {
-      const stateWith = {...initialState, habits: [makeHabit()]};
+      const stateWith = {...initialState, habits: [makeHabit({id: 'h1'})]};
       const state = habitsReducer(stateWith, toggleHabitActive('h1'));
       expect(state.habits[0].isActive).toBe(false);
 

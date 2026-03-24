@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
   StyleSheet,
 } from 'react-native';
 import {Habit, HabitCategory} from '../../types';
@@ -51,6 +52,7 @@ export function HabitForm({initial, onSubmit, onCancel}: HabitFormProps) {
 
   const handleSubmit = () => {
     if (!name.trim()) {
+      Alert.alert('Name Required', 'Please enter a name for this habit.');
       return;
     }
     onSubmit({

@@ -2,11 +2,12 @@ import React, {useState} from 'react';
 import {View, Text, Switch, TouchableOpacity, StyleSheet} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {RootState, AppDispatch} from '../store';
 import {setReminderEnabled, setReminderTime} from '../store/settingsSlice';
 import {notificationService} from '../services/notifications/notificationService';
-import {ReminderPeriod} from '../types';
+import {ReminderPeriod, HomeStackParamList} from '../types';
 import {Card} from '../components/common/Card';
 import {colors, commonStyles} from '../theme';
 
@@ -37,7 +38,8 @@ function formatTime12Hour(time: string): string {
 }
 
 export function SettingsScreen() {
-  const navigation = useNavigation<any>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   const dispatch = useDispatch<AppDispatch>();
   const {reminders} = useSelector((state: RootState) => state.settings);
   const [editingPeriod, setEditingPeriod] = useState<ReminderPeriod | null>(
@@ -59,7 +61,7 @@ export function SettingsScreen() {
     }
   };
 
-  const handleTimeChange = async (_event: any, selectedDate?: Date) => {
+  const handleTimeChange = async (_event: unknown, selectedDate?: Date) => {
     if (!editingPeriod || !selectedDate) {
       setEditingPeriod(null);
       return;

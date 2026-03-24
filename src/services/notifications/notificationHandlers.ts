@@ -52,7 +52,7 @@ export function registerNotificationHandlers(): void {
         break;
 
       case 'COMPLETE_HABIT':
-        if (habitId) {
+        if (habitId && notification?.id) {
           await habitRepository.saveCompletion({
             id: ulid(),
             habitId,
@@ -61,7 +61,7 @@ export function registerNotificationHandlers(): void {
             completedAt: Date.now(),
             source: 'notification',
           });
-          await notifee.cancelNotification(notification!.id!);
+          await notifee.cancelNotification(notification.id);
         }
         break;
 

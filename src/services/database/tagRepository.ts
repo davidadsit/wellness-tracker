@@ -88,8 +88,38 @@ export const tagRepository = {
 
   async saveTag(tag: Tag): Promise<Tag> {
     const db = getDatabase();
+    const existing = await db.execute('SELECT id FROM tags WHERE id = ?', [
+      tag.id,
+    ]);
+    if (existing.rows.length > 0) {
+      await db.execute(
+        'UPDATE tags SET category_id = ?, label = ?, is_default = ?, is_archived = ?, created_at = ? WHERE id = ?',
+        [
+          tag.categoryId,
+          tag.label,
+          tag.isDefault ? 1 : 0,
+          tag.isArchived ? 1 : 0,
+          tag.createdAt,
+          tag.id,
+        ],
+      );
+      return tag;
+    }
+
+    const archived = await db.execute(
+      'SELECT * FROM tags WHERE category_id = ? AND label = ? AND is_archived = 1',
+      [tag.categoryId, tag.label],
+    );
+    if (archived.rows.length > 0) {
+      const restoredTag = mapTag({...archived.rows[0], is_archived: 0});
+      await db.execute('UPDATE tags SET is_archived = 0 WHERE id = ?', [
+        restoredTag.id,
+      ]);
+      return restoredTag;
+    }
+
     await db.execute(
-      'INSERT INTO tags (id, category_id, label, is_default, is_archived, created_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET category_id = excluded.category_id, label = excluded.label, is_default = excluded.is_default, is_archived = excluded.is_archived, created_at = excluded.created_at',
+      'INSERT INTO tags (id, category_id, label, is_default, is_archived, created_at) VALUES (?, ?, ?, ?, ?, ?)',
       [
         tag.id,
         tag.categoryId,

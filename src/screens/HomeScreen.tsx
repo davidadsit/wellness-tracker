@@ -15,6 +15,7 @@ import {TagBadge} from '../components/common/TagBadge';
 import {colors, commonStyles} from '../theme';
 
 export function HomeScreen() {
+  // Uses any because this screen navigates across tab and stack navigators
   const navigation = useNavigation<any>();
   const {todayCheckIns, hasCheckedInToday, loadToday} = useCheckIn();
   const {activeHabits, todayCompletions, loadHabits, loadTodayCompletions} =

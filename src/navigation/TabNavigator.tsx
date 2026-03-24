@@ -23,6 +23,7 @@ import {TestControlScreen} from '../screens/TestControlScreen';
 import {HabitDetailScreen} from '../screens/HabitDetailScreen';
 import {HabitFormScreen} from '../screens/HabitFormScreen';
 import {TabParamList, HomeStackParamList, HabitsStackParamList} from '../types';
+import {colors} from '../theme';
 
 const TAB_ICONS: Record<
   keyof TabParamList,
@@ -51,7 +52,7 @@ function SettingsButton() {
     <TouchableOpacity
       onPress={() => navigation.navigate('Home', {screen: 'Settings'})}
       style={{marginRight: 8}}>
-      <Ionicons name="settings-outline" size={24} color="#4A90D9" />
+      <Ionicons name="settings-outline" size={24} color={colors.primary} />
     </TouchableOpacity>
   );
 }
@@ -140,7 +141,7 @@ function CustomTabBar({
         const isFocused = state.index === index && isOnRootScreen;
         const icons = TAB_ICONS[label];
         const iconName = isFocused ? icons.focused : icons.unfocused;
-        const color = isFocused ? '#4A90D9' : '#888';
+        const color = isFocused ? colors.primary : '#888';
 
         return (
           <TouchableOpacity

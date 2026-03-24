@@ -75,6 +75,7 @@ export function AnalyticsScreen() {
       setMaxDailyFrequency(1);
       return;
     }
+    let cancelled = false;
     const range = getDateRange(period);
     Promise.all(
       tagFrequency.map(tf =>
@@ -85,6 +86,9 @@ export function AnalyticsScreen() {
         ),
       ),
     ).then(results => {
+      if (cancelled) {
+        return;
+      }
       let max = 1;
       for (const daily of results) {
         for (const d of daily) {
@@ -95,6 +99,9 @@ export function AnalyticsScreen() {
       }
       setMaxDailyFrequency(max);
     });
+    return () => {
+      cancelled = true;
+    };
   }, [tagFrequency, period]);
 
   const loadTimelineForTag = useCallback(

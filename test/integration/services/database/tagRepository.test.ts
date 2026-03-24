@@ -148,6 +148,24 @@ describe('tagRepository', () => {
       ).rejects.toThrow();
     });
 
+    it('unarchives existing tag when saving duplicate label in same category', async () => {
+      const tag = await tagRepository.saveTag(makeTag({label: 'Revivable'}));
+      await tagRepository.archiveTag(tag.id);
+
+      const archived = await tagRepository.loadTag(tag.id);
+      expect(archived?.isArchived).toBe(true);
+
+      const result = await tagRepository.saveTag(
+        makeTag({categoryId: tag.categoryId, label: 'Revivable'}),
+      );
+
+      expect(result.id).toBe(tag.id);
+      expect(result.isArchived).toBe(false);
+
+      const loaded = await tagRepository.loadTag(tag.id);
+      expect(loaded?.isArchived).toBe(false);
+    });
+
     it('allows same label in different categories', async () => {
       const tag = await tagRepository.saveTag(
         makeTag({categoryId: 'cat-emotional', label: 'Focused'}),

@@ -9,7 +9,7 @@ import {
 import {ulid} from '../../src/utils/ulid';
 
 export const makeHabit = (overrides: Partial<Habit> = {}): Habit => ({
-  id: 'h1',
+  id: ulid(),
   name: 'Drink Water',
   category: 'water',
   frequency: 'daily',

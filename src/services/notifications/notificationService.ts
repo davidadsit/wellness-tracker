@@ -29,7 +29,7 @@ function habitNotificationId(habitId: string): string {
 }
 
 function randomOffset(): number {
-  return Math.floor(Math.random() * 20 - 10) * 60 * 1000;
+  return Math.floor(Math.random() * 10) * 60 * 1000;
 }
 
 function buildOneShotTrigger(hours: number, minutes: number) {

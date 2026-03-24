@@ -128,7 +128,7 @@ describe('notificationService', () => {
 
   describe('scheduleHabitReminder', () => {
     it('creates a trigger notification with stable ID', async () => {
-      const habit = makeHabit({reminderTime: '09:00'});
+      const habit = makeHabit({id: 'h1', reminderTime: '09:00'});
       await notificationService.scheduleHabitReminder(habit);
 
       expect(notifee.createTriggerNotification).toHaveBeenCalledWith(
@@ -145,7 +145,7 @@ describe('notificationService', () => {
 
     it('includes COMPLETE_HABIT and SNOOZE_HABIT actions', async () => {
       await notificationService.scheduleHabitReminder(
-        makeHabit({reminderTime: '09:00'}),
+        makeHabit({id: 'h1', reminderTime: '09:00'}),
       );
 
       const call = (notifee.createTriggerNotification as jest.Mock).mock
@@ -158,7 +158,7 @@ describe('notificationService', () => {
 
     it('does nothing if habit has no reminderTime', async () => {
       await notificationService.scheduleHabitReminder(
-        makeHabit({reminderTime: undefined}),
+        makeHabit({id: 'h1', reminderTime: undefined}),
       );
       expect(notifee.createTriggerNotification).not.toHaveBeenCalled();
     });
@@ -175,7 +175,7 @@ describe('notificationService', () => {
 
   describe('rescheduleHabitReminder', () => {
     it('cancels then reschedules', async () => {
-      const habit = makeHabit({reminderTime: '09:00'});
+      const habit = makeHabit({id: 'h1', reminderTime: '09:00'});
       await notificationService.rescheduleHabitReminder(habit);
 
       expect(notifee.cancelNotification).toHaveBeenCalledWith(

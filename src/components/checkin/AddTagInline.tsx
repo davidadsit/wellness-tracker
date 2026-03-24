@@ -87,10 +87,6 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     marginBottom: 8,
   },
-  addButtonActive: {
-    borderStyle: 'solid',
-    backgroundColor: '#e8e8e8',
-  },
   addButtonText: {
     fontSize: 18,
     color: colors.textSecondary,

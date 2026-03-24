@@ -2,6 +2,7 @@ import React from 'react';
 import {fireEvent} from '@testing-library/react-native';
 import {HabitsScreen} from '../../../src/screens/HabitsScreen';
 import {renderWithStore} from '../../helpers/renderWithStore';
+import {makeHabit} from '../../helpers/factories';
 
 jest.mock('../../../src/services/database/habitRepository', () => ({
   habitRepository: {
@@ -40,20 +41,7 @@ describe('HabitsScreen', () => {
         error: null,
       },
       habits: {
-        habits: [
-          {
-            id: 'h1',
-            name: 'Drink Water',
-            category: 'water',
-            frequency: 'daily',
-            targetCount: 8,
-            unit: 'glasses',
-            color: '#3498db',
-            icon: 'water',
-            isActive: true,
-            createdAt: 0,
-          },
-        ],
+        habits: [makeHabit({id: 'h1'})],
         todayCompletions: [],
         loading: false,
         error: null,
@@ -85,20 +73,7 @@ describe('HabitsScreen', () => {
         error: null,
       },
       habits: {
-        habits: [
-          {
-            id: 'h1',
-            name: 'Drink Water',
-            category: 'water',
-            frequency: 'daily',
-            targetCount: 8,
-            unit: 'glasses',
-            color: '#3498db',
-            icon: 'water',
-            isActive: true,
-            createdAt: 0,
-          },
-        ],
+        habits: [makeHabit({id: 'h1'})],
         todayCompletions: [],
         loading: false,
         error: null,
@@ -131,20 +106,7 @@ describe('HabitsScreen', () => {
         error: null,
       },
       habits: {
-        habits: [
-          {
-            id: 'h1',
-            name: 'Drink Water',
-            category: 'water',
-            frequency: 'daily',
-            targetCount: 8,
-            unit: 'glasses',
-            color: '#3498db',
-            icon: 'water',
-            isActive: true,
-            createdAt: 0,
-          },
-        ],
+        habits: [makeHabit({id: 'h1'})],
         todayCompletions: [],
         loading: false,
         error: null,

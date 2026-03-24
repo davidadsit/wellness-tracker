@@ -36,6 +36,9 @@ export const habitRepository = {
       'SELECT * FROM habit_completions WHERE habit_id = ? AND date = ?',
       [completion.habitId, completion.date],
     );
+    if (result.rows.length === 0) {
+      return completion;
+    }
     return mapCompletion(result.rows[0]);
   },
 

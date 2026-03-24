@@ -11,12 +11,15 @@ export function QuickCheckInScreen() {
   const navigation = useNavigation();
   const {submit} = useCheckIn();
   const {tagsByCategory, loadTags, visibleCategories} = useTags();
-  const {selectedTagIds, toggleTag} = useTagSelection();
+  const {selectedTagIds, toggleTag, resetSelection} = useTagSelection();
 
   useFocusEffect(
     useCallback(() => {
       loadTags();
-    }, [loadTags]),
+      return () => {
+        resetSelection();
+      };
+    }, [loadTags, resetSelection]),
   );
 
   const handleSubmit = async () => {
