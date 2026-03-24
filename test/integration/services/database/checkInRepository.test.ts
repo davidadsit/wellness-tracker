@@ -105,6 +105,35 @@ describe('checkInRepository', () => {
       expect(results).toHaveLength(0);
     });
 
+    it('returns correct tags for each check-in', async () => {
+      const withTwoTags = makeCheckIn({
+        tagIds: ['tag-happy', 'tag-energized'],
+        timestamp: Date.now(),
+      });
+      const withOneTag = makeCheckIn({
+        tagIds: ['tag-sad'],
+        timestamp: Date.now() + 1,
+      });
+      const withNoTags = makeCheckIn({
+        tagIds: [],
+        timestamp: Date.now() + 2,
+      });
+      await checkInRepository.save(withTwoTags);
+      await checkInRepository.save(withOneTag);
+      await checkInRepository.save(withNoTags);
+
+      const {start, end} = rangeAroundNow();
+      const results = await checkInRepository.loadDateRange(start, end);
+
+      const byId = (id: string) => results.find(r => r.id === id);
+      expect(byId(withTwoTags.id)?.tagIds).toEqual(
+        expect.arrayContaining(['tag-happy', 'tag-energized']),
+      );
+      expect(byId(withTwoTags.id)?.tagIds).toHaveLength(2);
+      expect(byId(withOneTag.id)?.tagIds).toEqual(['tag-sad']);
+      expect(byId(withNoTags.id)?.tagIds).toEqual([]);
+    });
+
     it('returns results in descending timestamp order', async () => {
       await checkInRepository.save(makeCheckIn({tagIds: ['tag-happy']}));
       await checkInRepository.save(makeCheckIn({tagIds: ['tag-sad']}));

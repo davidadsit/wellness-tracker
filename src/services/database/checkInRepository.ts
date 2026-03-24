@@ -2,25 +2,29 @@ import {getDatabase} from './database';
 import {CheckIn} from '../../types';
 import {formatDateString} from '../../utils/dateUtils';
 
-function mapCheckIn(row: any, tagIds: string[]): CheckIn {
-  return {
-    id: row.id,
-    timestamp: row.timestamp,
-    tagIds,
-    note: row.note ?? undefined,
-    source: row.source,
-  };
-}
+function groupRowsIntoCheckIns(rows: any[]): CheckIn[] {
+  const checkIns: CheckIn[] = [];
+  const seen = new Map<string, CheckIn>();
 
-async function loadTagIdsForCheckIn(
-  db: ReturnType<typeof getDatabase>,
-  checkInId: string,
-): Promise<string[]> {
-  const result = await db.execute(
-    'SELECT tag_id FROM check_in_tags WHERE check_in_id = ?',
-    [checkInId],
-  );
-  return result.rows.map((r: any) => r.tag_id);
+  for (const row of rows) {
+    let checkIn = seen.get(row.id);
+    if (!checkIn) {
+      checkIn = {
+        id: row.id,
+        timestamp: row.timestamp,
+        tagIds: [],
+        note: row.note ?? undefined,
+        source: row.source,
+      };
+      seen.set(row.id, checkIn);
+      checkIns.push(checkIn);
+    }
+    if (row.tag_id != null) {
+      checkIn.tagIds.push(row.tag_id);
+    }
+  }
+
+  return checkIns;
 }
 
 export const checkInRepository = {
@@ -47,15 +51,15 @@ export const checkInRepository = {
 
   async load(id: string): Promise<CheckIn | undefined> {
     const db = getDatabase();
-    const result = await db.execute('SELECT * FROM check_ins WHERE id = ?', [
-      id,
-    ]);
-    if (result.rows.length === 0) {
-      return undefined;
-    }
-    const row = result.rows[0];
-    const tagIds = await loadTagIdsForCheckIn(db, id);
-    return mapCheckIn(row, tagIds);
+    const result = await db.execute(
+      `SELECT ci.id, ci.timestamp, ci.note, ci.source, ct.tag_id
+       FROM check_ins ci
+       LEFT JOIN check_in_tags ct ON ci.id = ct.check_in_id
+       WHERE ci.id = ?`,
+      [id],
+    );
+    const checkIns = groupRowsIntoCheckIns(result.rows);
+    return checkIns[0];
   },
 
   async loadDateRange(
@@ -64,15 +68,14 @@ export const checkInRepository = {
   ): Promise<CheckIn[]> {
     const db = getDatabase();
     const result = await db.execute(
-      'SELECT * FROM check_ins WHERE timestamp >= ? AND timestamp <= ? ORDER BY timestamp DESC',
+      `SELECT ci.id, ci.timestamp, ci.note, ci.source, ct.tag_id
+       FROM check_ins ci
+       LEFT JOIN check_in_tags ct ON ci.id = ct.check_in_id
+       WHERE ci.timestamp >= ? AND ci.timestamp <= ?
+       ORDER BY ci.timestamp DESC`,
       [startTimestamp, endTimestamp],
     );
-    const checkIns: CheckIn[] = [];
-    for (const row of result.rows) {
-      const tagIds = await loadTagIdsForCheckIn(db, row.id);
-      checkIns.push(mapCheckIn(row, tagIds));
-    }
-    return checkIns;
+    return groupRowsIntoCheckIns(result.rows);
   },
 
   async loadToday(todayStart: number, todayEnd: number): Promise<CheckIn[]> {
@@ -82,15 +85,13 @@ export const checkInRepository = {
   async loadRecent(limit: number): Promise<CheckIn[]> {
     const db = getDatabase();
     const result = await db.execute(
-      'SELECT * FROM check_ins ORDER BY timestamp DESC LIMIT ?',
+      `SELECT ci.id, ci.timestamp, ci.note, ci.source, ct.tag_id
+       FROM (SELECT * FROM check_ins ORDER BY timestamp DESC LIMIT ?) ci
+       LEFT JOIN check_in_tags ct ON ci.id = ct.check_in_id
+       ORDER BY ci.timestamp DESC`,
       [limit],
     );
-    const checkIns: CheckIn[] = [];
-    for (const row of result.rows) {
-      const tagIds = await loadTagIdsForCheckIn(db, row.id);
-      checkIns.push(mapCheckIn(row, tagIds));
-    }
-    return checkIns;
+    return groupRowsIntoCheckIns(result.rows);
   },
 
   async delete(id: string): Promise<void> {

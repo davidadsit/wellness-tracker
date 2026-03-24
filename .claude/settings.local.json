@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npx react-native:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(find /Users/davidadsit/code/wellness-tracker/test/acceptance -type f -name *.test.ts)"
     ]
   }
 }
