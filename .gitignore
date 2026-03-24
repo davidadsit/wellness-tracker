@@ -64,6 +64,7 @@ yarn-error.log
 *.swp
 *.swo
 *~
+*.out
 
 # Env files
 .env
